@@ -22,6 +22,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	HWND hwnd;
 	MSG msg;
 	TCHAR szAppName[] = TEXT("SGKWindow");
+	int SystemWindowWidth, SystemWindowHeight;
+	int WindowWidth = 800, WindowHeight = 600;
+	int x_Coordinate, y_Coordinate;
+
+	SystemWindowWidth = GetSystemMetrics(SM_CXSCREEN);
+	SystemWindowHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	x_Coordinate = (SystemWindowWidth / 2) - (WindowWidth / 2);
+	y_Coordinate = (SystemWindowHeight / 2) - (WindowHeight / 2);
+
 	//code
 	gpFILE = fopen("Log.txt", "w");
 	if (gpFILE == NULL)
@@ -53,10 +63,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		szAppName,
 		TEXT("Siddhant Ganesh Kshirsagar"),
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
+		x_Coordinate,
+		y_Coordinate,
+		WindowWidth,
+		WindowHeight,
 		NULL,
 		NULL,
 		hInstance,
