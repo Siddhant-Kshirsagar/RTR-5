@@ -8,11 +8,13 @@
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global variable declaration
-HWND ghwnd = NULL; // g = global 
 DWORD dwStyle = 0;
 WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all value to 0)
 BOOL gbFullscreen = FALSE;
 FILE *gpFILE = NULL;
+
+HWND ghwnd = NULL; // g = global handle of window
+BOOL gbActive = FALSE; 
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -22,13 +24,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	HWND hwnd;
 	MSG msg;
 	TCHAR szAppName[] = TEXT("SGKWindow");
+	BOOL bDone = FALSE;
 	int SystemWindowWidth, SystemWindowHeight;
 	int WindowWidth = 800, WindowHeight = 600;
 	int x_Coordinate, y_Coordinate;
 
+	// get system window width and height
 	SystemWindowWidth = GetSystemMetrics(SM_CXSCREEN);
 	SystemWindowHeight = GetSystemMetrics(SM_CYSCREEN);
-
+	// get x and y coordinate for show window in center on screen
 	x_Coordinate = (SystemWindowWidth / 2) - (WindowWidth / 2);
 	y_Coordinate = (SystemWindowHeight / 2) - (WindowHeight / 2);
 
@@ -80,11 +84,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	//Paint/Redraw Window
 	UpdateWindow(hwnd);
 
-	//Message Loop
-	while(GetMessage(&msg, NULL, 0, 0))
+	//Game Loop
+	while(bDone == FALSE)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+			{
+				bDone = TRUE;
+			}
+			else
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+		else
+		{
+			// Render
+		}
 	}
 
 	return((int)msg.wParam);
@@ -141,6 +159,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_SETFOCUS: // when window is in focus (window is activate)
+		gbActive = TRUE;
+		break;
+	case WM_KILLFOCUS: // when window is not in focus(window is deactivate)
+		gbActive = FALSE;
+		break;
 	default:
 		break;
 	}
