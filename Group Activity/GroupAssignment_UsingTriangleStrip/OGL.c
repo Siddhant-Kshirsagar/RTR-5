@@ -351,30 +351,6 @@ void display(void)
 	{
 		RectUsingTriangle(-0.8f,fRow,0.8f);
 	}
-
-	// glBegin(GL_TRIANGLE_STRIP);
-	// 	//1st triangle
-		
-
-	// 	glColor3f(1.0f, 1.0f, 0.0f);
-	// 	glVertex3f(0.0f, (0.0f), 0.0f);
-
-	// 	glColor3f(0.0f, 1.0f, 1.0f);
-	// 	glVertex3f((0.2f), (0.0f), 0.0f);
-
-	// 	glColor3f(1.0f, 0.0f, 1.0f);
-	// 	glVertex3f(0.0f, 0.4f, 0.0f);
-
-	// 	//2nd triangle 
-	// 	glColor3f(1.0f, 0.0f, 1.0f);
-	// 	glVertex3f(0.2f, 0.4f, 0.0f);
-
-	// 	// glColor3f(0.0f, 1.0f, 1.0f);
-	// 	// glVertex3f((0.2f), 0.4f, 0.0f);
-
-	// 	glColor3f(1.0f, 1.0f, 0.0f);
-	// 	glVertex3f((0.2f), (0.0f), 0.0f);
-	// glEnd();
 	
 	SwapBuffers(ghdc);
 }

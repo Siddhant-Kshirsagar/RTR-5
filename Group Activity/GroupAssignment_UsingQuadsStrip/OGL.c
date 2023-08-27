@@ -369,17 +369,17 @@ void RectUsingQuad(float xAxis,float yAxis,float length)
 	glBegin(GL_QUAD_STRIP);
 
 		//Quads
-		// first line (1st coordinate)
+		// first quad (1st coordinate)
 		glColor3f(1.0f, 0.0f, 1.0f);
 		glVertex3f(xAxis, yAxis, 0.0f);
-		// first line (2nd coordinate)
+		// first quad (2nd coordinate)
 		glColor3f(1.0f, 1.0f, 0.0f);
 		glVertex3f(xAxis, (yAxis-0.4f), 0.0f);
 
-		//second line (3rd cordinate) 
+		//first quad (3rd cordinate) 
 		glColor3f(0.5f, 1.0f, 1.0f);
 		glVertex3f((xAxis+0.2f), yAxis, 0.0f);
-		//second line (4th cordinate)
+		//first quad (4th cordinate)
 		glColor3f(0.0f, 1.0f, 1.0f);
 		glVertex3f((xAxis+0.2f), (yAxis-0.4f), 0.0f);
 
