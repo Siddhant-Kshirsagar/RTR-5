@@ -390,11 +390,7 @@ void RectUsingQuad(float xAxis,float yAxis,float length)
 		glVertex3f((fxAxis+0.2f), yAxis, 0.0f);
 
 		glColor3f(0.5f, 1.0f, 0.4f);
-		glVertex3f((fxAxis+0.2f), (yAxis-0.4f), 0.0f);	
-
-		// log
-		fprintf(gpFILE,"Value Of vertex is %f \n",fxAxis);
-	
+		glVertex3f((fxAxis+0.2f), (yAxis-0.4f), 0.0f);		
 	}
 	glEnd();
 }

@@ -387,33 +387,40 @@ void update(void)
 
 void RectUsingTriangle(float xAxis,float yAxis,float length)
 {
-	
-	glBegin(GL_TRIANGLE_STRIP);
+	//variable declaration
+	float fxAxis, fyAxis;
 
-	for(float fxAxis = xAxis; (fxAxis+0.2f)<length; fxAxis = fxAxis+0.2f)
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // use to draw only edges of triangle 
+
+	glBegin(GL_TRIANGLE_STRIP); 
+
+	//1st triangle
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(xAxis, (yAxis - 0.4f), 0.0f);
+
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(xAxis, yAxis, 0.0f);
+
+	for(fxAxis = xAxis, fyAxis = yAxis; (fxAxis+0.2f)<length; /*fxAxis = fxAxis+0.2f*/)
 	{
-		//1st triangle
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glVertex3f(fxAxis, (yAxis-0.4f), 0.0f);
-
-		glColor3f(0.0f, 1.0f, 1.0f);
-		glVertex3f((fxAxis+0.2f), (yAxis-0.4f), 0.0f);
-
-		glColor3f(1.0f, 0.0f, 1.0f);
-		glVertex3f(fxAxis, yAxis, 0.0f);
-
-		//2nd triangle 
-		// glColor3f(1.0f, 0.0f, 1.0f);
-		// glVertex3f(fxAxis, yAxis, 0.0f);
-
-		glColor3f(0.0f, 1.0f, 1.0f);
-		glVertex3f((fxAxis+0.2f), yAxis, 0.0f);
-
-		glColor3f(1.0f, 1.0f, 0.0f);
-		glVertex3f((fxAxis+0.2f), (yAxis-0.4f), 0.0f);
-
+		if (fyAxis > (yAxis - 0.4f))
+		{
+			glColor3f(1.0f, 1.0f, 0.0f);
+			glVertex3f((fxAxis += 0.2f), (fyAxis -= 0.4f), 0.0f);
+		}
+		else
+		{
+			glColor3f(0.0f, 1.0f, 1.0f);
+			glVertex3f((fxAxis), (fyAxis += 0.4f), 0.0f);
+		}
 	
 	}
+	//because of for loop exit condition when (fxAxis+0.2f) > length then we exit from for loop
+	//but we have to draw last triangle using GL_TRIANGLE_STRIP we use this coordinate to complete
+	//Our Geometry
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f((fxAxis), (fyAxis += 0.4f), 0.0f);
+
 	glEnd();
 }
 
