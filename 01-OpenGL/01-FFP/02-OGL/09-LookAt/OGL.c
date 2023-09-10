@@ -26,15 +26,12 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global variable declaration
 DWORD dwStyle = 0;
-WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all member to 0)
+WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all value to 0)
 BOOL gbFullscreen = FALSE;
 FILE *gpFILE = NULL;
 
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE; 
-
-GLfloat tAngle = 0.0f;
-GLfloat rAngle = 0.0f;
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -349,33 +346,27 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(-1.5f,0.0f,-6.0f);
+	// 1) following call is done for modeling transformation
+	//glTranslatef(0.0f,0.0f,-3.0f);
 
-	glRotatef(tAngle, 0.0f, 1.0f, 0.0f);
+	// 2) following call is done for viewing transformation
+	//gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+	// 3) following lines for used for when both modeling and viewing transformation needed to be done
+	//(*** 1st must be done viewing transformation and then modeling transformation ***)
+	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, -2.0f);
+
 
 	glBegin(GL_TRIANGLES);
 
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 1.0f, 0.f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
-	
-	glEnd();
-
-	glLoadIdentity();
-
-	glTranslatef(1.5f, 0.0f, -6.0f);
-
-	glRotatef(rAngle, 1.0f, 0.0f, 0.0f);
-
-	glBegin(GL_QUADS);
-
 	glColor3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 0.0f);
-	glVertex3f(-1.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f);
+
+	glColor3f(1.0f, 1.0f, 0.0f);
 	glVertex3f(-1.0f, -1.0f, 0.0f);
+
+	glColor3f(0.0f, 1.0f, 1.0f);
 	glVertex3f(1.0f, -1.0f, 0.0f);
 
 	glEnd();
@@ -386,20 +377,6 @@ void display(void)
 void update(void)
 {
 	//code
-
-	//triangle rotate
-	tAngle = tAngle + 1.0f;
-	if (tAngle >= 360.0f)
-	{
-		tAngle = tAngle - 360.0f;
-	}
-
-	//rectangle rotate
-	rAngle = rAngle - 1.0f;
-	if (rAngle <= 0.0f)
-	{
-		rAngle = rAngle + 360.0f;
-	}
 
 }
 

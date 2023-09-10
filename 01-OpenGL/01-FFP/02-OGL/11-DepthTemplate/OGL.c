@@ -26,15 +26,12 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global variable declaration
 DWORD dwStyle = 0;
-WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all member to 0)
+WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all value to 0)
 BOOL gbFullscreen = FALSE;
 FILE *gpFILE = NULL;
 
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE; 
-
-GLfloat tAngle = 0.0f;
-GLfloat rAngle = 0.0f;
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -279,6 +276,7 @@ int initialize(void)
 	pfd.cGreenBits = 8;
 	pfd.cBlueBits = 8;
 	pfd.cAlphaBits = 8;
+	pfd.cDepthBits = 32;
 
 	// step 2 :- Get DC 
 	ghdc = GetDC(ghwnd);
@@ -317,6 +315,13 @@ int initialize(void)
 		fprintf(gpFILE,"wglMakeCurrent() Failed.\n");
 		return(-5);
 	}
+	
+	//for enable depth
+	glShadeModel(GL_SMOOTH); // optional (beautyfication color,light,texture shade)
+	glClearDepth(1.0f); // compulsory
+	glEnable(GL_DEPTH_TEST);// compulsory
+	glDepthFunc(GL_LEQUAL);// compulsory
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // optional (beautyfication for artifact e.g if we draw circle or sphere we see ellipse curve but we don't need that so we disable that)
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -344,39 +349,14 @@ void resize(int width, int height)
 void display(void)
 {
 	//code
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(-1.5f,0.0f,-6.0f);
-
-	glRotatef(tAngle, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f,0.0f,-3.0f);
 
 	glBegin(GL_TRIANGLES);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 1.0f, 0.f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
-	
-	glEnd();
-
-	glLoadIdentity();
-
-	glTranslatef(1.5f, 0.0f, -6.0f);
-
-	glRotatef(rAngle, 1.0f, 0.0f, 0.0f);
-
-	glBegin(GL_QUADS);
-
-	glColor3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 0.0f);
-	glVertex3f(-1.0f, 1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
 
 	glEnd();
 
@@ -386,20 +366,6 @@ void display(void)
 void update(void)
 {
 	//code
-
-	//triangle rotate
-	tAngle = tAngle + 1.0f;
-	if (tAngle >= 360.0f)
-	{
-		tAngle = tAngle - 360.0f;
-	}
-
-	//rectangle rotate
-	rAngle = rAngle - 1.0f;
-	if (rAngle <= 0.0f)
-	{
-		rAngle = rAngle + 360.0f;
-	}
 
 }
 
