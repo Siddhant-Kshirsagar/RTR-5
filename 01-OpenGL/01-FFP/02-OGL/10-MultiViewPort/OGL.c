@@ -178,6 +178,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 		resize(LOWORD(lParam),HIWORD(lParam));
+		iWidth = LOWORD(lParam);
+		iHeight = HIWORD(lParam);
 		break;
 
 	case WM_ERASEBKGND:
@@ -193,113 +195,43 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 		case VK_NUMPAD0:
 		case 0x30:
-			if (gbFullscreen)
-			{
-				glViewport(0, 0, (GLsizei)iWidth, (GLsizei)iHeight);
-			}
-			else
-			{
-				glViewport(0, 0, (GLsizei)WIN_WIDTH, (GLsizei)WIN_HEIGHT);
-			}
+			glViewport(0, 0, (GLsizei)iWidth, (GLsizei)iHeight);
 			break;
 		case VK_NUMPAD1:
 		case 0x31:
-			if (gbFullscreen)
-			{
 				glViewport(0, 0, ((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(0, 0, ((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD2:
 		case 0x32:
-			if (gbFullscreen)
-			{
 				glViewport(((GLsizei)iWidth) / ((GLsizei)2), 0, ((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(((GLsizei)WIN_WIDTH) / ((GLsizei)2), 0, ((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD3:
 		case 0x33:
-			if (gbFullscreen)
-			{
 				glViewport(((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2), ((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2), ((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD4:
 		case 0x34:
-			if (gbFullscreen)
-			{
 				glViewport(0, ((GLsizei)iHeight) / ((GLsizei)2), ((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(0, ((GLsizei)WIN_HEIGHT) / ((GLsizei)2), ((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD5:
 		case 0x35:
-			if (gbFullscreen)
-			{
 				glViewport(0, 0, (GLsizei)iWidth, ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(0, 0, WIN_WIDTH, ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD6:
 		case 0x36:
-			if (gbFullscreen)
-			{
 				glViewport(0, iHeight/2, (GLsizei)iWidth, ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(0, WIN_HEIGHT/2, WIN_WIDTH, ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		case VK_NUMPAD7:
 		case 0x37:
-			if (gbFullscreen)
-			{
 				glViewport(0, 0, ((GLsizei)iWidth)/((GLsizei)2), (GLsizei)iHeight);
-			}
-			else
-			{
-				glViewport(0, 0, ((GLsizei)WIN_WIDTH) / ((GLsizei)2), (GLsizei)WIN_HEIGHT);
-			}
 			break;
 		case VK_NUMPAD8:
 		case 0x38:
-			if (gbFullscreen)
-			{
 				glViewport(iWidth / 2, 0, ((GLsizei)iWidth) / ((GLsizei)2), (GLsizei)iHeight);
-			}
-			else
-			{
-				glViewport(WIN_WIDTH / 2, 0, ((GLsizei)WIN_WIDTH) / ((GLsizei)2), (GLsizei)WIN_HEIGHT);
-			}
 			break;
 		case VK_NUMPAD9:
 		case 0x39:
-			if (gbFullscreen)
-			{
 				glViewport(iWidth / 4, iHeight/4, ((GLsizei)iWidth) / ((GLsizei)2), ((GLsizei)iHeight) / ((GLsizei)2));
-			}
-			else
-			{
-				glViewport(WIN_WIDTH / 4, WIN_HEIGHT / 4, ((GLsizei)WIN_WIDTH) / ((GLsizei)2), ((GLsizei)WIN_HEIGHT) / ((GLsizei)2));
-			}
 			break;
 		default:
 			break;
@@ -357,9 +289,6 @@ void ToggleFullScreen(void)
 			{
 				SetWindowLong(ghwnd, GWL_STYLE, dwStyle & ~WS_OVERLAPPEDWINDOW);
 				SetWindowPos(ghwnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOZORDER | SWP_FRAMECHANGED);
-
-				iWidth = mi.rcMonitor.right - mi.rcMonitor.left;
-				iHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
 			}
 		}
 		ShowCursor(FALSE);
