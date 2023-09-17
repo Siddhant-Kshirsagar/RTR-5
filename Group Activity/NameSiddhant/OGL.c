@@ -144,7 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	// set focus on this window(internally send 'WM_SETFOCUS' message to WndProc())
 	SetFocus(hwnd);
 
-	PlaySound(TEXT("MyMusic.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	PlaySound(MAKEINTRESOURCE(MYMUSIC), GetModuleHandle(NULL), SND_RESOURCE| SND_ASYNC);
 
 	//Game Loop
 	while(bDone == FALSE)

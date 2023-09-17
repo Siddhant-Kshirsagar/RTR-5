@@ -3,4 +3,4 @@
 #include"OGL.h"
 
 MYICON ICON MyIcon.ico
-//MYMUSIC WAVE F:\MyRTRProject\GLUT_NameInitials\NameSiddhant\MyMusic.wave
+MYMUSIC WAVE MyMusic.wav
