@@ -35,6 +35,14 @@ FILE *gpFILE = NULL;
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE; 
 
+float length = 1.0f; // lenght of side of equilateral triangle 
+float semiPerimeter = 0.0f;
+float radius = 0.0f;
+float aSide, bSide, cSide;
+float xCenter, yCenter;
+float height = 0.0f;
+float xTop, yTop;
+
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
 {
@@ -343,15 +351,13 @@ void resize(int width, int height)
 void display(void)
 {
 	//function declaration
-	// param radius of circle
-	void drawCircle(float);
-	// param length of side
+	// 1st param radius of circle
+	// 2nd param x coordinate of center of circle
+	// 3rd param y coordinate of center of cirlce
+	void drawCircle(float,float,float);
+	// param length of side triangle 
 	void drawTriangle(float);
-	//variable declaration
-	int lineCount = 0;
-	float semiPerimeter = 0.0f;
-	float radius = 0.0f;
-	float length = 0.0f;
+
 	//code
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -360,147 +366,78 @@ void display(void)
 
 	glTranslatef(0.0f, 0.0f, -5.0f);
 
-	//glLineWidth(3.0f);
-	//glBegin(GL_LINES);
-
-	////vertical line 
-	//glColor3f(0.0f, 1.0f, 0.0f);
-	//glVertex3f(0.0f, 2.0f, 0.0f);
-	//glVertex3f(0.0f, -2.0f, 0.0f);
-
-	////horizontal line
-	//glColor3f(1.0f, 0.0f, 0.0f);
-	//glVertex3f(-2.0f, 0.0f, 0.0f);
-	//glVertex3f(2.0f, 0.0f, 0.0f);
-
-	//glEnd();
-
-	//// vertical line 
-	//glLineWidth(1.0f);
-
-
-
-	//glColor3f(0.0f, 0.0f, 1.0f);
-	//for (float xAxis = 0.05f; xAxis <= 2.0f; xAxis = xAxis + 0.05f)// positive x axis 
-	//{
-	//	lineCount = lineCount + 1;
-	//	if (lineCount % 5 == 0)
-	//	{
-	//		glLineWidth(2.0f);
-	//	}
-	//	else
-	//	{
-	//		glLineWidth(1.0f);
-	//	}
-	//	glBegin(GL_LINES);
-	//	glVertex3f(xAxis, 2.0f, 0.0f);
-	//	glVertex3f(xAxis, -2.0f, 0.0f);
-	//	fprintf(gpFILE, " positive x Count = %d\n", lineCount);
-	//	glEnd();
-	//}
-	//lineCount = 0;
-
-
-
-
-	//glColor3f(0.0f, 0.0f, 1.0f);
-	//for (float xAxis = -0.05f; xAxis >= -2.0f; xAxis = xAxis - 0.05f)// negative x axis 
-	//{
-	//	lineCount = lineCount + 1;
-	//	if (lineCount % 5 == 0)
-	//	{
-	//		glLineWidth(2.0f);
-	//	}
-	//	else
-	//	{
-	//		glLineWidth(1.0f);
-	//	}
-	//	glBegin(GL_LINES);
-	//	glVertex3f(xAxis, 2.0f, 0.0f);
-	//	glVertex3f(xAxis, -2.0f, 0.0f);
-	//	fprintf(gpFILE, " negative x Line Count = %d\n", lineCount);
-	//	glEnd();
-	//}
-	//lineCount = 0;
-
-
-	//// horizontal line
-	//glColor3f(0.0f, 0.0f, 1.0f);
-	//for (float yAxis = 0.05f; yAxis <= 2.0f; yAxis = yAxis + 0.05f)// positive y axis 
-	//{
-	//	lineCount = lineCount + 1;
-	//	if (lineCount % 5 == 0)
-	//	{
-	//		glLineWidth(2.0f);
-	//	}
-	//	else
-	//	{
-	//		glLineWidth(1.0f);
-	//	}
-	//	glBegin(GL_LINES);
-	//	glVertex3f(-2.0f, yAxis, 0.0f);
-	//	glVertex3f(2.0f, yAxis, 0.0f);
-	//	fprintf(gpFILE, " positive y Count = %d\n", lineCount);
-	//	glEnd();
-	//}
-	//lineCount = 0;
-
-
-
-
-	//glColor3f(0.0f, 0.0f, 1.0f);
-	//for (float yAxis = -0.05f; yAxis >= -2.0f; yAxis = yAxis - 0.05f)// negative x axis 
-	//{
-	//	lineCount = lineCount + 1;
-	//	if (lineCount % 5 == 0)
-	//	{
-	//		glLineWidth(2.0f);
-	//	}
-	//	else
-	//	{
-	//		glLineWidth(1.0f);
-	//	}
-	//	glBegin(GL_LINES);
-	//	glVertex3f(-2.0f, yAxis, 0.0f);
-	//	glVertex3f(2.0f, yAxis, 0.0f);
-	//	fprintf(gpFILE, " negative y Line Count = %d\n", lineCount);
-	//	glEnd();
-	//}
-	//lineCount = 0;
-
 	//triangle
 	glColor3f(1.0f, 1.0f, 0.0f);
-	length = 0.3f; // length of side of triangle
 	drawTriangle(length);
-	/*semiPerimeter = ((length + length + length)*1.0f) / 2.0f;*/
-	//semiPerimeter = ((3.0f*(sqrt(3.0f)))/2.0f)*
-	radius = length / (sqrt(3.0f));
-	//radius = (((sqrt(3.0f) / 2.0f) * length)) / 3.0f;
-	//radius = sqrt(((semiPerimeter - length) * (semiPerimeter - length) * (semiPerimeter - length) / semiPerimeter));
-	drawCircle(radius);
+	
 	SwapBuffers(ghdc);
 }
 
 void drawTriangle(float length)
 {
+	//variable declaration
+	float xAxisNegative = -(length * 0.5f);
+	float yAxisNegative = -(length * 0.5f);
+	float xAxisPositive = (length * 0.5f);
+	float yAxisPositive = (length * 0.5f);
+
+	//code
+
+	bSide = sqrt((pow((xAxisNegative - xAxisPositive), 2)) + (pow((yAxisNegative - yAxisNegative), 2))); // _ side
+	//for calculating apex of triangle 
+	xTop = xAxisNegative + (bSide * cos((60.0f * M_PI) / 180.0f));
+	yTop = yAxisNegative + (bSide * sin((60.0f * M_PI) / 180.0f));
+
+	aSide = sqrt((pow((xAxisNegative - xTop), 2)) + (pow((yAxisNegative - yTop), 2)));// / side
+	cSide = sqrt((pow((xTop - xAxisPositive), 2)) + (pow((yTop - yAxisNegative), 2)));  // \ side
+
+	fprintf(gpFILE, "xAxis = %f \t Distance base = %f \t Distance a-b / = %f \t Distance a-c \\ = %f \t height = %f \n", xAxisNegative, bSide,aSide,cSide,height);
+	
+
+	//for draw triangle 
+
 	glBegin(GL_LINE_LOOP);
 
-	glVertex3f(0.0f, length, 0.0f);
-	glVertex3f(-length, -length, 0.0f);
-	glVertex3f(length, -length, 0.0f);
+	glVertex3f(xTop, yTop, 0.0f);
+	glVertex3f(xAxisNegative, yAxisNegative, 0.0f);
+	glVertex3f(xAxisPositive, yAxisNegative, 0.0f);
 
 	glEnd();
+	// semi perimeter
+	semiPerimeter = ((aSide + bSide + cSide) * 1.0f) / 2.0f;
+
+	//formula for get radius of circle
+	radius = sqrt(((semiPerimeter - aSide) * (semiPerimeter - bSide) * (semiPerimeter - cSide) / semiPerimeter));
+
+	//formula 1 for calculating center of triangle 
+	xCenter = (xTop + xAxisNegative + xAxisPositive) / 3.0f;
+	yCenter = (yTop + yAxisNegative + yAxisNegative) / 3.0f;
+
+	//formula 2 for calculating center of triangle 
+	/*xCenter = ((aSide * xTop) + (bSide * xAxisNegative) + (cSide * xAxisPositive)) / (aSide + bSide + cSide);
+	yCenter = ((aSide * yTop) + (bSide * yAxisNegative) + (cSide * yAxisNegative)) / (aSide + bSide + cSide);*/
+
+	fprintf(gpFILE, "xCenter = %f \t yCenter = %f \n", xCenter, yCenter);
+
+	drawCircle(radius, xCenter, yCenter);
+
+	//for straight line
+	glBegin(GL_LINES);
+	glVertex3f(xTop, yTop, 0.0f);
+	glVertex3f(xTop, yAxisNegative, 0.0f);
+	glEnd();
+
 }
 
-void drawCircle(float radius)
+void drawCircle(float radius, float xAxis,float yAxis)
 {
 	//variable declaration
 	float x, y;
-	glBegin(GL_LINE_LOOP);
+	glBegin(GL_LINE_STRIP);
 	for (float fAngle = 0.0f; fAngle <= 360.0f; fAngle = fAngle + 0.1f)
 	{
-		x = 0.0f + radius * cos((fAngle * M_PI) / 180.0f);
-		y = -0.11f + radius * sin((fAngle * M_PI) / 180.0f);
+		x = xAxis + radius * cos((fAngle * M_PI) / 180.0f);
+		y = yAxis + radius * sin((fAngle * M_PI) / 180.0f);
 		glVertex3f(x, y, 0.0f);
 	}
 	glEnd();
