@@ -3,4 +3,4 @@
 #include"OGL.h"
 
 MYICON ICON MyIcon.ico
-//MYMUSIC WAVE MyMusic.wav
+MYMUSIC WAVE MyMusic.wav
