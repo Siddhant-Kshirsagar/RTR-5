@@ -14,57 +14,112 @@ void display_list(struct Node *first);
 
 struct Node *insert_node(struct Node * first, int input, int position);
 
+struct Node *insert_node_AtFirstPosition(struct Node *first, int input);
+
+struct Node *insert_node_AtLastPosition(struct Node *first, int input);
+
 struct Node *destroy_list(struct Node *first);
 
 struct Node *delete_node(struct Node *first, int position);
 
+struct Node *delete_last_node(struct Node *first);
+
+struct Node *delete_first_node(struct Node *first);
+
 int main(void)
 {
 
-    int numNodes = 10;
+    int numNodes = 5;
 
 
     struct Node *head = create_List(numNodes);
     printf("Create List\n");
     display_list(head);
-
-    head = insert_node(head,100,1);
-    printf("insert node at first position\n");
-    display_list(head);
-
-    
-    head = insert_node(head,101,3);
-    printf("insert node at third position\n");
-    display_list(head);
-
-    
-    head = insert_node(head,102,4);
-    printf("insert node at forth position\n");
-    display_list(head);
-
-    
-    head = insert_node(head,104,10);
-    printf("insert node at 10th position\n");
-    display_list(head);
-
-    head = insert_node(head,110,20); // not changes occured because this position is out of range 
-    printf("insert node at 20th position\n");
     display_list(head);
 
     head = delete_node(head,3);
     printf("delete node at third position\n");
     display_list(head);
 
-    head = delete_node(head,1);
-    printf("delete node at 1st position\n");
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head=delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
     display_list(head);
 
-    head = delete_node(head,20); // not changes occured because this position is out of range
-     printf("delete node at 20th position\n");
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head = delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
     display_list(head);
 
+
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head = delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Inserting First Node ************\n");
+    display_list(head);
+    head = insert_node_AtFirstPosition(head, 101);
+    printf(" ******** After Inserting First Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Inserting First Node ************\n");
+    display_list(head);
+    head = insert_node_AtFirstPosition(head, 1001);
+    printf(" ******** After Inserting First Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Deleting First Node ************\n");
+    display_list(head);
+    head = delete_first_node(head);
+    printf(" ******** After Deleting First Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Inserting Node At Last Position ************\n");
+    display_list(head);
+    head = insert_node_AtLastPosition(head, 1001);
+
+    printf(" ******** After Inserting Node At Last Position ************\n");
+    display_list(head);
+
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head = delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head = delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Deleting Last Node ************\n");
+    display_list(head);
+    head = delete_last_node(head);
+
+    printf(" ******** After Deleting Last Node ************\n");
+    display_list(head);
+
+    printf(" ******** Before Inserting Node At Last Position ************\n");
+    display_list(head);
+    head = insert_node_AtLastPosition(head, 1001);
+
+    printf(" ******** After Inserting Node At Last Position ************\n");
+    display_list(head);
+
+    printf("Before deleting all list\n");
+    display_list(head);
     head = destroy_list(head);
-
+    printf("After deleting all list\n");
     display_list(head);
 
     return(0);
@@ -97,15 +152,23 @@ struct Node *create_List(int numNodes)
 void display_list(struct Node *first)
 {
     struct Node *temp = first;
-    printf("-------------------------------------\n");
-    while(temp!=NULL)
+    printf("\n-----------------------------------------------------------------------\n");
+    if (temp == NULL)
     {
-        
-        printf("%d\t",temp->data);
-
-        temp = temp->next;
+        printf("List is empty \n");
     }
-    printf("-------------------------------------\n");
+    else
+    {
+        while (temp != NULL)
+        {
+
+            printf("%d\t", temp->data);
+
+            temp = temp->next;
+        }
+    }
+  
+    printf("\n-----------------------------------------------------------------------\n");
 }
 
 struct Node *insert_node(struct Node * first, int input, int position)
@@ -187,6 +250,106 @@ struct Node *delete_node(struct Node *first, int position)
     struct Node *delNode = temp->next;
     temp->next = delNode->next;
     free(delNode);
+    delNode = NULL;
+    return(first);
+}
 
+struct Node *delete_last_node(struct Node *first)
+{
+    struct Node *temp = first;
+    struct Node *delNode = NULL;
+
+    if (temp != NULL)
+    {
+        if (temp->next == NULL)
+        {
+            free(temp);
+            free(first);
+            temp = NULL;
+            first = NULL;
+        }
+        else
+        {
+            while (temp->next->next != NULL)
+            {
+                temp = temp->next;
+            }
+
+            if (temp != NULL)
+            {
+                delNode = temp->next;
+                temp->next = NULL;
+                free(delNode);
+                delNode = NULL;
+            }
+        }
+    }
+   
+ 
+
+    return(first);
+}
+
+struct Node *insert_node_AtFirstPosition(struct Node *first, int input)
+{
+    struct Node *temp = (struct Node *)malloc(sizeof(struct Node));
+
+    temp->data = input;
+    temp->next = first;
+    first = temp;
+
+    return(first);
+}
+
+struct Node *delete_first_node(struct Node *first)
+{
+    struct Node *temp = first;
+    if (temp != NULL)
+    {
+        if (temp->next == NULL)
+        {
+            free(temp);
+            free(first);
+            temp = NULL;
+            first = NULL;
+        }
+
+        else if (temp->next != NULL)
+        {
+            first = temp->next;
+            free(temp);
+            temp = NULL;
+        }
+    }
+    
+
+    
+  
+    return(first);
+}
+
+struct Node *insert_node_AtLastPosition(struct Node *first, int input)
+{   
+    struct Node *Last = (struct Node *)malloc(sizeof(struct Node));
+    struct Node *temp = first;
+
+    if (first == NULL)
+    {
+        Last->data = input;
+        Last->next = NULL;
+        first = Last;
+    }
+    else
+    {
+        while(temp->next != NULL)
+        {
+            temp = temp->next;
+        }
+
+        temp->next = Last;
+        Last->data = input;
+        Last->next = NULL;
+    }
+    
     return(first);
 }

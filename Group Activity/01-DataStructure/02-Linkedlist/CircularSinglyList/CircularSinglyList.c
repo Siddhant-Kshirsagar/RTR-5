@@ -18,6 +18,9 @@ struct Node *destroy_list(struct Node *first);
 
 struct Node *delete_node(struct Node *first, int position);
 
+struct Node *delete_node_AtLastPosition(struct Node *first);
+
+
 int main(void)
 {
 
@@ -62,10 +65,16 @@ int main(void)
     head = delete_node(head,20); // not changes occured because this position is out of range
      printf("delete node at 20th position\n");
     display_list(head);
+    
+    printf(" **********  Before Deleting Node at last Postion *******\n");
+    display_list(head);
+    head = delete_node_AtLastPosition(head);
+    printf(" **********  After Deleting Node at last Postion *******\n");
+    display_list(head);
 
     head = destroy_list(head);
 
-    printf("destroy list \n");
+    printf("after destroy list \n");
 
     display_list(head);
 
@@ -227,4 +236,36 @@ struct Node *delete_node(struct Node *first, int position)
     free(delNode);
     delNode = NULL;
     return(first);
+}
+
+struct Node *delete_node_AtLastPosition(struct Node *first)
+{
+    struct Node *temp = first;
+    struct Node *delNode = NULL;
+    if (temp == NULL)
+    {
+        return(first);
+    }
+
+    if (temp->next == first)
+    {
+        temp->next = NULL;
+        free(temp);
+        temp = NULL;
+        return(first);
+    }
+
+    while (temp->next->next != first)
+    {
+        temp = temp->next;
+    }
+
+    delNode = temp->next;
+    temp->next = delNode->next;
+
+    free(delNode);
+    delNode = NULL;
+
+    return(first);
+
 }
