@@ -46,7 +46,7 @@ GLfloat objy = 0.0f;
 GLfloat objz = 5.0f;
 GLfloat incrementFactor = 0.1f;
 
-int timer = 0;
+int timer = 0; // use as iterative variable for accessing BazierPoints elements
 bool bEnableBazierCamera = false;
 std::vector<float> BazierPoints;
 float controlPoints[4][3] = {
