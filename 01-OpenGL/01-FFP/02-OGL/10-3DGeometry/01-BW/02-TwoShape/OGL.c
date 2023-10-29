@@ -31,7 +31,10 @@ BOOL gbFullscreen = FALSE;
 FILE *gpFILE = NULL;
 
 HWND ghwnd = NULL; // g = global handle of window
-BOOL gbActive = FALSE; 
+BOOL gbActive = FALSE;
+
+GLfloat pAngle = 0.0f;
+GLfloat cAngle = 0.0f;
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -66,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	gpFILE = fopen("Log.txt", "w");
 	if (gpFILE == NULL)
 	{
-		MessageBox(NULL, TEXT("Log file cannot be open"), TEXT("Error"), MB_OK|MB_ICONERROR);
+		MessageBox(NULL, TEXT("Log file cannot be open"), TEXT("Error"), MB_OK | MB_ICONERROR);
 		exit(0);
 	}
 	fprintf(gpFILE, "Program Started Successfully\n");
@@ -108,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	iResult = initialize();
 	if (iResult != 0)
 	{
-		MessageBox(hwnd, TEXT("initialize() failed."), TEXT("Error"), MB_OK|MB_ICONERROR);
+		MessageBox(hwnd, TEXT("initialize() failed."), TEXT("Error"), MB_OK | MB_ICONERROR);
 		DestroyWindow(hwnd);
 	}
 
@@ -122,7 +125,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	SetFocus(hwnd);
 
 	//Game Loop
-	while(bDone == FALSE)
+	while (bDone == FALSE)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -173,7 +176,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		gbActive = FALSE;
 		break;
 	case WM_SIZE:
-		resize(LOWORD(lParam),HIWORD(lParam));
+		resize(LOWORD(lParam), HIWORD(lParam));
 		break;
 
 	case WM_ERASEBKGND:
@@ -213,7 +216,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	
+
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
 		break;
@@ -259,7 +262,7 @@ int initialize(void)
 {
 	//function declarations
 	void resize(int width, int height);
-	
+
 	//variable declarations
 	PIXELFORMATDESCRIPTOR pfd;
 	int iPixelFormatIndex = 0;
@@ -276,6 +279,7 @@ int initialize(void)
 	pfd.cGreenBits = 8;
 	pfd.cBlueBits = 8;
 	pfd.cAlphaBits = 8;
+	pfd.cDepthBits = 32;
 
 	// step 2 :- Get DC 
 	ghdc = GetDC(ghwnd);
@@ -311,14 +315,21 @@ int initialize(void)
 	// step 6 :- Make rendering context current
 	if (wglMakeCurrent(ghdc, ghrc) == FALSE)
 	{
-		fprintf(gpFILE,"wglMakeCurrent() Failed.\n");
+		fprintf(gpFILE, "wglMakeCurrent() Failed.\n");
 		return(-5);
 	}
+
+	//for enable depth
+	glShadeModel(GL_SMOOTH); // optional (beautyfication color,light,texture shade)
+	glClearDepth(1.0f); // compulsory
+	glEnable(GL_DEPTH_TEST);// compulsory
+	glDepthFunc(GL_LEQUAL);// compulsory
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // optional (beautyfication for artifact e.g if we draw circle or sphere we see ellipse curve but we don't need that so we disable that)
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	resize(WIN_WIDTH,WIN_HEIGHT);
+	resize(WIN_WIDTH, WIN_HEIGHT);
 
 	return(0);
 }
@@ -335,29 +346,122 @@ void resize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 }
 
 void display(void)
 {
 	//code
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.0f,0.0f,-3.0f);
+	glTranslatef(-1.5f, 0.0f, -7.0f);
+
+	glRotatef(pAngle, 0.0f, 1.0f, 0.0f);
 
 	glBegin(GL_TRIANGLES);
+	// by default value of Color for drawing is white
 
-	glColor3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
+	// front face
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f); // front top
 
-	glColor3f(1.0f, 1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f); // front left
 
-	glColor3f(0.0f, 1.0f, 1.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f); // front right
+
+	//right face
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f); // right top
+
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f); // right left
+
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f); // right right
+
+	//back face
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f); // back top
+
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f); // back left
+
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f); // back right
+
+	//left face
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f); // left top
+
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f); // left left
+
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f); // left right
+
+	glEnd();
+
+	// cube
+	glLoadIdentity();
+
+	glTranslatef(1.5f, 0.0f, -7.0f);
+
+	glScalef(0.75f, 0.75f, 0.75);
+
+	glRotatef(cAngle, 1.0f, 0.0f, 0.0f);
+
+	glRotatef(cAngle, 0.0f, 1.0f, 0.0f);
+
+	glRotatef(cAngle, 0.0f, 0.0f, 1.0f);
+
+	glBegin(GL_QUADS);
+
+	//front face
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+
+	// right face
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);;
+	glVertex3f(1.0f, -1.0f, -1.0f);
+
+	// back face
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+
+	// left face
+	//glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+
+	// top face
+	//glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+
+	// bottom face
+	//glColor3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
 
 	glEnd();
 
@@ -367,6 +471,17 @@ void display(void)
 void update(void)
 {
 	//code
+	pAngle = pAngle + 1.0f;
+	if (pAngle >= 360.0f)
+	{
+		pAngle = pAngle - 360.0f;
+	}
+
+	cAngle = cAngle + 1.0f;
+	if (cAngle >= 360.0f)
+	{
+		cAngle = cAngle - 360.0f;
+	}
 
 }
 
@@ -408,7 +523,6 @@ void uninitialize(void)
 		DestroyWindow(ghwnd);
 		ghwnd = NULL;
 	}
-
 	// Close log file
 	if (gpFILE)
 	{
