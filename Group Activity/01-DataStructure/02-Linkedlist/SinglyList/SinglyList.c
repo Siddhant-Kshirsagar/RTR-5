@@ -35,7 +35,6 @@ int main(void)
     struct Node *head = create_List(numNodes);
     printf("Create List\n");
     display_list(head);
-    display_list(head);
 
     head = delete_node(head,3);
     printf("delete node at third position\n");

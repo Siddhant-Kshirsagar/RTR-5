@@ -336,7 +336,7 @@ int initialize(void)
 	bResult = loadGLTexture(&texture_smiley, MAKEINTRESOURCE(MY_BITMAP_SMILEY));
 	if (bResult == FALSE)
 	{
-		fprintf(gpFILE, "load of kundali texture is Failed.\n");
+		fprintf(gpFILE, "load of smiley texture is Failed.\n");
 		return(-7);
 	}
 

@@ -67,8 +67,8 @@ GLfloat gfJettTwoTop = 5.0f;
 GLfloat gfJettThreeRight = -9.0f;
 GLfloat gfJettThreeBottom = -5.0f;
 
-GLfloat changeFactor = 0.01f;
-GLfloat changeFactorJett = 0.004f;
+GLfloat changeFactor = 0.05f;
+GLfloat changeFactorJett = 0.0035f;
 
 GLfloat gfJettTwoAngle = -45.0f;
 GLfloat gfJettThreeAngle = 45.0f;
@@ -93,7 +93,7 @@ GLfloat Alpha_T = 0.0f;
 GLfloat gfFire_xAxisIncrement = 0.3f;
 GLfloat gfFire_xAxisDecrement = 0.6f;
 
-float jettTwoAnimation = 240.0f;
+float jettTwoAnimation = 240.0f; 
 float jettThreeAnimation = 300.0f;
 
 BOOL IsArrived_B = FALSE;
@@ -438,13 +438,14 @@ void display(void)
 
 	glTranslatef(0.0f, 0.0f, -10.0f);
 
-	draw_BHARATLetters1();
-	draw_BHARATLetters();
+	/*draw_BHARATLetters1();
+	draw_BHARATLetters();*/
 
-	if (IsArrived_T)
+	/*if (IsArrived_T)
 	{
 		jettScene();
-	}
+	}*/
+	draw_jett();
 
 	SwapBuffers(ghdc);
 }
@@ -458,172 +459,6 @@ void jettScene(void)
 	//code
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//	glBegin(GL_QUADS);
-//
-////for B letter
-//		
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2],Alpha_B);
-//	glVertex3f(gfFlag_B, 0.1f, 0.0f);
-//	glVertex3f(-4.1f, 0.1f, 0.0f);
-//	glVertex3f(-4.1f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_B, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2], Alpha_B);
-//	glVertex3f(gfFlag_B, 0.035f, 0.0f);
-//	glVertex3f(-4.1f, 0.035f, 0.0f);
-//	glVertex3f(-4.1f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_B, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_B);
-//	glVertex3f(gfFlag_B, -0.025f, 0.0f);
-//	glVertex3f(-4.1f, -0.025f, 0.0f);
-//	glVertex3f(-4.1f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_B, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
-//
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	glBegin(GL_QUADS);
-//	// For H letter
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2],Alpha_H);
-//	glVertex3f(gfFlag_H, 0.1f, 0.0f);
-//	glVertex3f(-2.85f, 0.1f, 0.0f);
-//	glVertex3f(-2.85f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_H, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2], Alpha_H);
-//	glVertex3f(gfFlag_H, 0.035f, 0.0f);
-//	glVertex3f(-2.85f, 0.035f, 0.0f);
-//	glVertex3f(-2.85f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_H, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_H);
-//	glVertex3f(gfFlag_H, -0.025f, 0.0f);
-//	glVertex3f(-2.85f, -0.025f, 0.0f);
-//	glVertex3f(-2.85f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_H, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
-//
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	glBegin(GL_QUADS);
-//
-//	// For A1 letter
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2], Alpha_A1);
-//	glVertex3f(gfFlag_A1, 0.1f, 0.0f);
-//	glVertex3f(-0.98f, 0.1f, 0.0f);
-//	glVertex3f(-0.98f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_A1, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2], Alpha_A1);
-//	glVertex3f(gfFlag_A1, 0.035f, 0.0f);
-//	glVertex3f(-0.98f, 0.035f, 0.0f);
-//	glVertex3f(-0.98f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_A1, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_A1);
-//	glVertex3f(gfFlag_A1, -0.025f, 0.0f);
-//	glVertex3f(-0.98f, -0.025f, 0.0f);
-//	glVertex3f(-0.98f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_A1, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
-//
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	glBegin(GL_QUADS);
-//
-//	// For R letter
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2], Alpha_R);
-//	glVertex3f(gfFlag_R, 0.1f, 0.0f);
-//	glVertex3f(0.55f, 0.1f, 0.0f);
-//	glVertex3f(0.55f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_R, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2],Alpha_R);
-//	glVertex3f(gfFlag_R, 0.035f, 0.0f);
-//	glVertex3f(0.55f, 0.035f, 0.0f);
-//	glVertex3f(0.55f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_R, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_R);
-//	glVertex3f(gfFlag_R, -0.025f, 0.0f);
-//	glVertex3f(0.55f, -0.025f, 0.0f);
-//	glVertex3f(0.55f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_R, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
-//
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	glBegin(GL_QUADS);
-//
-//	// For A2 letter
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2], Alpha_A2);
-//	glVertex3f(gfFlag_A2, 0.1f, 0.0f);
-//	glVertex3f(2.05f, 0.1f, 0.0f);
-//	glVertex3f(2.05f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_A2, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2], Alpha_A2);
-//	glVertex3f(gfFlag_A2, 0.035f, 0.0f);
-//	glVertex3f(2.05f, 0.035f, 0.0f);
-//	glVertex3f(2.05f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_A2, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_A2);
-//	glVertex3f(gfFlag_A2, -0.025f, 0.0f);
-//	glVertex3f(2.05f, -0.025f, 0.0f);
-//	glVertex3f(2.05f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_A2, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
-//
-//
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	glBegin(GL_QUADS);
-//
-//	// For T letter
-//	glColor4f(OrangeColor[0], OrangeColor[1], OrangeColor[2], Alpha_T);
-//	glVertex3f(gfFlag_T, 0.1f, 0.0f);
-//	glVertex3f(3.85f, 0.1f, 0.0f);
-//	glVertex3f(3.85f, 0.035f, 0.0f);
-//	glVertex3f(gfFlag_T, 0.035f, 0.0f);
-//
-//	glColor4f(WhiteColor[0], WhiteColor[1], WhiteColor[2], Alpha_T);
-//	glVertex3f(gfFlag_T, 0.035f, 0.0f);
-//	glVertex3f(3.85f, 0.035f, 0.0f);
-//	glVertex3f(3.85f, -0.035f, 0.0f);
-//	glVertex3f(gfFlag_T, -0.035f, 0.0f);
-//
-//	glColor4f(GreenColor[0], GreenColor[1], GreenColor[2], Alpha_T);
-//	glVertex3f(gfFlag_T, -0.025f, 0.0f);
-//	glVertex3f(3.85f, -0.025f, 0.0f);
-//	glVertex3f(3.85f, -0.1f, 0.0f);
-//	glVertex3f(gfFlag_T, -0.1f, 0.0f);
-//
-//	glEnd();
-//
-//	glDisable(GL_BLEND);
 
 	// for jett One 
 	glPushMatrix();
@@ -655,51 +490,7 @@ void jettScene(void)
 	glPopMatrix();
 	glPopMatrix();
 	glPopMatrix();
-
-
-	//// for jett Two
-	//for (float fAngle = jettTwoAnimation + 0.1f; fAngle >= jettTwoAnimation; fAngle = fAngle - 0.1f)
-	//{
-	//	gfJettTwoRight = 0.0f + (10.0f) * sin((fAngle * M_PI) / 180.0f);
-	//	gfJettTwoTop =	7.5f + (6.0f) * cos((fAngle * M_PI) / 180.0f);
-
-	//	glPushMatrix();
-	//	glTranslatef(gfJettTwoRight, gfJettTwoTop, 0.0f);
-
-	//	glPushMatrix();
-	//	glScalef(0.3f, 0.3f, 1.0f);
-
-	//	glPushMatrix();
-	//	glRotatef(gfJettTwoAngle, 0.0f, 0.0f, 1.0f);
-
-	//	draw_jett();
-
-	//	glPopMatrix();
-	//	glPopMatrix();
-	//	glPopMatrix();
-	//}
 	
-	// for jett Three
-	/*for (float fAngle = jettThreeAnimation - 0.1f; fAngle <= jettThreeAnimation; fAngle = fAngle + 0.1f)
-	{
-		gfJettThreeRight = 0.0f + (10.0f) * sin((fAngle * M_PI) / 180.0f);
-		gfJettThreeBottom = -7.5f + (6.0f) * cos((fAngle * M_PI) / 180.0f);
-
-		glPushMatrix();
-		glTranslatef(gfJettThreeRight, gfJettThreeBottom, 0.0f);
-
-		glPushMatrix();
-		glScalef(0.3f, 0.3f, 1.0f);
-
-		glPushMatrix();
-		glRotatef(gfJettThreeAngle, 0.0f, 0.0f, 1.0f);
-
-		draw_jett();
-
-		glPopMatrix();
-		glPopMatrix();
-		glPopMatrix();
-	}*/	
 }
 
 void draw_BHARATLetters1(void)
@@ -2493,68 +2284,6 @@ void update(void)
 				gfJettThreeAngle = gfJettThreeAngle - 0.0555f;
 			}
 		}
-
-		/*if (jettTwoAnimation <= 180.0f)
-		{
-			if (gfJettTwoAngle <= 45.0f)
-			{
-				gfJettTwoAngle = gfJettTwoAngle + 0.05f;
-			}
-		}
-		else if (jettTwoAnimation >= 181.0f)
-		{
-			
-			if (gfJettTwoAngle <= 0.0f)
-			{
-				gfJettTwoAngle = gfJettTwoAngle + 0.05f;
-			}
-		}*/
-
-		//if (jettThreeAnimation >= 300.0f)
-		//{
-		//
-		//	if (gfJettThreeAngle >= 0.0f)
-		//	{
-		//		gfJettThreeAngle = gfJettThreeAngle - 0.05f;
-		//	}
-		//}
-		//else if (jettThreeAnimation <= 70.0f)
-		//{
-		//	if (gfJettThreeAngle >= -45.0f)
-		//	{
-		//		gfJettThreeAngle = gfJettThreeAngle - 0.05f;
-		//	}
-		//	
-		//}
-
-		//
-		//if (jettTwoAnimation >= 110.0f)
-		//{
-		//	jettTwoAnimation = jettTwoAnimation - 0.07f;
-		//	//jettTwoAnimation = 240.0f;
-		//}
-
-
-		//if (jettThreeAnimation <= 360.0f && jettThreeAnimation >= 300.0f)
-		//{
-		//	jettThreeAnimation = jettThreeAnimation + 0.07f;
-		//}
-		//else if (jettThreeAnimation >= 360.0f)
-		//{
-		//	jettThreeAnimation = 0.0f;
-
-		//}
-		//else if (jettThreeAnimation <= 71.0f)
-		//{
-		//	if (jettThreeAnimation <= 70.0f)
-		//	{
-		//		jettThreeAnimation = jettThreeAnimation + 0.07f;
-		//	}
-		//	else
-		//	{
-		//		//jettThreeAnimation = 300.0f;
-		//	}
-		//}
 	}
 	
 	

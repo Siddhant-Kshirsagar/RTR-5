@@ -451,6 +451,7 @@ void uninitialize(void)
 	if (quadric)
 	{
 		gluDeleteQuadric(quadric);
+		quadric = NULL;
 	}
 
 	// Close log file
