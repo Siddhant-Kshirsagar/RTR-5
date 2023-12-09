@@ -396,7 +396,7 @@ void display(void)
 		//pop the matrix where comeback where arm ended by translation not by scale
 		glPopMatrix();
 
-		// do transformation for forearm in MTRT 
+		// do transformation for forearm in Matrix of glTranslate(), glRotation(), glTranslate(), (MTRT)
 		glTranslatef(1.0f, 0.0f, 0.0f);
 
 		glRotatef((GLfloat)elbow, 0.0f, 0.0f, 1.0f);
