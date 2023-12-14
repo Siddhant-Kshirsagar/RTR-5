@@ -33,19 +33,6 @@ FILE *gpFILE = NULL;
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE; 
 
-// for light
-BOOL gbLight = FALSE;
-
-//GLfloat lightAmbient[] = { 0.1f,0.1f,0.1f,1.0f };
-//GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
-//GLfloat lightSpecular[] = { 1.0f,1.0f,1.0f,1.0f };
-//GLfloat lightPosition[] = { 100.0f,100.0f,100.0f,1.0f };
-//
-//GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};
-//GLfloat materialDiffuse[] = { 0.5f,0.2f,0.7f,1.0f };
-//GLfloat materialSpecular[] = { 0.7f, 0.7f, 0.7f,1.0f };
-//GLfloat materialShininess[] = { 128.0f };
-
 GLUquadric *quadric = NULL;
 
 
@@ -224,21 +211,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				gbFullscreen = FALSE;
 			}
 			break;
-		case 'L':
-		case 'l':
-		{
-			if (gbLight == FALSE)
-			{
-				glEnable(GL_LIGHTING);
-				gbLight = TRUE;
-			}
-			else
-			{
-				glDisable(GL_LIGHTING);
-				gbLight = FALSE;
-			}
-		}
-		break;
 		default:
 			break;
 		}
@@ -356,21 +328,6 @@ int initialize(void)
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//// light related initialization
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-	//glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
-	//// material properties
-	//glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
-	//glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
-	//glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
-	//glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
-
-	//// by default GL_LIGHT0 is enable but we still use this because good programming practice to understand it's enalble(if we don't use this then when we enalbe lighting after pressing 'L' key than we see sphere is invisible becuase of state machine we are setting properties of light after light is enalbe that's why it is not consider so "always use this")
-	//glEnable(GL_LIGHT0);
 
 	// initialize quadric
 	quadric = gluNewQuadric();
