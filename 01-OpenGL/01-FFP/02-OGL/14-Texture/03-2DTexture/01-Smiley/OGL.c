@@ -33,9 +33,6 @@ FILE *gpFILE = NULL;
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE;
 
-GLfloat pAngle = 0.0f;
-GLfloat cAngle = 0.0f;
-
 GLuint texture_smiley = 0;
 
 //Entry Point Function
@@ -420,8 +417,6 @@ void display(void)
 
 	glBindTexture(GL_TEXTURE_2D, texture_smiley);
 
-
-
 	glBegin(GL_QUADS);
 
 	glTexCoord2f(1.0f, 1.0f);
@@ -447,18 +442,6 @@ void display(void)
 void update(void)
 {
 	//code
-	pAngle = pAngle + 1.0f;
-	if (pAngle >= 360.0f)
-	{
-		pAngle = pAngle - 360.0f;
-	}
-
-	cAngle = cAngle + 1.0f;
-	if (cAngle >= 360.0f)
-	{
-		cAngle = cAngle - 360.0f;
-	}
-
 }
 
 void uninitialize(void)

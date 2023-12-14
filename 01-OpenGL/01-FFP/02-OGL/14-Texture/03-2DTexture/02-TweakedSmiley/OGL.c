@@ -33,9 +33,6 @@ FILE *gpFILE = NULL;
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE;
 
-GLfloat pAngle = 0.0f;
-GLfloat cAngle = 0.0f;
-
 GLuint texture_smiley = 0;
 int glPressedKey = 0; // for  control what to display on screen
 
@@ -558,17 +555,6 @@ void display(void)
 void update(void)
 {
 	//code
-	pAngle = pAngle + 1.0f;
-	if (pAngle >= 360.0f)
-	{
-		pAngle = pAngle - 360.0f;
-	}
-
-	cAngle = cAngle + 1.0f;
-	if (cAngle >= 360.0f)
-	{
-		cAngle = cAngle - 360.0f;
-	}
 
 }
 
