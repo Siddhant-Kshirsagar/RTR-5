@@ -416,17 +416,18 @@ void resize(int width, int height)
 	if (width <= height)
 	{
 		glOrtho(0.0f,
-			27.5f,
-			0.0f * ((GLfloat)height / (GLfloat)width),
-			15.5f * ((GLfloat)height / (GLfloat)width),
-			-10.0f, 10.0f);
+			15.5f,
+			0.0f * (((GLfloat)height) / ((GLfloat)width)),
+			15.5f * (((GLfloat)height) / ((GLfloat)width)),
+			-10.0f,
+			10.0f);
 	}
 	else
 	{
-		glOrtho(0.0f *((GLfloat)width/(GLfloat)height),
-			27.5f * ((GLfloat)height/(GLfloat)width),
+		glOrtho(0.0f * (((GLfloat)width) / ((GLfloat)height)),
+			15.5f * (((GLfloat)width) / ((GLfloat)height)),
 			0.0f,
-			15.5f,
+			15.0f,
 			-10.0f,
 			10.0f);
 	}

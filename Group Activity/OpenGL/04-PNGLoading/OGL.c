@@ -459,6 +459,7 @@ BOOL loadGLPNGTexture(GLuint *texture, char *image)
 
 	return(FALSE);
 }
+
 void resize(int width, int height)
 {
 	//code
