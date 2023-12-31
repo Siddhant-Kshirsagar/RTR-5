@@ -1,0 +1,12 @@
+Song :- Adhi kalas mag paya re
+
+
+effects :-
+
+1) Terrain
+2) water
+3) rain
+4) vegetation (trees,grass)
+5) clouds
+6) particals 
+7) Temple model
