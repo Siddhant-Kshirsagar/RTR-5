@@ -1,8 +1,0 @@
-#include<windows.h>
-
-#include"OGL.h"
-
-MYICON ICON MyIcon.ico
-MY_BITMAP_SMILEY BITMAP Smiley.bmp
-MY_BITMAP_WATER BITMAP Water.bmp
-MY_BITMAP_FLAG BITMAP Flag.bmp
