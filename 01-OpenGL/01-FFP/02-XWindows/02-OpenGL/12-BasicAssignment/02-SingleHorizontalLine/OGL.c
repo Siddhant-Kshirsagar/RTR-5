@@ -30,12 +30,14 @@ Bool bActiveWindow = False;
 GLXContext glxContext = NULL;
 XVisualInfo *visualInfo = NULL;
 
+FILE *gpFILE = NULL;
+
 // entry point function
 int main(void)
 {
     // local function declaration
     void uninitialize(void);
-    void initialize(void);
+    int initialize(void);
     void resize(int,int);
     void draw(void);
     void update(void);
@@ -70,8 +72,17 @@ int main(void)
     };
 
     Bool bDone = False;
+    int iResult = 0;
 
     // code
+
+    gpFILE = fopen("Log.txt","w");
+    if(gpFILE == NULL)
+    {
+        printf("Log file cannot be open\n");
+        exit(0);
+    }
+    fprintf(gpFILE,"Program started successfully\n");
 
     // step 1: open connection with xserver and get display interface
     display = XOpenDisplay(NULL);
@@ -155,7 +166,13 @@ int main(void)
     XMoveWindow(display,window,(screenWidth - WINWIDTH)/2,(screenHeight-WINHEIGHT)/2);
 
     // OpenGL initialization
-    initialize();
+    iResult = initialize();
+    if(iResult != 0)
+    {
+        printf("initialize () failed.\n");
+        uninitialize();
+        exit(1);
+    }
 
     // step 14 : game loop
     memset((void*)&event,0,sizeof(XEvent));
@@ -293,27 +310,25 @@ void ToggleFullScreen(void)
     &event); 
 }
 
-void initialize(void)
+int initialize(void)
 {
     // local function declaration
     void resize(int,int);
-    void uninitialize(void);
+    
     // code
     // create OpenGL context
     glxContext = glXCreateContext(display,visualInfo,NULL,True);
     if(glxContext == NULL)
     {
         printf("glXCreateContext() failed()\n");
-        uninitialize();
-        exit(1);
+        return(1);
     }
 
     // make this OpenGL context as current context
     if(glXMakeCurrent(display,window,glxContext) == False)
     {
         printf("glXMakeCurrent() failed\n");
-        uninitialize();
-        exit(1);
+        return(2);
     }
 
     //for enable depth
@@ -330,6 +345,7 @@ void initialize(void)
     // warm up Resize call
     resize(WINWIDTH,WINHEIGHT);
 
+    return(0);
 }
 
 void resize(int width,int height)
@@ -416,6 +432,11 @@ void uninitialize(void)
         display = NULL;
     }
 
-
+    if(gpFILE)
+    {
+        fprintf(gpFILE,"Program Ended\n");
+        fclose(gpFILE);
+        gpFILE = NULL;
+    }
 }
 
