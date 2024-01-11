@@ -36,16 +36,6 @@ BOOL gbActive = FALSE;
 // for light
 BOOL gbLight = FALSE;
 
-//GLfloat lightAmbient[] = { 0.1f,0.1f,0.1f,1.0f };
-//GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
-//GLfloat lightSpecular[] = { 1.0f,1.0f,1.0f,1.0f };
-//GLfloat lightPosition[] = { 100.0f,100.0f,100.0f,1.0f };
-//
-//GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};
-//GLfloat materialDiffuse[] = { 0.5f,0.2f,0.7f,1.0f };
-//GLfloat materialSpecular[] = { 0.7f, 0.7f, 0.7f,1.0f };
-//GLfloat materialShininess[] = { 128.0f };
-
 GLfloat lightAmbient[] = { 0.1f,0.1f,0.1f,1.0f };
 GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
 GLfloat lightPosition[] = { 0.0f,0.0f,0.0f,1.0f };
@@ -57,6 +47,9 @@ GLfloat angleForYRotation = 0.0f;
 GLfloat angleForZRotation = 0.0f;
 
 GLuint keyPressed = 0;
+
+GLuint currentWinWidth = 0;
+GLuint currentWinHeight = 0;
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -199,6 +192,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 		resize(LOWORD(lParam),HIWORD(lParam));
+		currentWinWidth = LOWORD(lParam);
+		currentWinHeight = HIWORD(lParam);
 		break;
 
 	case WM_ERASEBKGND:
@@ -409,7 +404,7 @@ void resize(int width, int height)
 		height = 1;
 	}
 
-	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+	//glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -424,8 +419,31 @@ void display(void)
 	GLfloat materialSpecular[4];
 	GLfloat materialShininess;
 
+	GLfloat row1_Y, row2_Y, row3_Y, row4_Y, row5_Y, row6_Y;
+	GLfloat col1_X, col2_X, col3_X, col4_X;
+
+	GLfloat difference_X = currentWinWidth/6; // for column
+	GLfloat difference_Y = currentWinHeight/6; // for rows
+
+	col1_X = 0.0f;
+	col2_X = col1_X + difference_X;
+	col3_X = col2_X + difference_X;
+	col4_X = col3_X + difference_X;
+
+	row1_Y = currentWinHeight - difference_Y;
+	row2_Y = row1_Y - difference_Y;
+	row3_Y = row2_Y - difference_Y;
+	row4_Y = row3_Y - difference_Y;
+	row5_Y = row4_Y - difference_Y;
+	row6_Y = row5_Y - difference_Y;
+
+
+
+
+
 	//code
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	  // code
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -475,9 +493,13 @@ void display(void)
 	materialShininess = 0.6f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 14.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -507,9 +529,13 @@ void display(void)
 	materialShininess = 0.1f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 11.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -539,9 +565,13 @@ void display(void)
 	materialShininess = 0.3f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 9.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -571,9 +601,13 @@ void display(void)
 	materialShininess = 0.088f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 6.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -603,9 +637,13 @@ void display(void)
 	materialShininess = 0.6f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 4.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -635,9 +673,13 @@ void display(void)
 	materialShininess = 0.1f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col1_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(1.5f, 1.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -668,9 +710,13 @@ void display(void)
 	materialShininess = 0.21794872f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 14.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -700,9 +746,13 @@ void display(void)
 	materialShininess = 0.2 * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 11.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -732,9 +782,13 @@ void display(void)
 	materialShininess = 0.6f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 9.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -764,9 +818,13 @@ void display(void)
 	materialShininess = 0.1f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 6.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -796,9 +854,13 @@ void display(void)
 	materialShininess = 0.4f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 4.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -828,9 +890,13 @@ void display(void)
 	materialShininess = 0.4f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col2_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(5.5f, 1.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -860,9 +926,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 14.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -892,9 +962,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 11.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -924,9 +998,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 9.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -956,9 +1034,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 6.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -988,9 +1070,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 4.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1020,9 +1106,13 @@ void display(void)
 	materialShininess = 0.25f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col3_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(9.5f, 1.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1052,9 +1142,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 14.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1084,9 +1178,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 11.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1116,9 +1214,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 9.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1148,9 +1250,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 6.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1180,9 +1286,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 4.0f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
@@ -1212,9 +1322,13 @@ void display(void)
 	materialShininess = 0.078125f * 128;
 	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
+	glViewport(col4_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
+
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
-	glTranslatef(13.5f, 1.5f, -30.0f);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
 	gluSphere(quadric, 1.0f, 30, 30);
 
