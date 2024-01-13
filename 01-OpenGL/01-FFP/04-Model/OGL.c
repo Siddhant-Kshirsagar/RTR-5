@@ -8,6 +8,7 @@
 #include<GL/glu.h>
 
 #include"OGL.h"
+#include"Model.h"
 
 //OpenGl Related Global variable
 HDC ghdc = NULL;
@@ -31,9 +32,27 @@ BOOL gbFullscreen = FALSE;
 FILE *gpFILE = NULL;
 
 HWND ghwnd = NULL; // g = global handle of window
-BOOL gbActive = FALSE;
+BOOL gbActive = FALSE; 
 
-GLuint texture_smiley = 0;
+// for light
+BOOL gbLight = FALSE;
+
+GLfloat lightAmbient[] = { 0.0f,0.0f,0.0f,1.0f };
+GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat lightSpecular[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat lightPosition[] = { 100.0f,100.0f,100.0f,1.0f };
+
+GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat materialDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f,1.0f };
+GLfloat materialShininess[] = { 128.0f };
+
+BOOL bTexture = FALSE;
+GLuint texture_model = 0;
+
+// for animation
+BOOL bAnimate = FALSE;
+GLfloat angle = 0.0f;
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -68,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	gpFILE = fopen("Log.txt", "w");
 	if (gpFILE == NULL)
 	{
-		MessageBox(NULL, TEXT("Log file cannot be open"), TEXT("Error"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, TEXT("Log file cannot be open"), TEXT("Error"), MB_OK|MB_ICONERROR);
 		exit(0);
 	}
 	fprintf(gpFILE, "Program Started Successfully\n");
@@ -110,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	iResult = initialize();
 	if (iResult != 0)
 	{
-		MessageBox(hwnd, TEXT("initialize() failed."), TEXT("Error"), MB_OK | MB_ICONERROR);
+		MessageBox(hwnd, TEXT("initialize() failed."), TEXT("Error"), MB_OK|MB_ICONERROR);
 		DestroyWindow(hwnd);
 	}
 
@@ -124,7 +143,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	SetFocus(hwnd);
 
 	//Game Loop
-	while (bDone == FALSE)
+	while(bDone == FALSE)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -147,7 +166,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 				display();
 
 				//Update
-				update();
+				if (bAnimate == TRUE)
+				{
+					update();
+				}
+				
 			}
 
 		}
@@ -175,7 +198,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		gbActive = FALSE;
 		break;
 	case WM_SIZE:
-		resize(LOWORD(lParam), HIWORD(lParam));
+		resize(LOWORD(lParam),HIWORD(lParam));
 		break;
 
 	case WM_ERASEBKGND:
@@ -210,12 +233,54 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				gbFullscreen = FALSE;
 			}
 			break;
+		case 'L':
+		case 'l':
+		{
+			if (gbLight == FALSE)
+			{				
+				gbLight = TRUE;
+			}
+			else
+			{			
+				gbLight = FALSE;
+			}
+		}
+		break;
+
+		case 'T':
+		case 't':
+		{
+			if (bTexture == FALSE)
+			{
+				bTexture = TRUE;
+			}
+			else
+			{
+				bTexture = FALSE;
+			}
+		}
+		break;
+
+		case 'A':
+		case 'a':
+		{
+			if (bAnimate == FALSE)
+			{
+				bAnimate = TRUE;
+			}
+			else
+			{
+				bAnimate = FALSE;
+			}
+		}
+		break;
+
 		default:
 			break;
 		}
 	}
 	break;
-
+	
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
 		break;
@@ -262,11 +327,11 @@ int initialize(void)
 	//function declarations
 	void resize(int width, int height);
 	BOOL loadGLTexture(GLuint *, TCHAR[]);
-
+	
 	//variable declarations
 	PIXELFORMATDESCRIPTOR pfd;
 	int iPixelFormatIndex = 0;
-	BOOL bResult;
+	BOOL bResult = FALSE;
 
 	ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
 
@@ -316,10 +381,10 @@ int initialize(void)
 	// step 6 :- Make rendering context current
 	if (wglMakeCurrent(ghdc, ghrc) == FALSE)
 	{
-		fprintf(gpFILE, "wglMakeCurrent() Failed.\n");
+		fprintf(gpFILE,"wglMakeCurrent() Failed.\n");
 		return(-5);
 	}
-
+	
 	//for enable depth
 	glShadeModel(GL_SMOOTH); // optional (beautyfication color,light,texture shade)
 	glClearDepth(1.0f); // compulsory
@@ -330,17 +395,29 @@ int initialize(void)
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	bResult = loadGLTexture(&texture_smiley, MAKEINTRESOURCE(MY_BITMAP_SMILEY));
+	// light related initialization
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	// material properties
+	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
+
+	// by default GL_LIGHT0 is enable but we still use this because good programming practice to understand it's enalble(if we don't use this then when we enalbe lighting after pressing 'L' key than we see sphere is invisible becuase of state machine we are setting properties of light after light is enalbe that's why it is not consider so "always use this")
+	glEnable(GL_LIGHT0);
+
+	bResult = loadGLTexture(&texture_model, MAKEINTRESOURCE(IDBITMAP_MARBLE));
 	if (bResult == FALSE)
 	{
-		fprintf(gpFILE, "load of smiley texture is Failed.\n");
+		fprintf(gpFILE, "load of marble texture is Failed.\n");
 		return(-6);
 	}
 
-	// enable texture
-	glEnable(GL_TEXTURE_2D);
-
-	resize(WIN_WIDTH, WIN_HEIGHT);
+	resize(WIN_WIDTH,WIN_HEIGHT);
 
 	return(0);
 }
@@ -401,41 +478,65 @@ void resize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
 }
 
 void display(void)
 {
+	// local variable declaration
+	int i, j;
+	int vi, ni, ti;
 	//code
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
-
-	// cube
 	glLoadIdentity();
 
-	glTranslatef(0.0f, 0.0f, -4.0f);
+	glTranslatef(0.0f,0.0f,-1.5f);
 
-	glBindTexture(GL_TEXTURE_2D, texture_smiley);
+	glRotatef(angle, 0.0f, 1.0f, 0.0f);
 
-	glBegin(GL_QUADS);
+	// Toggle Lighting
+	if (gbLight == TRUE)
+	{
+		glEnable(GL_LIGHTING);
+	}
+	else
+	{
+		glDisable(GL_LIGHTING);
+	}
 
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 0.0f);
+	// Toggle Texture
+	if (bTexture == TRUE)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture_model);
+	}
+	else
+	{
+		glDisable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, 0.0f);
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
 	
+	glBegin(GL_TRIANGLES);
+
+	for (i = 0; i < (sizeof(face_indicies) / sizeof(face_indicies[0])); i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			vi = face_indicies[i][j];
+			ni = face_indicies[i][j + 3];
+			ti = face_indicies[i][j + 6];
+
+			glNormal3f(normals[ni][0], normals[ni][1], normals[ni][2]);
+			glTexCoord2f(textures[ti][0], textures[ti][1]);
+			glVertex3f(vertices[vi][0], vertices[vi][1], vertices[vi][2]);
+		}
+	}
 
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	SwapBuffers(ghdc);
 }
@@ -443,6 +544,11 @@ void display(void)
 void update(void)
 {
 	//code
+	angle = angle + 1.0f;
+	if (angle >= 360.0f)
+	{
+		angle = angle - 360.0f;
+	}
 }
 
 void uninitialize(void)
@@ -483,11 +589,11 @@ void uninitialize(void)
 		DestroyWindow(ghwnd);
 		ghwnd = NULL;
 	}
-	// delete texture
-	if (texture_smiley)
+
+	if (texture_model)
 	{
-		glDeleteTextures(1, &texture_smiley);
-		texture_smiley = 0;
+		glDeleteTextures(1, &texture_model);
+		texture_model = 0;
 	}
 
 	// Close log file
