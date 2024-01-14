@@ -16,6 +16,8 @@
 // For texture SOIL(Simple Object Image Library)
 #include<SOIL/SOIL.h>
 
+#include"Model.h"
+
 // Macros
 #define WINWIDTH 800
 #define WINHEIGHT 600
@@ -35,7 +37,25 @@ FILE *gpFILE = NULL;
 GLXContext glxContext = NULL;
 XVisualInfo *visualInfo = NULL;
 
-GLuint texture_smiley = 0;
+// for light
+Bool gbLight = False;
+
+GLfloat lightAmbient[] = { 0.0f,0.0f,0.0f,1.0f };
+GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat lightSpecular[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat lightPosition[] = { 100.0f,100.0f,100.0f,1.0f };
+
+GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat materialDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f,1.0f };
+GLfloat materialShininess[] = { 128.0f };
+
+Bool bTexture = False;
+GLuint texture_model = 0;
+
+// for animation
+Bool bAnimate = False;
+GLfloat angle = 0.0f;
 
 // entry point function
 int main(void)
@@ -176,7 +196,7 @@ int main(void)
     {
         fprintf(gpFILE,"initialize() failed\n");
         uninitialize();
-        exit(1);
+        exit(0);
     }
 
     // step 14 : game loop
@@ -223,7 +243,47 @@ int main(void)
                         bFullScreen = False;
                     }
                     break;
+                	case 'L':
+                    case 'l':
+                    {
+                        if (gbLight == False)
+                        {				
+                            gbLight = True;
+                        }
+                        else
+                        {			
+                            gbLight = False;
+                        }
+                    }
+                    break;
 
+                    case 'T':
+                    case 't':
+                    {
+                        if (bTexture == False)
+                        {
+                            bTexture = True;
+                        }
+                        else
+                        {
+                            bTexture = False;
+                        }
+                    }
+                    break;
+
+                    case 'A':
+                    case 'a':
+                    {
+                        if (bAnimate == False)
+                        {
+                            bAnimate = True;
+                        }
+                        else
+                        {
+                            bAnimate = False;
+                        }
+                    }
+                    break;
                     default:
                     break;
                 }
@@ -277,8 +337,11 @@ int main(void)
             // display
             draw();
 
-            // update
-            update();
+           	//Update
+            if (bAnimate == True)
+            {
+                update();
+            }
         }
     }
     
@@ -321,9 +384,6 @@ int initialize(void)
     void resize(int,int);
     GLuint loadGLTexture(const char *path);
 
-    // variable declaration
-    Bool bResult;
-
     // code
     // create OpenGL context
     glxContext = glXCreateContext(display,visualInfo,NULL,True);
@@ -351,14 +411,27 @@ int initialize(void)
     // clear color
     glClearColor(0.0f,0.0f,0.0f,1.0f);
 
-    texture_smiley = loadGLTexture("Smiley.bmp");
-    if(!texture_smiley)
+    // light related initialization
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	// material properties
+	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
+
+	// by default GL_LIGHT0 is enable but we still use this because good programming practice to understand it's enalble(if we don't use this then when we enalbe lighting after pressing 'L' key than we see sphere is invisible becuase of state machine we are setting properties of light after light is enalbe that's why it is not consider so "always use this")
+	glEnable(GL_LIGHT0);
+
+    texture_model = loadGLTexture("marble.bmp");
+    if(!texture_model)
     {
         fprintf(gpFILE,"loadGLTexture() failed.\n");
         return(3);
     }
-    
-    glEnable(GL_TEXTURE_2D);
 
     // warm up Resize call
     resize(WINWIDTH,WINHEIGHT);
@@ -426,6 +499,10 @@ void resize(int width,int height)
 
 void draw(void) // similar to display() in windows
 {
+    // local variable declaration
+	int i, j;
+	int vi, ni, ti;
+
     // code
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -437,7 +514,7 @@ void draw(void) // similar to display() in windows
 	glRotatef(angle, 0.0f, 1.0f, 0.0f);
 
 	// Toggle Lighting
-	if (gbLight == TRUE)
+	if (gbLight == True)
 	{
 		glEnable(GL_LIGHTING);
 	}
@@ -447,7 +524,7 @@ void draw(void) // similar to display() in windows
 	}
 
 	// Toggle Texture
-	if (bTexture == TRUE)
+	if (bTexture == True)
 	{
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture_model);
@@ -483,7 +560,7 @@ void draw(void) // similar to display() in windows
 void update(void)
 {
     // code
-    angle = angle + 1.0f;
+	angle = angle + 1.0f;
 	if (angle >= 360.0f)
 	{
 		angle = angle - 360.0f;
@@ -532,10 +609,10 @@ void uninitialize(void)
         display = NULL;
     }
 
-    if (texture_smiley)
+    if (texture_model)
 	{
-		glDeleteTextures(1, &texture_smiley);
-		texture_smiley = 0;
+		glDeleteTextures(1, &texture_model);
+		texture_model = 0;
 	}
 
     if(gpFILE)
