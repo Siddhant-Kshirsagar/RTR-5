@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -pedantic -rdynamic CMakeFiles/resizer.dir/progs/demos/resizer/resizer.c.o -o bin/resizer  -Wl,-rpath,/home/hemant/Siddhant/RTR/01-XWindows/03-FreeGlut/freeglut-3.4.0/lib -lGLU -lX11 -lXrandr -lXi -lGL -lm -lm lib/libglut.so.3.12.0 -lX11 -lXrandr -lXi -lGL -lm 
