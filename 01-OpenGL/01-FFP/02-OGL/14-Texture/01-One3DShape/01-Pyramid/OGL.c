@@ -392,6 +392,7 @@ BOOL loadGLTexture(GLuint *texture, TCHAR imageResourceID[])
 
 	return(TRUE);
 }
+
 void resize(int width, int height)
 {
 	//code

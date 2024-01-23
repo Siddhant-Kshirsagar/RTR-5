@@ -1,0 +1,6 @@
+#include<windows.h>
+
+#include"OGLMain.h"
+
+MYICON ICON MyIcon.ico
+ID_MUSIC WAVE .\Assets\Audio\SavalaGaRamachandra.wav

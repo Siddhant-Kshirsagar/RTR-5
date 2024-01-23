@@ -1,0 +1,11 @@
+#include<windows.h>
+
+#include"OGL.h"
+#include"SGK_Demo.h"
+
+MYICON ICON MyIcon.ico
+//MY_MOBILE_SCREEN BITMAP Screen.bmp
+//CITY_BUILDINGS BITMAP CityBuildings.bmp
+//NIGHT_ROAD BITMAP NightRoad.bmp
+//SIR_BITMAP BITMAP SirImage.bmp
+
