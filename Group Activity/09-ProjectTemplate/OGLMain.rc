@@ -3,4 +3,17 @@
 #include"OGLMain.h"
 
 MYICON ICON MyIcon.ico
+
 ID_MUSIC WAVE .\Assets\Audio\SavalaGaRamachandra.wav
+
+IDBITMAP_TEXTURE_RAM_01 BITMAP .\Assets\Texture\Ram_01.bmp
+IDBITMAP_TEXTURE_RAM_02 BITMAP .\Assets\Texture\Ram_02.bmp
+IDBITMAP_TEXTURE_RAM_03 BITMAP .\Assets\Texture\Ram_03.bmp
+IDBITMAP_TEXTURE_RAM_04 BITMAP .\Assets\Texture\Ram_04.bmp
+IDBITMAP_TEXTURE_RAM_05 BITMAP .\Assets\Texture\Ram_05.bmp
+IDBITMAP_TEXTURE_RAM_06 BITMAP .\Assets\Texture\Ram_06.bmp
+IDBITMAP_TEXTURE_RAM_07 BITMAP .\Assets\Texture\Ram_07.bmp
+IDBITMAP_TEXTURE_RAM_08 BITMAP .\Assets\Texture\Ram_08.bmp
+IDBITMAP_TEXTURE_RAM_09 BITMAP .\Assets\Texture\Ram_09.bmp
+IDBITMAP_TEXTURE_RAM_10 BITMAP .\Assets\Texture\Ram_10.bmp
+

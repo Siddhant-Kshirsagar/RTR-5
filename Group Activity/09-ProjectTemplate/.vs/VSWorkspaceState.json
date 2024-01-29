@@ -3,8 +3,14 @@
     "",
     "\\Assets",
     "\\Assets\\Audio",
-    "\\Scenes"
+    "\\Assets\\Texture",
+    "\\Scenes",
+    "\\Scenes\\EndCredits",
+    "\\Scenes\\Opening",
+    "\\Scenes\\Scene1",
+    "\\Scenes\\Scene2",
+    "\\Scenes\\Scene3"
   ],
-  "SelectedNode": "\\Build.bat",
+  "SelectedNode": "\\OGLMain.h",
   "PreviewInSolutionExplorer": false
 }

@@ -1,5 +1,11 @@
 
-#include"Comman.h"
+#include"./Common.h"
+
+// variable declaration 
+int selectedScene; // selected scene counter (jo scene havay tya scene pasun start honar)
+float ELLAPSED_TIME; // global time for scene
+FILE *gpFILE = NULL; // for log file
+
 // for texture
 BOOL loadGLTexture(GLuint *texture, TCHAR imageResourceID[])
 {

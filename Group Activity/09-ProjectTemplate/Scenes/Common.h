@@ -8,7 +8,8 @@
 #include<gl/GL.h>
 #include<gl/GLU.h>
 
-#include"Comman.h"
+#include"Common.h"
+#include"../OGLMain.h"
 
 enum SCENE
 {
@@ -16,14 +17,14 @@ enum SCENE
 	SCENE_ONE,
 	SCENE_TWO,
 	SCENE_THREE,
-	SCENE_ENDCREAITS,
+	SCENE_ENDCREDITS,
 };
 
 #define START_TIME_OPENING 0.0f				// 0 to 10 sec opening scene
-#define START_TIME_SCENE_ONE 10.0f			// 10 to 20 sec scene 1
-#define START_TIME_SCENE_TWO 20.0f			// 20 to 30 sec scene 2 
-#define START_TIME_SCENE_THREE 30.0f		// 30 to 40 sec scene 3
-#define START_TIME_ENDCREDITS 40.0f			// 40 to 50 sec end credits
+#define START_TIME_SCENE_ONE 78.0f			// 10 to 20 sec scene 1
+#define START_TIME_SCENE_TWO 141.0f			// 20 to 30 sec scene 2 
+#define START_TIME_SCENE_THREE 204.0f		// 30 to 40 sec scene 3
+#define START_TIME_ENDCREDITS 268.0f			// 40 to 50 sec end credits
 
 
 // global variables

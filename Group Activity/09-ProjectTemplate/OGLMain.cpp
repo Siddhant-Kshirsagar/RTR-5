@@ -9,6 +9,12 @@
 
 #include"OGLMain.h"
 
+#include"./Scenes/Opening/Opening.h"
+#include"./Scenes/Scene1/Scene1.h"
+#include"./Scenes/Scene2/Scene2.h"
+#include"./Scenes/Scene3/Scene3.h"
+#include"./Scenes/EndCredits/EndCredits.h"
+
 #include"./Scenes/Common.h"				// comman functionality for all projects
 
 #include"./External/helper_timer.h"		// for time calculation
@@ -24,6 +30,7 @@ HGLRC ghrc = NULL;
 // Link With OpenGL Library
 #pragma comment(lib,"OpenGL32.lib")
 #pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"winmm.lib")
 
 
 //Global function declaration
@@ -33,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 DWORD dwStyle = 0;
 WINDOWPLACEMENT wpPrev = { sizeof(WINDOWPLACEMENT) }; // initialization of struct => this work on all type (if we want to initialize all value to 0)
 BOOL gbFullscreen = FALSE;
-FILE *gpFILE = NULL;
+
 
 HWND ghwnd = NULL; // g = global handle of window
 BOOL gbActive = FALSE; 
@@ -120,6 +127,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		MessageBox(hwnd, TEXT("initialize() failed."), TEXT("Error"), MB_OK|MB_ICONERROR);
 		DestroyWindow(hwnd);
 	}
+	// play sound
+	PlaySound(MAKEINTRESOURCE(ID_MUSIC),GetModuleHandle(NULL), SND_ASYNC | SND_RESOURCE);
 
 	//show window
 	ShowWindow(hwnd, iCmdShow);
@@ -228,6 +237,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
+		PlaySound(NULL, 0, 0);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -339,17 +349,25 @@ int initialize(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Initialize all scenes
+	initializeOpening();
+	initializeScene1();
+	initializeScene2();
+	initializeScene3();
+	initializeEndCreadits();
 
 	//Timer initialization
 	sdkCreateTimer(&timer);
 	sdkStartTimer(&timer);
 
 	// Initialize audio
-	bRet = initializeAudio();
-	if (bRet == FALSE)
-	{
-		return(-6)
-	}
+	//bRet = initializeAudio();
+	//if (bRet == FALSE)
+	//{
+	//	return(-6);
+	//}
+
+
+	glEnable(GL_TEXTURE_2D);
 
 	resize(WIN_WIDTH,WIN_HEIGHT);
 
@@ -373,7 +391,8 @@ void resize(int width, int height)
 
 void display(void)
 {
-	TCHAR myString[256] = { '\0' };
+	// variable declaration
+	char titleText[255] = {'\0'};
 
 	//code
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -385,9 +404,44 @@ void display(void)
 	ELLAPSED_TIME = sdkGetTimerValue(&timer); // time in miliseconds
 	ELLAPSED_TIME = ELLAPSED_TIME / 1000; // miliseconds to seconds conversion
 
-	//set time value to 
-	wsprintf(myString, "Current Time :- %f", ELLAPSED_TIME);
-	SetWindowTextW(ghwnd, myString);
+	// display text in title bar 
+	sprintf(titleText,"Current Time :- %f Seconds", ELLAPSED_TIME);
+
+	// call to display generated string in Title Bar
+	SetWindowTextA(ghwnd, (LPCSTR)titleText);
+
+
+	glTranslatef(0.0f, 0.0f, -3.0f);
+	switch (selectedScene)
+	{
+	case SCENE_OPENING:
+	{
+		displayOpening();
+	}
+		break;
+	case SCENE_ONE:
+	{
+		displayScene1();
+	}
+		break;
+	case SCENE_TWO:
+	{
+		displayScene2();
+	}
+		break;
+	case SCENE_THREE:
+	{
+		displayScene3();
+	}
+		break;
+	case SCENE_ENDCREDITS:
+	{
+		displayEndCreadits();
+	}
+		break;
+	default:
+		break;
+	}
 
 
 	SwapBuffers(ghdc);
@@ -396,6 +450,56 @@ void display(void)
 void update(void)
 {
 	//code
+	if (ELLAPSED_TIME > START_TIME_OPENING && ELLAPSED_TIME < START_TIME_SCENE_ONE)
+	{
+		selectedScene = SCENE_OPENING;
+	}
+	else if (ELLAPSED_TIME > START_TIME_SCENE_ONE && ELLAPSED_TIME < START_TIME_SCENE_TWO)
+	{
+		selectedScene = SCENE_ONE;
+	}
+	else if (ELLAPSED_TIME > START_TIME_SCENE_TWO && ELLAPSED_TIME < START_TIME_SCENE_THREE)
+	{
+		selectedScene = SCENE_TWO;
+	}
+	else if (ELLAPSED_TIME > START_TIME_SCENE_THREE && ELLAPSED_TIME < START_TIME_ENDCREDITS)
+	{
+		selectedScene = SCENE_THREE;
+	}
+	else if (ELLAPSED_TIME > START_TIME_ENDCREDITS)
+	{
+		selectedScene = SCENE_ENDCREDITS;
+	}
+	switch (selectedScene)
+	{
+	case SCENE_OPENING:
+	{
+		updateOpening();
+	}
+	break;
+	case SCENE_ONE:
+	{
+		updateScene1();
+	}
+	break;
+	case SCENE_TWO:
+	{
+		updateScene2();
+	}
+	break;
+	case SCENE_THREE:
+	{
+		updateScene3();
+	}
+		break;
+	case SCENE_ENDCREDITS:
+	{
+		updateEndCreadits();
+	}
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -406,7 +510,12 @@ void uninitialize(void)
 
 	//code
 	
-	uninitalizeAudio();
+	//uninitalizeAudio();
+	uninitializeEndCreadits();
+	uninitializeScene3();
+	uninitializeScene2();
+	uninitializeScene1();
+	uninitializeOpening();
 
 	// delete timer if exists
 	if (timer)
