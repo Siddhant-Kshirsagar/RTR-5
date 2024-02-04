@@ -36,15 +36,7 @@ FILE *gpFILE = NULL;
 
 // OpenGL related variable 
 GLuint shaderProgramObject = 0;
-GLuint vao = 0;
-GLuint vbo_position = 0;
-GLuint vbo_color = 0;
 
-enum
-{
-	AMC_ATTRIBUTE_POSITION = 0,
-	AMC_ATTRIBUTE_COLOR,
-};
 
 //Entry Point Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -345,13 +337,8 @@ int initialize(void)
 	const GLchar *vertexShaderSourceCode =
 		"#version 460 core" \
 		"\n" \
-		"in vec4 aPosition;" \
-		"in vec4 aColor;" \
-		"out vec4 oColor;" \
 		"void main(void)" \
 		"{" \
-		"gl_Position=aPosition;" \
-		"oColor = aColor;" \
 		"}";
 
 	// step 2 : create vertex shader object
@@ -408,11 +395,8 @@ int initialize(void)
 	const GLchar *fragmentShaderCode =
 		"#version 460 core" \
 		"\n" \
-		"in vec4 oColor;" \
-		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = oColor;" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -470,11 +454,6 @@ int initialize(void)
 	glAttachShader(shaderProgramObject, vertexShaderObject);
 	glAttachShader(shaderProgramObject, fragmentShaderObject);
 
-	// step 13 : bind attribute location with the shader program object
-	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
-
-	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
-
 	// step 14 : link the shader program
 	glLinkProgram(shaderProgramObject);
 
@@ -517,67 +496,13 @@ int initialize(void)
 		uninitialize();
 	}
 
-	// step 16: declare position and color array 
-
-	// position array inline initialization
-	const GLfloat triangle_position[] =
-	{
-		0.0f,1.0f,0.0f, // glVertex3f() 1 st call for triangle 
-		-1.0f,-1.0f,0.0f, // glVertex3f() 2nd call for triangle
-		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
-	};
-
-	// color array inline initialization
-	const GLfloat triangle_color[] =
-	{
-		1.0f,0.0f,0.0f, // glColor3f() 1st  call for triangle
-		0.0f,1.0f,0.0f, // glColor3f() 2nd  call for triangle
-		0.0f,0.0f,1.0f // glColor3f() 3rd  call for triangle
-	};
-
-	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao);
-
-	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao);
-
-	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_position);
-
-	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_position);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_position), triangle_position, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glEnableVertexAttribArray(AMC_ATTRIBUTE_POSITION);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// VBO(Vertex Buffer Object) for color
-	glGenBuffers(1, &vbo_color);
-
-	//  bind with VBO( Vertex Buffer Object) for color
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_color), triangle_color, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-
 	//for enable depth
 	glClearDepth(1.0f); // compulsory
 	glEnable(GL_DEPTH_TEST);// compulsory
 	glDepthFunc(GL_LEQUAL);// compulsory
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f,  1.0f, 1.0f);
 
 	return(0);
 }
@@ -627,16 +552,11 @@ void display(void)
 	// step 1 : use shader program
 	glUseProgram(shaderProgramObject);
 
-	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao);
+	// draw geometry here
 
-	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	// unbind vao 
-	glBindVertexArray(0);
-
+	// unused shader
 	glUseProgram(0);
+
 
 	SwapBuffers(ghdc);
 }
@@ -693,27 +613,6 @@ void uninitialize(void)
 		glDeleteProgram(shaderProgramObject);
 
 		shaderProgramObject = 0;
-	}
-
-	// delete vbo for color 
-	if (vbo_color)
-	{
-		glDeleteBuffers(1, &vbo_color);
-		vbo_color = 0;
-	}
-
-	// delete vbo for position
-	if (vbo_position)
-	{
-		glDeleteBuffers(1, &vbo_position);
-		vbo_position = 0;
-	}
-
-	// delete vao 
-	if (vao)
-	{
-		glDeleteVertexArrays(1, &vao);
-		vao = 0;
 	}
 
 	// If Application is exitting in fullscreen mode

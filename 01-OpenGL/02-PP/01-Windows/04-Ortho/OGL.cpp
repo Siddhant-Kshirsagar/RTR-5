@@ -7,7 +7,11 @@
 #include<gl/glew.h> // this must be before gl/GL.h 
 #include<gl/GL.h>
 
+#include"vmath.h"
+using namespace vmath;
+
 #include"OGL.h"
+
 
 //OpenGl Related Global variable
 HDC ghdc = NULL;
@@ -38,12 +42,14 @@ FILE *gpFILE = NULL;
 GLuint shaderProgramObject = 0;
 GLuint vao = 0;
 GLuint vbo_position = 0;
-GLuint vbo_color = 0;
+
+GLuint mvpMatrixUniform = 0;
+// mat4 is datatype means 4 * 4 matrix (present in vmath.h)
+mat4 orthographicProjectionMatrix;
 
 enum
 {
-	AMC_ATTRIBUTE_POSITION = 0,
-	AMC_ATTRIBUTE_COLOR,
+	AMC_ATTRIBUTE_POSITION = 0
 };
 
 //Entry Point Function
@@ -272,11 +278,13 @@ int initialize(void)
 {
 	//function declarations
 	void printGLInfo(void);
+	void resize(int, int);
 	void uninitialize(void);
 	
 	//variable declarations
 	PIXELFORMATDESCRIPTOR pfd;
 	int iPixelFormatIndex = 0;
+
 
 	ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
 
@@ -345,13 +353,11 @@ int initialize(void)
 	const GLchar *vertexShaderSourceCode =
 		"#version 460 core" \
 		"\n" \
+		"uniform mat4 uMVPMatrix;" \
 		"in vec4 aPosition;" \
-		"in vec4 aColor;" \
-		"out vec4 oColor;" \
 		"void main(void)" \
 		"{" \
-		"gl_Position=aPosition;" \
-		"oColor = aColor;" \
+		"gl_Position= uMVPMatrix * aPosition;" \
 		"}";
 
 	// step 2 : create vertex shader object
@@ -408,11 +414,10 @@ int initialize(void)
 	const GLchar *fragmentShaderCode =
 		"#version 460 core" \
 		"\n" \
-		"in vec4 oColor;" \
 		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = oColor;" \
+		"FragColor = vec4(1.0,1.0,1.0,1.0);" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -473,8 +478,6 @@ int initialize(void)
 	// step 13 : bind attribute location with the shader program object
 	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
 
-	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
-
 	// step 14 : link the shader program
 	glLinkProgram(shaderProgramObject);
 
@@ -517,22 +520,17 @@ int initialize(void)
 		uninitialize();
 	}
 
-	// step 16: declare position and color array 
+	// get shader uniform location
+	mvpMatrixUniform = glGetUniformLocation(shaderProgramObject, "uMVPMatrix");
+
+	// step 16: declare position
 
 	// position array inline initialization
 	const GLfloat triangle_position[] =
 	{
-		0.0f,1.0f,0.0f, // glVertex3f() 1 st call for triangle 
-		-1.0f,-1.0f,0.0f, // glVertex3f() 2nd call for triangle
-		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
-	};
-
-	// color array inline initialization
-	const GLfloat triangle_color[] =
-	{
-		1.0f,0.0f,0.0f, // glColor3f() 1st  call for triangle
-		0.0f,1.0f,0.0f, // glColor3f() 2nd  call for triangle
-		0.0f,0.0f,1.0f // glColor3f() 3rd  call for triangle
+		0.0f,50.0f,0.0f, // glVertex3f() 1 st call for triangle 
+		-50.0f,-50.0f,0.0f, // glVertex3f() 2nd call for triangle
+		50.0f,-50.0f,0.0f // glVertex3f() 3rd  call for triangle
 	};
 
 	// step 17 : create VAO (vertex array object) 
@@ -555,20 +553,6 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// VBO(Vertex Buffer Object) for color
-	glGenBuffers(1, &vbo_color);
-
-	//  bind with VBO( Vertex Buffer Object) for color
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_color), triangle_color, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	glBindVertexArray(0);
 
 	//for enable depth
@@ -577,7 +561,12 @@ int initialize(void)
 	glDepthFunc(GL_LEQUAL);// compulsory
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+
+	// initialize orthographic projection matrix 
+	orthographicProjectionMatrix = vmath::mat4::identity();
+
+	resize(WIN_WIDTH, WIN_HEIGHT);
 
 	return(0);
 }
@@ -617,6 +606,19 @@ void resize(int width, int height)
 
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+	// set orthographic projection matrix
+	if (width <= height)
+	{
+		orthographicProjectionMatrix =  vmath::ortho(-100.0f, 100.0f,
+			-100.0f * (((GLfloat)height) / ((GLfloat)width)),
+			100.0f * (((GLfloat)height) / ((GLfloat)width)), -100.0f, 100.0f);
+	}
+	else
+	{
+		orthographicProjectionMatrix = vmath::ortho(-100.0f * ((GLfloat)width / (GLfloat)height),
+			100.0f * ((GLfloat)width / (GLfloat)height), -100.0f, 100.0f, -100.0f, 100.0f);
+	}
+
 }
 
 void display(void)
@@ -626,6 +628,15 @@ void display(void)
 
 	// step 1 : use shader program
 	glUseProgram(shaderProgramObject);
+
+	// Transformation
+	mat4 modelViewMatrix = vmath::mat4::identity();
+
+	// order of multiplication is very important
+	mat4 modelViewProjectionMatrix = orthographicProjectionMatrix * modelViewMatrix;
+
+	// push above mvp(model view projection) into vertex shader's mvp uniform
+	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
 	glBindVertexArray(vao);
@@ -693,13 +704,6 @@ void uninitialize(void)
 		glDeleteProgram(shaderProgramObject);
 
 		shaderProgramObject = 0;
-	}
-
-	// delete vbo for color 
-	if (vbo_color)
-	{
-		glDeleteBuffers(1, &vbo_color);
-		vbo_color = 0;
 	}
 
 	// delete vbo for position
