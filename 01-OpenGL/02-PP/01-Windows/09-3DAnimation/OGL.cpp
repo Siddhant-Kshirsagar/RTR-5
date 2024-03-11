@@ -807,7 +807,6 @@ void display(void)
 	rotationMatrix = vmath::rotate(pAngle, 0.0f, 1.0f, 0.0f);
 
 	modelViewMatrix = translationMatrix * rotationMatrix;
-	/*mat4 modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);*/
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -848,9 +847,6 @@ void display(void)
 	rotationMatrix = rotationMatrix1 * rotationMatrix2 * rotationMatrix3;
 
 	modelViewMatrix = translationMatrix * scaleMatrix * rotationMatrix;
-
-
-	/*mat4 modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);*/
 
 	// order of multiplication is very important
 	modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;

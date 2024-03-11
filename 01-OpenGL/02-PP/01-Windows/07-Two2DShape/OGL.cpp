@@ -620,20 +620,8 @@ int initialize(void)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// VBO(Vertex Buffer Object) for color
-	//glGenBuffers(1, &vbo_color);
 
 	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 0.0f, 0.0f, 1.0f);
-
-	//  bind with VBO( Vertex Buffer Object) for color
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
-
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_color), triangle_color, GL_STATIC_DRAW);
-
-	//glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 
@@ -708,8 +696,6 @@ void display(void)
 	mat4 modelViewMatrix = mat4::identity();
 	modelViewMatrix = vmath::translate(-1.5f, 0.0f, -6.0f);
 
-	/*mat4 modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);*/
-
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
 
@@ -730,8 +716,6 @@ void display(void)
 	modelViewMatrix = mat4::identity();
 
 	modelViewMatrix = vmath::translate(1.5f, 0.0f, -6.0f);
-
-	/*mat4 modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);*/
 
 	// order of multiplication is very important
 	modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
