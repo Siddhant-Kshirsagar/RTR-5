@@ -1,0 +1,53 @@
+#include<windows.h>
+
+#include"OGLMain.h"
+
+MYICON ICON MyIcon.ico
+
+ID_MUSIC WAVE .\Assets\Audio\AadhiKalasMagPayare.wav
+
+MY_BITMAP_TREE BITMAP .\Assets\Texture\treeTexture.bmp
+
+MY_SACK_TEXTURE BITMAP .\Assets\Texture\sackcloth.bmp
+MY_CARDS_TEXTURE BITMAP .\Assets\Texture\cards.bmp
+
+
+MY_BITMAP_LOGO BITMAP .\Assets\Texture\logo.bmp
+
+MY_SAD_FACE_BITMAP BITMAP .\Assets\Texture\SadFace.bmp
+MY_EVIL_SMILE_FACE_BITMAP BITMAP .\Assets\Texture\evilSmileExpression.bmp
+UPPER_WEAR_BITMAP BITMAP .\Assets\Texture\upperwear.bmp
+
+MY_BITMAP_MOUNTAIN BITMAP .\Assets\Texture\MountainTexture.bmp
+MY_BITMAP_CLOUD BITMAP .\Assets\Texture\clouds.bmp
+MY_BITMAP_LANDSCAPE BITMAP .\Assets\Texture\Landscape.bmp
+MY_BITMAP_WHITE_CLOUD_SKY BITMAP .\Assets\Texture\whiteCloudSky.bmp
+
+MY_EARTH_BITMAP BITMAP .\Assets\Texture\earth.bmp
+MY_SPACE_BITMAP BITMAP .\Assets\Texture\stars_milky_way.bmp
+
+MY_STONE_BITMAP BITMAP .\Assets\Texture\StoneTexture.bmp
+MY_ROPE_BITMAP BITMAP .\Assets\Texture\RopeTexture.bmp
+MY_GOLD_BITMAP BITMAP .\Assets\Texture\GoldTexture.bmp
+MY_MARBLE_BITMAP BITMAP .\Assets\Texture\MarbleTexture.bmp
+MY_WALL_1_BITMAP BITMAP .\Assets\Texture\WallTexture_1.bmp
+MY_WALL_2_BITMAP BITMAP .\Assets\Texture\wallTexture_2.bmp
+MY_SHREEVISHNU_1_BITMAP BITMAP .\Assets\Texture\ShreeVishnuCosmicOcean.bmp
+MY_SHREEGANESH_BITMAP BITMAP .\Assets\Texture\ShreeGanesh.bmp
+MY_INVERTEDTREE BITMAP .\Assets\Texture\InvertedTree.bmp
+MY_TRIPUNDBITMAP BITMAP .\Assets\Texture\tripund.bmp
+MY_BLACKBITMAP BITMAP .\Assets\Texture\black.bmp
+MY_SKIN_TEXTURE BITMAP .\Assets\Texture\skinTexture.bmp
+
+MY_SOIL_BITMAP BITMAP .\Assets\Texture\Soil.bmp
+MY_PLANT_BITMAP BITMAP .\Assets\Texture\plant.bmp
+MY_BAZARI_BITMAP BITMAP .\Assets\Texture\bazari.bmp
+MY_WHITE_CLOTH_BITMAP BITMAP .\Assets\Texture\whiteClothTexture.bmp
+MY_DRY_GRASS_BITMAP BITMAP .\Assets\Texture\dryGrass.bmp
+MY_FACE_BITMAP BITMAP .\Assets\Texture\AngryFace.bmp
+MY_WALL_TEXTURE_BITMAP BITMAP .\Assets\Texture\wallTexture.bmp
+MY_DOOR_TEXTURE_BITMAP BITMAP .\Assets\Texture\door.bmp
+MY_WALL1_TEXTURE_BITMAP BITMAP .\Assets\Texture\brickWall.bmp
+MY_TOPCEILING_TEXTURE_BITMAP BITMAP .\Assets\Texture\TopCeiling.bmp
+MY_ROCK_WALL_TEXTURE_BITMAP BITMAP .\Assets\Texture\rockWall.bmp
+
