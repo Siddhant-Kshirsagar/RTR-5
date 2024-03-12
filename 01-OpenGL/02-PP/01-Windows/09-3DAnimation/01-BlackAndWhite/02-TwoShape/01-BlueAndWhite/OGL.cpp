@@ -40,12 +40,12 @@ FILE *gpFILE = NULL;
 // OpenGL related variable 
 GLuint shaderProgramObject = 0;
 
-// for triangle
+// for pyramid
 GLuint vao_pyramid = 0;
 GLuint vbo_positionPyramid = 0;
 GLuint vbo_colorPyramid = 0;
 
-// for square
+// for cube
 GLuint vao_cube = 0;
 GLuint vbo_positionCube = 0;
 GLuint vbo_colorCube = 0;
@@ -565,26 +565,6 @@ int initialize(void)
 		-1.0f, -1.0f, 1.0f
 	};
 
-	// color array inline initialization
-	const GLfloat pyramid_color[] =
-	{
-		1.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f,
-
-		1.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f
-	};
-
 	const GLfloat cube_position[] =
 	{
 		// top
@@ -624,40 +604,6 @@ int initialize(void)
 		-1.0f, -1.0f, 1.0f,
 	};
 
-	const GLfloat cubeColor[] =
-	{
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-
-		1.0f, 0.5f, 0.0f,
-		1.0f, 0.5f, 0.0f,
-		1.0f, 0.5f, 0.0f,
-		1.0f, 0.5f, 0.0f,
-
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-
-		1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f
-
-	};
-
 	// for Pyramid
 	// step 17 : create VAO (vertex array object) 
 	glGenVertexArrays(1, &vao_pyramid);
@@ -680,18 +626,7 @@ int initialize(void)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// VBO(Vertex Buffer Object) for color
-	glGenBuffers(1, &vbo_colorPyramid);
-
-	//  bind with VBO( Vertex Buffer Object) for color
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_colorPyramid);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_color), pyramid_color, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
 
 	glBindVertexArray(0);
 
@@ -717,18 +652,7 @@ int initialize(void)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// VBO(Vertex Buffer Object) for color
-	glGenBuffers(1, &vbo_colorCube);
-
-	//  bind with VBO( Vertex Buffer Object) for color
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_colorCube);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeColor), cubeColor, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
 
 	glBindVertexArray(0);
 
@@ -738,7 +662,7 @@ int initialize(void)
 	glDepthFunc(GL_LEQUAL);// compulsory
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// initialize orthographic projection matrix 
 	perspectiveProjectionMatrix = vmath::mat4::identity();
@@ -939,14 +863,7 @@ void uninitialize(void)
 		shaderProgramObject = 0;
 	}
 
-	// square 
-
-	// delete vbo for color 
-	if (vbo_colorCube)
-	{
-		glDeleteBuffers(1, &vbo_colorCube);
-		vbo_colorCube = 0;
-	}
+	// cube 
 
 	// delete vbo for position
 	if (vbo_positionCube)
@@ -964,14 +881,7 @@ void uninitialize(void)
 
 
 
-	// triangle 
-	
-	// delete vbo for color 
-	if (vbo_colorPyramid)
-	{
-		glDeleteBuffers(1, &vbo_colorPyramid);
-		vbo_colorPyramid = 0;
-	}
+	// pyramid 
 
 	// delete vbo for position
 	if (vbo_positionPyramid)
