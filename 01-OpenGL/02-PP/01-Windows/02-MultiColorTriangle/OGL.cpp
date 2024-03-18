@@ -385,7 +385,7 @@ int initialize(void)
 			{
 
 				// step 5 d:
-				glGetShaderInfoLog(vertexShaderObject, infoLogLength, NULL, szInfoLog);
+				glGetShaderInfoLog(vertexShaderObject, infoLogLength + 1, NULL, szInfoLog);
 				
 				// step 5 e:
 				fprintf(gpFILE, "Vertex shader compilation error log : %s\n", szInfoLog);
@@ -444,7 +444,7 @@ int initialize(void)
 			if (szInfoLog != NULL)
 			{
 				// step 10 d:
-				glGetShaderInfoLog(fragmentShaderObject, infoLogLength, NULL, szInfoLog);
+				glGetShaderInfoLog(fragmentShaderObject, infoLogLength + 1, NULL, szInfoLog);
 
 				// step 10 e:
 				fprintf(gpFILE, "fragmenet shader compilation log : %s\n", szInfoLog);
@@ -494,12 +494,12 @@ int initialize(void)
 		if (infoLogLength > 0)
 		{
 			// step 15 c:
-			szInfoLog = (GLchar *)malloc(infoLogLength);
+			szInfoLog = (GLchar *)malloc(sizeof(GLchar) * (infoLogLength + 1));
 
 			if (szInfoLog != NULL)
 			{
 				// step 15 d:
-				glGetProgramInfoLog(shaderProgramObject, infoLogLength, NULL, szInfoLog);
+				glGetProgramInfoLog(shaderProgramObject, infoLogLength + 1, NULL, szInfoLog);
 
 				// step 15 e:
 				fprintf(gpFILE, "Shader program linking error log : %s \n", szInfoLog);
