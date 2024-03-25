@@ -483,6 +483,7 @@ void uninitialize(void)
 		DestroyWindow(ghwnd);
 		ghwnd = NULL;
 	}
+
 	// delete texture
 	if (texture_smiley)
 	{
