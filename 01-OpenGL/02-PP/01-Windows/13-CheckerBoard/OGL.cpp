@@ -12,6 +12,10 @@ using namespace vmath;
 
 #include"OGL.h"
 
+// for procedural texture
+#define CHECKIMAGEWIDTH 64
+#define CHECKIMAGEHEIGHT 64
+
 //OpenGl Related Global variable
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
@@ -47,7 +51,10 @@ GLuint vbo_texCoordSquare = 0;
 
 GLuint mvpMatrixUniform = 0;
 GLuint textureSamplerUniform = 0;
-GLuint texture_smiley = 0;
+
+GLuint texture_checkerboard = 0;
+
+GLubyte checkImage[CHECKIMAGEHEIGHT][CHECKIMAGEWIDTH][4];
 
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
@@ -287,7 +294,7 @@ int initialize(void)
 	void printGLInfo(void);
 	void resize(int, int);
 	void uninitialize(void);
-	BOOL loadGLTexture(GLuint *, TCHAR[]);
+	void loadGLTexture(void);
 
 	
 	//variable declarations
@@ -573,7 +580,7 @@ int initialize(void)
 	// step 20 : bind with VBO( Vertex Buffer Object) for position
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSquare);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(square_position), square_position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 3 *sizeof(GL_FLOAT), NULL, GL_DYNAMIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -604,14 +611,9 @@ int initialize(void)
 	glDepthFunc(GL_LEQUAL);// compulsory
 
 	// step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
 
-	bResult = loadGLTexture(&texture_smiley, MAKEINTRESOURCE(MY_BITMAP_SMILEY));
-	if (bResult == FALSE)
-	{
-		fprintf(gpFILE, "load of smiley texture is Failed.\n");
-		return(-6);
-	}
+	loadGLTexture();
 
 	// enable texture
 	glEnable(GL_TEXTURE_2D);
@@ -626,50 +628,60 @@ int initialize(void)
 	return(0);
 }
 
-BOOL loadGLTexture(GLuint *texture, TCHAR imageResourceID[])
+void loadGLTexture(void)
 {
-	//local variable declaration
-	HBITMAP hBitmap = NULL;
-	BITMAP bmp;
+	//local function declaration
+	void makeCheckImage(void);
 
-	hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL), imageResourceID, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-	if (hBitmap == NULL)
-	{
-		fprintf(gpFILE, "LoadImage() Failed.\n");
-		return(FALSE);
-	}
+	//code
 
-	// get Image Data
-	GetObject(hBitmap, sizeof(BITMAP), &bmp);
+	makeCheckImage();
 
 	// create openGL texture
-	glGenTextures(1, texture);
+	glGenTextures(1, &texture_checkerboard);
 
 	// bind to the generated texture
-	glBindTexture(GL_TEXTURE_2D, *texture);
+	glBindTexture(GL_TEXTURE_2D, texture_checkerboard);
 
 	// decide image pixel alignment and unpacking 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// set texture parameter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	// create multiple mipmap images
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, bmp.bmWidth, bmp.bmHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, bmp.bmBits);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKIMAGEWIDTH, CHECKIMAGEHEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
 
 	// unBind texture
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// delete bitmap object
-	DeleteObject(hBitmap);
+}
 
-	hBitmap = NULL;
+void makeCheckImage(void)
+{
+	//variable declaration
+	int i, j, c;
 
-	return(TRUE);
+	//code
+	for (i = 0; i < CHECKIMAGEHEIGHT; i++)
+	{
+		for (j = 0; j < CHECKIMAGEWIDTH; j++)
+		{
+			c = (((i & 0x8) == 0) ^ ((j & 0x8) == 0)) * 255;
+
+			checkImage[i][j][0] = (GLubyte)c;
+			checkImage[i][j][1] = (GLubyte)c;
+			checkImage[i][j][2] = (GLubyte)c;
+			checkImage[i][j][3] = (GLubyte)c;
+
+		}
+	}
 }
 
 void printGLInfo(void)
@@ -714,6 +726,9 @@ void resize(int width, int height)
 
 void display(void)
 {
+	//variable declaration
+	GLfloat squarePosition[12];
+
 	//code
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -723,7 +738,7 @@ void display(void)
 	// Triangle
 	// Transformation
 	mat4 modelViewMatrix = mat4::identity();
-	modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
+	modelViewMatrix = vmath::translate(0.0f, 0.0f, -4.0f);
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -734,12 +749,55 @@ void display(void)
 	//for texture
 	glActiveTexture(GL_TEXTURE0);
 	
-	glBindTexture(GL_TEXTURE_2D, texture_smiley);
+	glBindTexture(GL_TEXTURE_2D, texture_checkerboard);
 
 	glUniform1i(textureSamplerUniform, 0);
 
 	// step 2 : bind with VAO(vertex array object)
 	glBindVertexArray(vao_square);
+
+	// square 1
+	squarePosition[0] = 0.0f;
+	squarePosition[1] = 1.0f;
+	squarePosition[2] = 0.0f;
+	squarePosition[3] = -2.0f;
+	squarePosition[4] = 1.0f;
+	squarePosition[5] = 0.0f;
+	squarePosition[6] = -2.0f;
+	squarePosition[7] = -1.0f;
+	squarePosition[8] = 0.0f;
+	squarePosition[9] = 0.0f;
+	squarePosition[10] = -1.0f;
+	squarePosition[11] = 0.0f;
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSquare);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squarePosition), squarePosition, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// step 3 : draw geometry / shape / model /scene
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	// square 2
+	squarePosition[0] = 2.41421f;
+	squarePosition[1] = 1.0f;
+	squarePosition[2] = -1.41421f;
+	squarePosition[3] = 1.0f;
+	squarePosition[4] = 1.0f;
+	squarePosition[5] = 0.0f;
+	squarePosition[6] = 1.0f;
+	squarePosition[7] = -1.0f;
+	squarePosition[8] = 0.0f;
+	squarePosition[9] = 2.41421f;
+	squarePosition[10] = -1.0f;
+	squarePosition[11] = -1.41421f;
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSquare);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squarePosition), squarePosition, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// step 3 : draw geometry / shape / model /scene
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -865,10 +923,10 @@ void uninitialize(void)
 	}
 
 	// delete texture
-	if (texture_smiley)
+	if (texture_checkerboard)
 	{
-		glDeleteTextures(1, &texture_smiley);
-		texture_smiley = 0;
+		glDeleteTextures(1, &texture_checkerboard);
+		texture_checkerboard = 0;
 	}
 
 	// Close log file
