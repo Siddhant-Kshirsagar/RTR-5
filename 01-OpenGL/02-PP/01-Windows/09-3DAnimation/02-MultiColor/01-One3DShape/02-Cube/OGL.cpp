@@ -40,14 +40,16 @@ FILE *gpFILE = NULL;
 // OpenGL related variable 
 GLuint shaderProgramObject = 0;
 
-// for triangle
-GLuint vao_triangle = 0;
-GLuint vbo_positionTriangle = 0;
-GLuint vbo_colorTriangle = 0;
+// for cube
+GLuint vao_cube = 0;
+GLuint vbo_positionCube = 0;
+GLuint vbo_colorCube = 0;
 
 GLuint mvpMatrixUniform = 0;
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
+
+GLfloat cAngle = 0.0f;
 
 enum
 {
@@ -532,29 +534,93 @@ int initialize(void)
 	mvpMatrixUniform = glGetUniformLocation(shaderProgramObject, "uMVPMatrix");
 
 	// step 16: declare position and color array 
-
-	// position array inline initialization
-	const GLfloat triangle_position[] =
+	const GLfloat cube_position[] =
 	{
-		0.0f,1.0f,0.0f, // glVertex3f() 1 st call for triangle 
-		-1.0f,-1.0f,0.0f, // glVertex3f() 2nd call for triangle
-		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
+		// top
+		1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+
+		// bottom
+		1.0f, -1.0f, -1.0f,
+	   -1.0f, -1.0f, -1.0f,
+	   -1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+
+		// front
+		1.0f, 1.0f, 1.0f,
+	   -1.0f, 1.0f, 1.0f,
+	   -1.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f,
+
+		// back
+		1.0f, 1.0f, -1.0f,
+	   -1.0f, 1.0f, -1.0f,
+	   -1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		// right
+		1.0f, 1.0f, -1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		// left
+		-1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f, 1.0f,
 	};
 
-	// for Triangle
+	const GLfloat cubeColor[] =
+	{
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+
+		1.0f, 0.5f, 0.0f,
+		1.0f, 0.5f, 0.0f,
+		1.0f, 0.5f, 0.0f,
+		1.0f, 0.5f, 0.0f,
+
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+
+		1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+
+		1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f
+
+	};
+
+	// for cube
 	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao_triangle);
+	glGenVertexArrays(1, &vao_cube);
 
 	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao_triangle);
+	glBindVertexArray(vao_cube);
 
 	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_positionTriangle);
+	glGenBuffers(1, &vbo_positionCube);
 
 	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionTriangle);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionCube);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_position), triangle_position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_position), cube_position, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -563,7 +629,18 @@ int initialize(void)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// VBO(Vertex Buffer Object) for color
-	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
+	glGenBuffers(1, &vbo_colorCube);
+
+	//  bind with VBO( Vertex Buffer Object) for color
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_colorCube);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeColor), cubeColor, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 
@@ -633,10 +710,30 @@ void display(void)
 	// step 1 : use shader program
 	glUseProgram(shaderProgramObject);
 
-	// Triangle
+	// cube
 	// Transformation
 	mat4 modelViewMatrix = mat4::identity();
-	modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
+
+	mat4 translationMatrix = mat4::identity();
+	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
+
+	// scale matrix
+	mat4 scaleMatrix = mat4::identity();
+	scaleMatrix = vmath::scale(0.75f, 0.75f, 0.75f);
+
+	mat4 rotationMatrix1 = mat4::identity();
+	rotationMatrix1 = vmath::rotate(cAngle, 1.0f, 0.0f, 0.0f);
+
+	mat4 rotationMatrix2 = mat4::identity();
+	rotationMatrix2 = vmath::rotate(cAngle, 0.0f, 1.0f, 0.0f);
+
+	mat4 rotationMatrix3 = mat4::identity();
+	rotationMatrix3 = vmath::rotate(cAngle, 0.0f, 0.0f, 1.0f);
+
+	mat4 rotationMatrix = mat4::identity();
+	rotationMatrix = rotationMatrix1 * rotationMatrix2 * rotationMatrix3;
+
+	modelViewMatrix = translationMatrix * scaleMatrix * rotationMatrix;
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -645,10 +742,15 @@ void display(void)
 	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao_triangle);
+	glBindVertexArray(vao_cube);
 
 	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
 
 	// unbind vao 
 	glBindVertexArray(0);
@@ -661,7 +763,12 @@ void display(void)
 void update(void)
 {
 	//code
-
+	//cube rotate
+	cAngle = cAngle - 1.0f;
+	if (cAngle <= 0.0f)
+	{
+		cAngle = cAngle + 360.0f;
+	}
 }
 
 void uninitialize(void)
@@ -712,29 +819,28 @@ void uninitialize(void)
 		shaderProgramObject = 0;
 	}
 
-	// triangle 
-	
+	// cube 
+
 	// delete vbo for color 
-	if (vbo_colorTriangle)
+	if (vbo_colorCube)
 	{
-		glDeleteBuffers(1, &vbo_colorTriangle);
-		vbo_colorTriangle = 0;
+		glDeleteBuffers(1, &vbo_colorCube);
+		vbo_colorCube = 0;
 	}
 
 	// delete vbo for position
-	if (vbo_positionTriangle)
+	if (vbo_positionCube)
 	{
-		glDeleteBuffers(1, &vbo_positionTriangle);
-		vbo_positionTriangle = 0;
+		glDeleteBuffers(1, &vbo_positionCube);
+		vbo_positionCube = 0;
 	}
 
 	// delete vao 
-	if (vao_triangle)
+	if (vao_cube)
 	{
-		glDeleteVertexArrays(1, &vao_triangle);
-		vao_triangle = 0;
+		glDeleteVertexArrays(1, &vao_cube);
+		vao_cube = 0;
 	}
-
 	
 	// If Application is exitting in fullscreen mode
 	if (gbFullscreen == TRUE)

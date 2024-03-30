@@ -40,16 +40,13 @@ FILE *gpFILE = NULL;
 // OpenGL related variable 
 GLuint shaderProgramObject = 0;
 
-// for pyramid
-GLuint vao_pyramid = 0;
-GLuint vbo_positionPyramid = 0;
-GLuint vbo_colorPyramid = 0;
+// for square
+GLuint vao_square = 0;
+GLuint vbo_positionSquare = 0;
 
 GLuint mvpMatrixUniform = 0;
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
-
-GLfloat pAngle = 0.0f;
 
 enum
 {
@@ -535,44 +532,28 @@ int initialize(void)
 
 	// step 16: declare position and color array 
 
-	// position array inline initialization
-	const GLfloat pyramid_position[] =
+	const GLfloat square_position[] =
 	{
-		// front
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f,
-
-		// right
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, -1.0f,
-
-		// back
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-
-		// left
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, 1.0f
+		1.0f,1.0f,0.0f, // glVertex3f() 1st call for square
+		-1.0f,1.0f,0.0f,// glVertex3f() 2nd call for square
+		-1.0f,-1.0f,0.0f,// glVertex3f() 3rd call for square
+		1.0f,-1.0f,0.0f// glVertex3f() 4th call for square
 	};
 
-	// for Pyramid
+	// for square
 	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao_pyramid);
+	glGenVertexArrays(1, &vao_square);
 
 	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao_pyramid);
+	glBindVertexArray(vao_square);
 
 	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_positionPyramid);
+	glGenBuffers(1, &vbo_positionSquare);
 
 	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionPyramid);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSquare);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_position), pyramid_position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(square_position), square_position, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -581,7 +562,8 @@ int initialize(void)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// VBO(Vertex Buffer Object) for color
-	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
+
+	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 0.0f, 0.0f, 1.0f);
 
 	glBindVertexArray(0);
 
@@ -651,15 +633,10 @@ void display(void)
 	// step 1 : use shader program
 	glUseProgram(shaderProgramObject);
 
-	// Pyramid
+	// Triangle
 	// Transformation
 	mat4 modelViewMatrix = mat4::identity();
-	mat4 translationMatrix = mat4::identity();
-	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
-	mat4 rotationMatrix = mat4::identity();
-	rotationMatrix = vmath::rotate(pAngle, 0.0f, 1.0f, 0.0f);
-
-	modelViewMatrix = translationMatrix * rotationMatrix;
+	modelViewMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -668,10 +645,10 @@ void display(void)
 	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao_pyramid);
+	glBindVertexArray(vao_square);
 
 	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLES, 0, 12);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	// unbind vao 
 	glBindVertexArray(0);
@@ -684,12 +661,7 @@ void display(void)
 void update(void)
 {
 	//code
-	//pyramid rotate
-	pAngle = pAngle + 1.0f;
-	if (pAngle >= 360.0f)
-	{
-		pAngle = pAngle - 360.0f;
-	}
+
 }
 
 void uninitialize(void)
@@ -740,20 +712,19 @@ void uninitialize(void)
 		shaderProgramObject = 0;
 	}
 
-	// pyramid 
-
+	// square 
 	// delete vbo for position
-	if (vbo_positionPyramid)
+	if (vbo_positionSquare)
 	{
-		glDeleteBuffers(1, &vbo_positionPyramid);
-		vbo_positionPyramid = 0;
+		glDeleteBuffers(1, &vbo_positionSquare);
+		vbo_positionSquare = 0;
 	}
 
 	// delete vao 
-	if (vao_pyramid)
+	if (vao_square)
 	{
-		glDeleteVertexArrays(1, &vao_pyramid);
-		vao_pyramid = 0;
+		glDeleteVertexArrays(1, &vao_square);
+		vao_square = 0;
 	}
 
 	
