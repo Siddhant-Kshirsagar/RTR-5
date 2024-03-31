@@ -793,13 +793,6 @@ void uninitialize(void)
 
 	// square 
 
-	//// delete vbo for color 
-	//if (vbo_colorTriangle)
-	//{
-	//	glDeleteBuffers(1, &vbo_colorTriangle);
-	//	vbo_colorTriangle = 0;
-	//}
-
 	// delete vbo for position
 	if (vbo_positionSquare)
 	{

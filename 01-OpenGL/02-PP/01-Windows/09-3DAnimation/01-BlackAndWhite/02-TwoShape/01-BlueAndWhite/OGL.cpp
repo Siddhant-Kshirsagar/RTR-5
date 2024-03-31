@@ -43,12 +43,10 @@ GLuint shaderProgramObject = 0;
 // for pyramid
 GLuint vao_pyramid = 0;
 GLuint vbo_positionPyramid = 0;
-GLuint vbo_colorPyramid = 0;
 
 // for cube
 GLuint vao_cube = 0;
 GLuint vbo_positionCube = 0;
-GLuint vbo_colorCube = 0;
 
 GLuint mvpMatrixUniform = 0;
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
@@ -625,7 +623,7 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// VBO(Vertex Buffer Object) for color
+	//for color
 	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
 
 	glBindVertexArray(0);
@@ -651,7 +649,7 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// VBO(Vertex Buffer Object) for color
+	//for color
 	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
 
 	glBindVertexArray(0);

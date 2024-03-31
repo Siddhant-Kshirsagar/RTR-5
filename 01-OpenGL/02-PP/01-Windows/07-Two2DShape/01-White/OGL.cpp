@@ -43,7 +43,6 @@ GLuint shaderProgramObject = 0;
 // for triangle
 GLuint vao_triangle = 0;
 GLuint vbo_positionTriangle = 0;
-GLuint vbo_colorTriangle = 0;
 
 // for square
 GLuint vao_square = 0;
@@ -545,14 +544,6 @@ int initialize(void)
 		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
 	};
 
-	// color array inline initialization
-	const GLfloat triangle_color[] =
-	{
-		1.0f,0.0f,0.0f, // glColor3f() 1st  call for triangle
-		0.0f,1.0f,0.0f, // glColor3f() 2nd  call for triangle
-		0.0f,0.0f,1.0f // glColor3f() 3rd  call for triangle
-	};
-
 	const GLfloat square_position[] =
 	{
 		1.0f,1.0f,0.0f, // glVertex3f() 1st call for square
@@ -582,21 +573,8 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// VBO(Vertex Buffer Object) for color
-
+	// for color
 	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
-	//glGenBuffers(1, &vbo_colorTriangle);
-
-	////  bind with VBO( Vertex Buffer Object) for color
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo_colorTriangle);
-
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_color), triangle_color, GL_STATIC_DRAW);
-
-	//glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 
@@ -621,8 +599,7 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// VBO(Vertex Buffer Object) for color
-
+	// for color
 	glVertexAttrib3f(AMC_ATTRIBUTE_COLOR, 1.0f, 1.0f, 1.0f);
 
 	glBindVertexArray(0);
@@ -794,14 +771,6 @@ void uninitialize(void)
 	}
 
 	// square 
-
-	//// delete vbo for color 
-	//if (vbo_colorTriangle)
-	//{
-	//	glDeleteBuffers(1, &vbo_colorTriangle);
-	//	vbo_colorTriangle = 0;
-	//}
-
 	// delete vbo for position
 	if (vbo_positionSquare)
 	{
@@ -819,14 +788,6 @@ void uninitialize(void)
 
 
 	// triangle 
-	
-	// delete vbo for color 
-	if (vbo_colorTriangle)
-	{
-		glDeleteBuffers(1, &vbo_colorTriangle);
-		vbo_colorTriangle = 0;
-	}
-
 	// delete vbo for position
 	if (vbo_positionTriangle)
 	{
