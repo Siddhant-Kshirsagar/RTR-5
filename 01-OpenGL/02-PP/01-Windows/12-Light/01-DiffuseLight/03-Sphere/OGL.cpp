@@ -11,6 +11,7 @@
 using namespace vmath;
 
 #include"OGL.h"
+#include"Sphere.h"
 
 //OpenGl Related Global variable
 HDC ghdc = NULL;
@@ -23,6 +24,7 @@ HGLRC ghrc = NULL;
 // Link With OpenGL Library
 #pragma comment(lib,"glew32.lib")
 #pragma comment(lib,"OpenGL32.lib")
+#pragma comment(lib,"Sphere.lib")
 
 //Global function declaration
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -40,10 +42,20 @@ FILE *gpFILE = NULL;
 // OpenGL related variable 
 GLuint shaderProgramObject = 0;
 
-// for cube
-GLuint vao_cube = 0;
-GLuint vbo_positionCube = 0;
-GLuint vbo_normal = 0;
+// for sphere
+GLuint vao_sphere = 0;
+GLuint vbo_positionSphere = 0;
+GLuint vbo_normalSphere = 0;
+GLuint vbo_elementSphere = 0;
+GLuint vbo_texureSphere = 0;
+
+float sphere_vertices[1146];
+float sphere_normals[1146];
+float sphere_textures[764];
+unsigned short sphere_elements[2280];
+
+GLuint gNumVertices;
+GLuint gNumElements;
 
 GLuint mvpMatrixUniform = 0;
 GLuint modelViewMatrixUniform = 0;
@@ -54,7 +66,6 @@ GLuint lightPositionUniform = 0;
 GLuint keyPressedUniform = 0;
 
 BOOL bLightingEnable = FALSE;
-BOOL bAnimationEnable = FALSE;
 
 GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
 GLfloat materialDiffuse[] = { 0.5f,0.5f,0.5f,1.0f };
@@ -62,8 +73,6 @@ GLfloat lightPosition[] = { 0.0f,0.0f,2.0f,1.0f };
 
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
-
-GLfloat cAngle = 0.0f;
 
 enum
 {
@@ -184,11 +193,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 				//Render
 				display();
 
-				if (bAnimationEnable == TRUE)
-				{
-					//Update
-					update();
-				}
+				//Update
+				update();
 
 			}
 
@@ -250,17 +256,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			{
 				ToggleFullScreen();
 				gbFullscreen = FALSE;
-			}
-			break;
-		case 'A':
-		case 'a':
-			if (bAnimationEnable == FALSE)
-			{
-				bAnimationEnable = TRUE;
-			}
-			else
-			{
-				bAnimationEnable = FALSE;
 			}
 			break;
 		case 'L':
@@ -416,7 +411,7 @@ int initialize(void)
 		"mat3 normalMatrix = mat3(transpose(inverse(uModelViewMatrix)));" \
 		"vec3 n = normalize(normalMatrix * aNormal);" \
 		"vec3 s = normalize(vec3(uLightPosition-eyePosition));" \
-		"oDiffuseLight = uld * ukd * dot(s,n);" \
+		"oDiffuseLight = uld * ukd * max(dot(s,n),0.0);" \
 		"}"\
 		"else" \
 		"{" \
@@ -597,7 +592,6 @@ int initialize(void)
 	}
 
 	// get shader uniform location
-
 	modelViewMatrixUniform = glGetUniformLocation(shaderProgramObject, "uModelViewMatrix");
 	projectionMatrixUniform = glGetUniformLocation(shaderProgramObject, "uProjectionMatrix");
 	ldUniform = glGetUniformLocation(shaderProgramObject, "uld");
@@ -607,99 +601,22 @@ int initialize(void)
 
 
 	// step 16: declare position and color array 
-	const GLfloat cube_position[] =
-	{
-		// front
-		 1.0f,  1.0f,  1.0f, // top-right of front
-		-1.0f,  1.0f,  1.0f, // top-left of front
-		-1.0f, -1.0f,  1.0f, // bottom-left of front
-		 1.0f, -1.0f,  1.0f, // bottom-right of front
 
-		// right
-		 1.0f,  1.0f, -1.0f, // top-right of right
-		 1.0f,  1.0f,  1.0f, // top-left of right
-		 1.0f, -1.0f,  1.0f, // bottom-left of right
-		 1.0f, -1.0f, -1.0f, // bottom-right of right
+	getSphereVertexData(sphere_vertices, sphere_normals, sphere_textures, sphere_elements);
+	gNumVertices = getNumberOfSphereVertices();
+	gNumElements = getNumberOfSphereElements();
 
-		// back
-		 1.0f,  1.0f, -1.0f, // top-right of back
-		-1.0f,  1.0f, -1.0f, // top-left of back
-		-1.0f, -1.0f, -1.0f, // bottom-left of back
-		 1.0f, -1.0f, -1.0f, // bottom-right of back
-
-		// left
-		-1.0f,  1.0f,  1.0f, // top-right of left
-		-1.0f,  1.0f, -1.0f, // top-left of left
-		-1.0f, -1.0f, -1.0f, // bottom-left of left
-		-1.0f, -1.0f,  1.0f, // bottom-right of left
-
-		// top
-		 1.0f,  1.0f, -1.0f, // top-right of top
-		-1.0f,  1.0f, -1.0f, // top-left of top
-		-1.0f,  1.0f,  1.0f, // bottom-left of top
-		 1.0f,  1.0f,  1.0f, // bottom-right of top
-
-		// bottom
-		 1.0f, -1.0f,  1.0f, // top-right of bottom
-		-1.0f, -1.0f,  1.0f, // top-left of bottom
-		-1.0f, -1.0f, -1.0f, // bottom-left of bottom
-		 1.0f, -1.0f, -1.0f, // bottom-right of bottom
-	};
-
-	GLfloat cube_Normals[] =
-	{
-		// front surface
-		0.0f,  0.0f,  1.0f, // top-right of front
-		0.0f,  0.0f,  1.0f, // top-left of front
-		0.0f,  0.0f,  1.0f, // bottom-left of front
-		0.0f,  0.0f,  1.0f, // bottom-right of front
-
-		// right surface
-		1.0f,  0.0f,  0.0f, // top-right of right
-		1.0f,  0.0f,  0.0f, // top-left of right
-		1.0f,  0.0f,  0.0f, // bottom-left of right
-		1.0f,  0.0f,  0.0f, // bottom-right of right
-
-		// back surface
-		0.0f,  0.0f, -1.0f, // top-right of back
-		0.0f,  0.0f, -1.0f, // top-left of back
-		0.0f,  0.0f, -1.0f, // bottom-left of back
-		0.0f,  0.0f, -1.0f, // bottom-right of back
-
-		// left surface
-	   -1.0f,  0.0f,  0.0f, // top-right of left
-	   -1.0f,  0.0f,  0.0f, // top-left of left
-	   -1.0f,  0.0f,  0.0f, // bottom-left of left
-	   -1.0f,  0.0f,  0.0f, // bottom-right of left
-
-		// top surface
-		0.0f,  1.0f,  0.0f, // top-right of top
-		0.0f,  1.0f,  0.0f, // top-left of top
-		0.0f,  1.0f,  0.0f, // bottom-left of top
-		0.0f,  1.0f,  0.0f, // bottom-right of top
-
-		// bottom surface
-		0.0f, -1.0f,  0.0f, // top-right of bottom
-		0.0f, -1.0f,  0.0f, // top-left of bottom
-		0.0f, -1.0f,  0.0f, // bottom-left of bottom
-		0.0f, -1.0f,  0.0f, // bottom-right of bottom
-	};
-
-
-	// for cube
+	// for sphere
 	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao_cube);
+	glGenVertexArrays(1, &vao_sphere);
 
 	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao_cube);
+	glBindVertexArray(vao_sphere);
 
-	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_positionCube);
-
-	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionCube);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_position), cube_position, GL_STATIC_DRAW);
+	// position vbo
+	glGenBuffers(1, &vbo_positionSphere);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSphere);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphere_vertices), sphere_vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -707,18 +624,36 @@ int initialize(void)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// vbo for normal
-	glGenBuffers(1, &vbo_normal);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_normal);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_Normals), cube_Normals, GL_STATIC_DRAW);
+	// normal vbo
+	glGenBuffers(1, &vbo_normalSphere);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_normalSphere);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphere_normals), sphere_normals, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	glEnableVertexAttribArray(AMC_ATTRIBUTE_NORMAL);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// texture vbo
+	glGenBuffers(1, &vbo_texureSphere);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_texureSphere);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphere_textures), sphere_textures, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_TEXCOORD, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_TEXCOORD);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// element vbo
+	glGenBuffers(1, &vbo_elementSphere);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere_elements), sphere_elements, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// unbind vao
+	glBindVertexArray(0);
 
 	glBindVertexArray(0);
 
@@ -794,26 +729,9 @@ void display(void)
 
 	// Transformation
 	mat4 translationMatrix = mat4::identity();
-	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
+	translationMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
 
-	// rotation matrix
-	mat4 rotationMatrix1 = mat4::identity();
-	rotationMatrix1 = vmath::rotate(cAngle, 1.0f, 0.0f, 0.0f);
-
-	mat4 rotationMatrix2 = mat4::identity();
-	rotationMatrix2 = vmath::rotate(cAngle, 0.0f, 1.0f, 0.0f);
-
-	mat4 rotationMatrix3 = mat4::identity();
-	rotationMatrix3 = vmath::rotate(cAngle, 0.0f, 0.0f, 1.0f);
-
-	mat4 rotationMatrix = mat4::identity();
-	rotationMatrix = rotationMatrix1 * rotationMatrix2 * rotationMatrix3;
-
-	// scale matrix
-	mat4 scaleMatrix = mat4::identity();
-	scaleMatrix = vmath::scale(0.75f, 0.75f, 0.75f);
-
-	modelViewMatrix = translationMatrix * scaleMatrix * rotationMatrix;
+	modelViewMatrix = translationMatrix;
 
 	// push above mvp(model view projection) into vertex shader's mvp uniform
 	glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
@@ -821,7 +739,8 @@ void display(void)
 	glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao_cube);
+	// *** bind vao ***
+	glBindVertexArray(vao_sphere);
 
 	if (bLightingEnable == TRUE)
 	{
@@ -835,15 +754,12 @@ void display(void)
 		glUniform1i(keyPressedUniform, 0);
 	}
 
-	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-	glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-	glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
-	glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
-	glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
-	glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
+	// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
 
-	// unbind vao 
+	glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+	// *** unbind vao ***
 	glBindVertexArray(0);
 
 	glUseProgram(0);
@@ -854,12 +770,7 @@ void display(void)
 void update(void)
 {
 	//code
-	//cube rotate
-	cAngle = cAngle - 1.0f;
-	if (cAngle <= 0.0f)
-	{
-		cAngle = cAngle + 360.0f;
-	}
+
 }
 
 void uninitialize(void)
@@ -910,25 +821,39 @@ void uninitialize(void)
 		shaderProgramObject = 0;
 	}
 
-	// cube 
+	// sphere 
 	// 
-	if (vbo_normal)
+ 	// delete vbo for texture
+	if (vbo_texureSphere)
 	{
-		glDeleteBuffers(1, &vbo_normal);
-		vbo_normal = 0;
+		glDeleteBuffers(1, &vbo_texureSphere);
+		vbo_texureSphere = 0;
+	}
+	// delete vbo for element
+	if (vbo_elementSphere)
+	{
+		glDeleteBuffers(1, &vbo_elementSphere);
+		vbo_elementSphere = 0;
+	}
+
+	// delete vbo for normal
+	if (vbo_normalSphere)
+	{
+		glDeleteBuffers(1, &vbo_normalSphere);
+		vbo_normalSphere = 0;
 	}
 	// delete vbo for position
-	if (vbo_positionCube)
+	if (vbo_positionSphere)
 	{
-		glDeleteBuffers(1, &vbo_positionCube);
-		vbo_positionCube = 0;
+		glDeleteBuffers(1, &vbo_positionSphere);
+		vbo_positionSphere = 0;
 	}
 
 	// delete vao 
-	if (vao_cube)
+	if (vao_sphere)
 	{
-		glDeleteVertexArrays(1, &vao_cube);
-		vao_cube = 0;
+		glDeleteVertexArrays(1, &vao_sphere);
+		vao_sphere = 0;
 	}
 	
 	// If Application is exitting in fullscreen mode

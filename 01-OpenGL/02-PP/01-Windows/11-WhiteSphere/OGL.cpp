@@ -56,20 +56,11 @@ unsigned short sphere_elements[2280];
 unsigned int gNumVertices;
 unsigned int gNumElements;
 
-GLuint mvpMatrixUniform = 0;
 GLuint modelViewMatrixUniform = 0;
 GLuint projectionMatrixUniform = 0;
-GLuint ldUniform = 0;
-GLuint kdUniform = 0; // for material 
-GLuint lightPositionUniform = 0;
-GLuint keyPressedUniform = 0;
 
 BOOL bLightingEnable = FALSE;
 BOOL bAnimationEnable = FALSE;
-
-GLfloat lightDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
-GLfloat materialDiffuse[] = { 0.5f,0.5f,0.5f,1.0f };
-GLfloat lightPosition[] = { 0.0f,0.0f,2.0f,1.0f };
 
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
@@ -592,6 +583,12 @@ int initialize(void)
 	gNumVertices = getNumberOfSphereVertices();
 	gNumElements = getNumberOfSphereElements();
 
+	// for sphere
+	// step 17 : create VAO (vertex array object) 
+	glGenVertexArrays(1, &vao_sphere);
+
+	// step 18 : bind with VAO (vertex array object)
+	glBindVertexArray(vao_sphere);
 
 	// position vbo
 	glGenBuffers(1, &vbo_positionSphere);
@@ -809,6 +806,7 @@ void uninitialize(void)
 		glDeleteBuffers(1, &vbo_normalSphere);
 		vbo_normalSphere = 0;
 	}
+
 	// delete vbo for position
 	if (vbo_positionSphere)
 	{
