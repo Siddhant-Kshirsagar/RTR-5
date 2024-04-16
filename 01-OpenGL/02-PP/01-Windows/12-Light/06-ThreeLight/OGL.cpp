@@ -94,8 +94,8 @@ struct LIGHT
 struct LIGHT light[3];
 
 GLfloat materialAmbient[] = { 0.0f,0.0f,0.0f,1.0f };
-GLfloat materialDiffuse[] = { 0.5f,0.2f,0.7f,1.0f };
-GLfloat materialSpecular[] = { 0.7f, 0.7f, 0.7f,1.0f };
+GLfloat materialDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
+GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f,1.0f };
 GLfloat materialShininess = 128.0f;
 
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
