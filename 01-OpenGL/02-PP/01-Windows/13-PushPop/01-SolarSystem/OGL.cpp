@@ -53,6 +53,7 @@ GLuint vao_sphere = 0;
 GLuint vbo_positionSphere = 0;
 GLuint vbo_normalSphere = 0;
 GLuint vbo_elementSphere = 0;
+GLuint vbo_colorSphere = 0;
 
 float sphere_vertices[1146];
 float sphere_normals[1146];
@@ -64,6 +65,7 @@ unsigned int gNumElements;
 
 GLuint modelViewMatrixUniform = 0;
 GLuint projectionMatrixUniform = 0;
+GLuint colorUniform = 0; 
 
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
 mat4 perspectiveProjectionMatrix;
@@ -73,7 +75,8 @@ int matrixStackTop = -1;
 
 int year = 0;
 int day = 0;
-
+int mDay = 0;
+int mYear = 0;
 
 
 enum
@@ -273,6 +276,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case 'd':
 			day = (day - 3) % 360;
 			break;
+		case 'M':
+			mDay = (mDay + 3) % 360;
+			break;
+		case 'm':
+			mDay = (mDay - 3) % 360;
+			break;
+		case 'N':
+			mYear = (mYear + 3) % 360;
+			break;
+		case 'n':
+			mYear = (mYear - 3) % 360;
+			break;
 		default:
 			break;
 		}
@@ -461,10 +476,11 @@ int initialize(void)
 	const GLchar *fragmentShaderCode =
 		"#version 460 core" \
 		"\n" \
+		"uniform vec4 uColor;" \
 		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = vec4(1.0,1.0,1.0,1.0);" \
+		"FragColor = uColor;" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -525,6 +541,8 @@ int initialize(void)
 	// step 13 : bind attribute location with the shader program object
 	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
 
+	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
+
 	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_NORMAL, "aNormal");
 
 	// step 14 : link the shader program
@@ -572,6 +590,8 @@ int initialize(void)
 	// get shader uniform location
 	modelViewMatrixUniform = glGetUniformLocation(shaderProgramObject, "uModelViewMatrix");
 	projectionMatrixUniform = glGetUniformLocation(shaderProgramObject, "uProjectionMatrix");
+	colorUniform = glGetUniformLocation(shaderProgramObject, "uColor");
+
 
 
 	// step 16: declare position and color array 
@@ -597,6 +617,14 @@ int initialize(void)
 	glEnableVertexAttribArray(AMC_ATTRIBUTE_POSITION);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//// color vbo
+	//glGenBuffers(1, &vbo_colorSphere);
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo_positionSphere);
+	//glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+	//glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// normal vbo
 	glGenBuffers(1, &vbo_normalSphere);
@@ -682,6 +710,8 @@ void resize(int width, int height)
 
 void display(void)
 {
+	// variable declaration
+	GLfloat colorArray[4];
 	//code
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -697,31 +727,47 @@ void display(void)
 	mat4 scaleMatrix = mat4::identity();
 	mat4 modelMatrix = mat4::identity();
 
+	//mat4 lookAt = mat4::identity();
+	//lookAt = vmath::lookat(vec3(0.0f, 0.0f, -5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
 	translationMatrix = vmath::translate(0.0f, 0.0f, -5.0f);
 
-	modelMatrix = translationMatrix;
+	//modelMatrix = translationMatrix;
 
 	pushMatrix(modelMatrix);
 	{
 		modelMatrix = modelMatrix * translationMatrix;
 
-		modelViewMatrix = viewMatrix * modelMatrix;
+		pushMatrix(modelMatrix);
+		{
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(1.5f, 1.5f, 1.5f);
 
-		// draw arm
-// push above mvp(model view projection) into vertex shader's mvp uniform
-		glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+			modelMatrix = modelMatrix * scaleMatrix;
 
-		glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+			modelViewMatrix = viewMatrix * modelMatrix;
 
-		// *** bind vao ***
-		glBindVertexArray(vao_sphere);
+			// draw arm
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 
-		// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
-		glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+			glUniform4f(colorUniform, 1.0f, 0.5f, 0.0f, 1.0f);
 
-		// *** unbind vao ***
-		glBindVertexArray(0);
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
 
 		// do transformation for earth
 		rotationMatrix = vmath::rotate((GLfloat)year, 0.0f, 1.0f, 0.0f);  // year rotation
@@ -737,10 +783,10 @@ void display(void)
 		modelMatrix = modelMatrix * rotationMatrix;
 		pushMatrix(modelMatrix);
 		{
-			rotationMatrix = mat4::identity();
-			rotationMatrix = vmath::rotate((GLfloat)90.0f, 1.0f, 0.0f, 0.0f);
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
 
-			modelMatrix = modelMatrix * rotationMatrix;
+			modelMatrix = modelMatrix * scaleMatrix;
 
 			modelViewMatrix = viewMatrix * modelMatrix;
 
@@ -748,9 +794,12 @@ void display(void)
 			// push above mvp(model view projection) into vertex shader's mvp uniform
 			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 
+			glUniform4f(colorUniform, 0.4f, 0.9f, 1.0f, 1.0f);
+
 			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
 
 			// step 2 : bind with VAO(vertex array object)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			// *** bind vao ***
 			glBindVertexArray(vao_sphere);
 
@@ -763,20 +812,27 @@ void display(void)
 		}
 		modelMatrix = popMatrix();
 
-		translationMatrix = mat4::identity();
-		translationMatrix = vmath::translate(1.0f, 0.0f, 0.0f);
+		// transformation of moon
 
 		rotationMatrix = mat4::identity();
-		rotationMatrix = vmath::rotate((GLfloat)day, 0.0f, 0.0f, 1.0f);
+		rotationMatrix = vmath::rotate((GLfloat)mYear, 0.0f, 1.0f, 0.0f);
 
 		translationMatrix = mat4::identity();
-		translationMatrix = vmath::translate(1.0f, 0.0f, 0.0f);
+		translationMatrix = vmath::translate(0.6f, 0.0f, 0.0f);
 
-		modelMatrix = modelMatrix * translationMatrix * rotationMatrix * translationMatrix;
+		modelMatrix = modelMatrix * rotationMatrix * translationMatrix;
+
+		rotationMatrix = mat4::identity();
+		rotationMatrix = vmath::rotate((GLfloat)mDay, 0.0f, 1.0f, 0.0f);
+
+		modelMatrix = modelMatrix * rotationMatrix;
 		
 		pushMatrix(modelMatrix);
 		{
-			modelMatrix = modelMatrix;
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.25f,0.25f,0.25f);
+
+			modelMatrix = modelMatrix * scaleMatrix;
 
 			modelViewMatrix = viewMatrix * modelMatrix;
 
@@ -784,9 +840,12 @@ void display(void)
 			// push above mvp(model view projection) into vertex shader's mvp uniform
 			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 
+			glUniform4f(colorUniform, 1.0f, 1.0f, 1.0f, 1.0f);
+
 			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
 
 			// step 2 : bind with VAO(vertex array object)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			// *** bind vao ***
 			glBindVertexArray(vao_sphere);
 
@@ -800,8 +859,6 @@ void display(void)
 		modelMatrix = popMatrix();
 	}
 	modelMatrix = popMatrix();
-
-	
 
 	glUseProgram(0);
 

@@ -73,8 +73,7 @@ int matrixStackTop = -1;
 
 int sholder = 0;
 int elbow = 0;
-
-
+int wrist = 0;
 
 enum
 {
@@ -273,6 +272,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case 'e':
 			elbow = (elbow - 3) % 360;
 			break;
+		case 'W':
+			wrist = (wrist + 3) % 360;
+			break;
+		case 'w':
+			wrist = (wrist - 3) % 360;
+			break;
 		default:
 			break;
 		}
@@ -464,7 +469,7 @@ int initialize(void)
 		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = vec4(1.0,1.0,1.0,1.0);" \
+		"FragColor = vec4(0.8f, 0.6f, 0.4f,1.0);" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -743,10 +748,12 @@ void display(void)
 		rotationMatrix = mat4::identity();
 		rotationMatrix = vmath::rotate((GLfloat)elbow, 0.0f, 0.0f, 1.0f);
 
+		modelMatrix = modelMatrix * translationMatrix * rotationMatrix;
+
 		translationMatrix = mat4::identity();
 		translationMatrix = vmath::translate(1.0f, 0.0f, 0.0f);
 
-		modelMatrix = modelMatrix * translationMatrix * rotationMatrix * translationMatrix;
+		modelMatrix = modelMatrix * translationMatrix;
 		
 		pushMatrix(modelMatrix);
 		{
@@ -775,6 +782,216 @@ void display(void)
 			glBindVertexArray(0);
 		}
 		modelMatrix = popMatrix();
+
+		// draw palm of hand
+		translationMatrix = mat4::identity();
+		translationMatrix = vmath::translate(1.0f, 0.0f, 0.0f);
+
+		rotationMatrix = mat4::identity();
+		rotationMatrix = vmath::rotate((GLfloat)wrist	, 0.0f, 0.0f, 1.0f);
+
+		modelMatrix = modelMatrix * translationMatrix * rotationMatrix;
+
+		translationMatrix = mat4::identity();
+		translationMatrix = vmath::translate(0.25f, 0.0f, 0.0f);
+
+		modelMatrix = modelMatrix * translationMatrix;
+
+		pushMatrix(modelMatrix);
+		{
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+
+			modelMatrix = modelMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// draw palm of hand
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
+		// draw thumb
+		pushMatrix(modelMatrix);
+		{
+			rotationMatrix = mat4::identity();
+			rotationMatrix = vmath::rotate(90.0f, 0.0f, 0.0f, 1.0f);
+
+			translationMatrix = mat4::identity();
+			translationMatrix = vmath::translate(0.45f, 0.0f, 0.0f);
+
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.4f, 0.2f, 0.3f);
+
+			modelMatrix = modelMatrix * rotationMatrix * translationMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
+		// draw index finger
+		pushMatrix(modelMatrix);
+		{
+			rotationMatrix = mat4::identity();
+			rotationMatrix = vmath::rotate(10.0f, 0.0f, 0.0f, 1.0f);
+
+			translationMatrix = mat4::identity();
+			translationMatrix = vmath::translate(0.45f, 0.15f, 0.0f);
+
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.5f, 0.15f, 0.25f);
+
+			modelMatrix = modelMatrix * rotationMatrix * translationMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
+		// draw middle finger
+		pushMatrix(modelMatrix);
+		{
+			translationMatrix = mat4::identity();
+			translationMatrix = vmath::translate(0.55f, 0.05f, 0.0f);
+
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.6f, 0.15f, 0.25f);
+
+			modelMatrix = modelMatrix * translationMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
+		// draw ring finger
+		pushMatrix(modelMatrix);
+		{
+			rotationMatrix = mat4::identity();
+			rotationMatrix = vmath::rotate(-10.0f, 0.0f, 0.0f, 1.0f);
+
+			translationMatrix = mat4::identity();
+			translationMatrix = vmath::translate(0.5f, -0.05f, 0.0f);
+
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.5f, 0.15f, 0.25f);
+
+			modelMatrix = modelMatrix * rotationMatrix * translationMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
+		// draw pinky finger
+		pushMatrix(modelMatrix);
+		{
+			rotationMatrix = mat4::identity();
+			rotationMatrix = vmath::rotate(-20.0f, 0.0f, 0.0f, 1.0f);
+
+			translationMatrix = mat4::identity();
+			translationMatrix = vmath::translate(0.4f, -0.15f, 0.0f);
+
+			scaleMatrix = mat4::identity();
+			scaleMatrix = vmath::scale(0.35f, 0.1f, 0.2f);
+
+			modelMatrix = modelMatrix * rotationMatrix * translationMatrix * scaleMatrix;
+
+			modelViewMatrix = viewMatrix * modelMatrix;
+
+			// push above mvp(model view projection) into vertex shader's mvp uniform
+			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
+
+			glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+			// step 2 : bind with VAO(vertex array object)
+			// *** bind vao ***
+			glBindVertexArray(vao_sphere);
+
+			// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
+			glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+			// *** unbind vao ***
+			glBindVertexArray(0);
+		}
+		modelMatrix = popMatrix();
+
 	}
 	modelMatrix = popMatrix();
 
