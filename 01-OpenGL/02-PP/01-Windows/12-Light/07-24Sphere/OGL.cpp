@@ -42,7 +42,6 @@ BOOL gbActive = FALSE;
 FILE *gpFILE = NULL;
 
 // OpenGL related variable 
-GLuint shaderProgramObject_PV = 0;
 GLuint shaderProgramObject_PF = 0;
 
 // for sphere
@@ -91,7 +90,7 @@ struct LIGHT
 	vec4 position;
 };
 
-struct LIGHT light[3];
+struct LIGHT light[1];
 
 struct MATERIAL
 {
@@ -456,10 +455,10 @@ int initialize(void)
 			"uniform mat4 uModelMatrix;" \
 			"uniform mat4 uViewMatrix;" \
 			"uniform mat4 uProjectionMatrix;" \
-			"uniform vec4 uLightPosition[3];" \
+			"uniform vec4 uLightPosition[1];" \
 			"uniform int uKeyPressed;" \
 			"out vec3 oTransformedNormals;" \
-			"out vec3 oLightDirection[3];" \
+			"out vec3 oLightDirection[1];" \
 			"out vec3 oViewerVector;" \
 			"void main(void)" \
 			"{" \
@@ -468,16 +467,12 @@ int initialize(void)
 			"vec4 eyeCoordinates = uViewMatrix * uModelMatrix * aPosition;" \
 			"oTransformedNormals = mat3(uViewMatrix * uModelMatrix) * aNormal;" \
 			"oLightDirection[0] = vec3(uLightPosition[0]-eyeCoordinates);" \
-			"oLightDirection[1] = vec3(uLightPosition[1]-eyeCoordinates);" \
-			"oLightDirection[2] = vec3(uLightPosition[2]-eyeCoordinates);" \
 			"oViewerVector = -eyeCoordinates.xyz;" \
 			"}"\
 			"else" \
 			"{" \
 			"oTransformedNormals = vec3(0.0,0.0,0.0);" \
 			"oLightDirection[0] = vec3(0.0,0.0,0.0);" \
-			"oLightDirection[1] = vec3(0.0,0.0,0.0);" \
-			"oLightDirection[2] = vec3(0.0,0.0,0.0);" \
 			"oViewerVector = vec3(0.0,0.0,0.0);" \
 			"}" \
 			"gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" \
@@ -538,11 +533,11 @@ int initialize(void)
 			"#version 460 core" \
 			"\n" \
 			"in vec3 oTransformedNormals;" \
-			"in vec3 oLightDirection[3];" \
+			"in vec3 oLightDirection[1];" \
 			"in vec3 oViewerVector;" \
-			"uniform vec3 uLightAmbient[3];" \
-			"uniform vec3 uLightDiffuse[3];" \
-			"uniform vec3 uLightSpecular[3];" \
+			"uniform vec3 uLightAmbient[1];" \
+			"uniform vec3 uLightDiffuse[1];" \
+			"uniform vec3 uLightSpecular[1];" \
 			"uniform vec3 uMaterialAmbient;" \
 			"uniform vec3 uMaterialDiffuse;" \
 			"uniform vec3 uMaterialSpecular;" \
@@ -552,18 +547,16 @@ int initialize(void)
 			"void main(void)" \
 			"{" \
 			"vec3 phongADSLight;" \
-			"vec3 normalizeLightDirection[3];" \
-			"vec3 lightAmbient[3];" \
-			"vec3 lightDirection[3];" \
-			"vec3 lightDiffuse[3];" \
-			"vec3 reflectionVector[3];" \
-			"vec3 lightSpecular[3];" \
+			"vec3 normalizeLightDirection[1];" \
+			"vec3 lightAmbient[1];" \
+			"vec3 lightDirection[1];" \
+			"vec3 lightDiffuse[1];" \
+			"vec3 reflectionVector[1];" \
+			"vec3 lightSpecular[1];" \
 			"if(uKeyPressed == 1)" \
 			"{" \
 			"vec3 normalizeTransformedNormals = normalize(oTransformedNormals);" \
 			"normalizeLightDirection[0] = normalize(oLightDirection[0]);" \
-			"normalizeLightDirection[1] = normalize(oLightDirection[1]);" \
-			"normalizeLightDirection[2] = normalize(oLightDirection[2]);" \
 			"vec3 normalizeViewerVector = normalize(oViewerVector);" \
 			"for(int i = 0; i<1; i++)" \
 			"{" \
@@ -692,18 +685,6 @@ int initialize(void)
 		lightDiffuseUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uLightDiffuse[0]");
 		lightSpecularUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uLightSpecular[0]");
 		lightPositionUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uLightPosition[0]");
-
-
-		lightAmbientUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uLightAmbient[1]");
-		lightDiffuseUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uLightDiffuse[1]");
-		lightSpecularUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uLightSpecular[1]");
-		lightPositionUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uLightPosition[1]");
-
-		lightAmbientUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uLightAmbient[2]");
-		lightDiffuseUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uLightDiffuse[2]");
-		lightSpecularUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uLightSpecular[2]");
-		lightPositionUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uLightPosition[2]");
-
 
 		materialAmbientUniform = glGetUniformLocation(shaderProgramObject_PF, "uMaterialAmbient");
 		materialDiffuseUniform = glGetUniformLocation(shaderProgramObject_PF, "uMaterialDiffuse");
@@ -893,16 +874,6 @@ void display(void)
 			glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 			glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-			glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-			glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-			glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-			glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-			glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-			glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-			glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-			glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 			glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 			glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 			glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -982,16 +953,6 @@ void display(void)
 			glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 			glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-			glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-			glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-			glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-			glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-			glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-			glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-			glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-			glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 			glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 			glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 			glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1070,16 +1031,6 @@ void display(void)
 			glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 			glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-			glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-			glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-			glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-			glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-			glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-			glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-			glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-			glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 			glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 			glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 			glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1157,16 +1108,6 @@ void display(void)
 			glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 			glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 			glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-			glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-			glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-			glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-			glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-			glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-			glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-			glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-			glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 			glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 			glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -1247,16 +1188,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1335,16 +1266,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1422,16 +1343,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -1512,16 +1423,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1599,16 +1500,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -1688,16 +1579,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1775,16 +1656,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -1864,16 +1735,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -1951,16 +1812,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2040,16 +1891,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -2127,16 +1968,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2216,16 +2047,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -2303,16 +2124,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2392,16 +2203,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -2479,16 +2280,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2568,16 +2359,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -2655,16 +2436,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2744,16 +2515,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -2831,16 +2592,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -2920,16 +2671,6 @@ void display(void)
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
 
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
-
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
 				glUniform3fv(materialSpecularUniform, 1, materialSpecular);
@@ -3007,16 +2748,6 @@ void display(void)
 				glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
 				glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
 				glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-				glUniform3fv(lightAmbientUniform[1], 1, light[1].ambient);
-				glUniform3fv(lightDiffuseUniform[1], 1, light[1].diffuse);
-				glUniform3fv(lightSpecularUniform[1], 1, light[1].specular);
-				glUniform4fv(lightPositionUniform[1], 1, light[1].position);
-
-				glUniform3fv(lightAmbientUniform[2], 1, light[2].ambient);
-				glUniform3fv(lightDiffuseUniform[2], 1, light[2].diffuse);
-				glUniform3fv(lightSpecularUniform[2], 1, light[2].specular);
-				glUniform4fv(lightPositionUniform[2], 1, light[2].position);
 
 				glUniform3fv(materialAmbientUniform, 1, materialAmbient);
 				glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
@@ -3148,46 +2879,6 @@ void uninitialize(void)
 		glDeleteProgram(shaderProgramObject_PF);
 
 		shaderProgramObject_PF = 0;
-	}
-
-	if (shaderProgramObject_PV)
-	{
-		// step 1 : use shader Program object
-		glUseProgram(shaderProgramObject_PV);
-
-		// step 2 : get number of attached shader
-		GLint numShader = 0;
-
-		glGetProgramiv(shaderProgramObject_PV, GL_ATTACHED_SHADERS, &numShader);
-
-		if (numShader > 0)
-		{
-			GLuint *pShader = (GLuint *)malloc(numShader * sizeof(GLuint));
-			if (pShader != NULL)
-			{
-				glGetAttachedShaders(shaderProgramObject_PV, numShader, NULL, pShader);
-
-				for (GLint i = 0; i < numShader; i++)
-				{
-					glDetachShader(shaderProgramObject_PV, pShader[i]);
-
-					glDeleteShader(pShader[i]);
-
-					pShader[i] = NULL;
-				}
-
-				free(pShader);
-
-				pShader = NULL;
-			}
-		}
-
-
-		glUseProgram(0);
-
-		glDeleteProgram(shaderProgramObject_PV);
-
-		shaderProgramObject_PV = 0;
 	}
 
 	// sphere 
