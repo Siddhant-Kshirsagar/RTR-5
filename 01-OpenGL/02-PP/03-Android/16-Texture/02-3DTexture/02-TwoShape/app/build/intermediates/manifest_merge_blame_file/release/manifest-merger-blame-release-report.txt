@@ -1,0 +1,78 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.sgk.gles_texture_two_shape"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+8-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="33" />
+9-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml
+10
+11    <permission
+11-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:22:5-24:47
+12        android:name="com.sgk.gles_texture_two_shape.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.sgk.gles_texture_two_shape.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:5:2-19:16
+18        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+18-->[androidx.core:core:1.9.0] C:\Users\Siddhant\.gradle\caches\transforms-3\85625968673fb9fd8db34217596f6efd\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
+19        android:extractNativeLibs="false"
+20        android:icon="@mipmap/my_icon "
+20-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:6:9-40
+21        android:label="@string/app_name"
+21-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:7:9-41
+22        android:roundIcon="@mipmap/my_icon_round"
+22-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:8:3-44
+23        android:theme="@style/Theme.AppCompat" >
+23-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:9:9-47
+24        <activity
+24-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:11:3-18:14
+25            android:name="com.sgk.gles_texture_two_shape.MainActivity"
+25-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:12:4-32
+26            android:exported="true" >
+26-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:13:4-27
+27            <intent-filter>
+27-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:14:4-17:20
+28                <action android:name="android.intent.action.MAIN" />
+28-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:15:5-57
+28-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:15:13-54
+29
+30                <category android:name="android.intent.category.LAUNCHER" />
+30-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:16:5-65
+30-->F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\AndroidManifest.xml:16:15-62
+31            </intent-filter>
+32        </activity>
+33
+34        <provider
+34-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+35            android:name="androidx.startup.InitializationProvider"
+35-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+36            android:authorities="com.sgk.gles_texture_two_shape.androidx-startup"
+36-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+37            android:exported="false" >
+37-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+38            <meta-data
+38-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+39                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+39-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+40                android:value="androidx.startup" />
+40-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Siddhant\.gradle\caches\transforms-3\7efe218e7ae35cb58dbf86d5ee36a529\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+41            <meta-data
+41-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Siddhant\.gradle\caches\transforms-3\7495f4090f64d34b46f8102bfc12da1e\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+42                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+42-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Siddhant\.gradle\caches\transforms-3\7495f4090f64d34b46f8102bfc12da1e\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+43                android:value="androidx.startup" />
+43-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Siddhant\.gradle\caches\transforms-3\7495f4090f64d34b46f8102bfc12da1e\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+44        </provider>
+45    </application>
+46
+47</manifest>

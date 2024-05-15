@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 7.4.0">
+
+    <issue
+        id="SuspiciousIndentation"
+        severity="Warning"
+        message="The indentation string here is different from on the previous line (`&quot; &quot;` vs `\t`)"
+        category="Correctness"
+        priority="6"
+        summary="Suspicious indentation"
+        explanation="This check looks for cases where the indentation suggests a grouping that isn&apos;t actually there in the code. A common example of this would be something like&#xA;```kotlin&#xA;if (column > width)&#xA;    line++&#xA;    column = 0&#xA;```&#xA;Here, the `column = 0` line will be executed every single time, not just if the condition is true."
+        errorLine1="     GLES32.glEnable(GLES32.GL_TEXTURE_2D);"
+        errorLine2="~~~~~">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\java\com\sgk\gles_texture_two_shape\GLESView.java"
+            line="563"
+            column="1"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\java\com\sgk\gles_texture_two_shape\GLESView.java"
+            line="560"
+            column="1"
+            message="Previous line indentation here"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of androidx.appcompat:appcompat than 1.6.0 is available: 1.6.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    implementation &apos;androidx.appcompat:appcompat:1.6.0&apos;"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\build.gradle"
+            line="33"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.google.android.material:material than 1.7.0 is available: 1.12.0"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    implementation &apos;com.google.android.material:material:1.7.0&apos;"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\build.gradle"
+            line="34"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="This folder configuration (`v24`) is unnecessary; `minSdkVersion` is 24. Merge all the resources in this folder into `drawable`."
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\drawable-v24"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.mipmap.ic_launcher` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.drawable.ic_launcher_background` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\drawable\ic_launcher_background.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.drawable.ic_launcher_foreground` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\drawable-v24\ic_launcher_foreground.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.mipmap.ic_launcher_round` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.mipmap.my_icon` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (https://material.io/design/iconography/) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (https://material.io/design/iconography/) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-mdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (https://material.io/design/iconography/) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xhdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (https://material.io/design/iconography/) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxhdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (https://material.io/design/iconography/) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxxhdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconDipSize"
+        severity="Warning"
+        message="The image `my_icon.png` varies significantly in its density-independent (dip) size across the various density versions: mipmap-hdpi\my_icon.png: 48x48 dp (72x72 px), mipmap-mdpi\my_icon.png: 72x72 dp (72x72 px), mipmap-xhdpi\my_icon.png: 36x36 dp (72x72 px), mipmap-xxhdpi\my_icon.png: 24x24 dp (72x72 px), mipmap-xxxhdpi\my_icon.png: 18x18 dp (72x72 px)"
+        category="Usability:Icons"
+        priority="5"
+        summary="Icon density-independent size validation"
+        explanation="Checks the all icons which are provided in multiple densities, all compute to roughly the same density-independent pixel (`dip`) size. This catches errors where images are either placed in the wrong folder, or icons are changed to new sizes but some folders are forgotten.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxxhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-mdpi\my_icon.png"/>
+    </issue>
+
+    <issue
+        id="IconDipSize"
+        severity="Warning"
+        message="The image `my_icon_round.png` varies significantly in its density-independent (dip) size across the various density versions: mipmap-hdpi\my_icon_round.png: 44x44 dp (66x66 px), mipmap-mdpi\my_icon_round.png: 66x66 dp (66x66 px), mipmap-xhdpi\my_icon_round.png: 33x33 dp (66x66 px), mipmap-xxhdpi\my_icon_round.png: 22x22 dp (66x66 px), mipmap-xxxhdpi\my_icon_round.png: 17x17 dp (66x66 px)"
+        category="Usability:Icons"
+        priority="5"
+        summary="Icon density-independent size validation"
+        explanation="Checks the all icons which are provided in multiple densities, all compute to roughly the same density-independent pixel (`dip`) size. This catches errors where images are either placed in the wrong folder, or icons are changed to new sizes but some folders are forgotten.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxxhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-mdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicatesConfig"
+        severity="Warning"
+        message="The `my_icon.png` icon has identical contents in the following configuration folders: mipmap-hdpi, mipmap-mdpi, mipmap-xhdpi, mipmap-xxhdpi, mipmap-xxxhdpi"
+        category="Usability:Icons"
+        priority="5"
+        summary="Identical bitmaps across various configurations"
+        explanation="If an icon is provided under different configuration parameters such as `drawable-hdpi` or `-v11`, they should typically be different. This detector catches cases where the same icon is provided in different configuration folder which is usually not intentional.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxxhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xhdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-mdpi\my_icon.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicatesConfig"
+        severity="Warning"
+        message="The `my_icon_round.png` icon has identical contents in the following configuration folders: mipmap-hdpi, mipmap-mdpi, mipmap-xhdpi, mipmap-xxhdpi, mipmap-xxxhdpi"
+        category="Usability:Icons"
+        priority="5"
+        summary="Identical bitmaps across various configurations"
+        explanation="If an icon is provided under different configuration parameters such as `drawable-hdpi` or `-v11`, they should typically be different. This detector catches cases where the same icon is provided in different configuration folder which is usually not intentional.">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxxhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xxhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-xhdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-mdpi\my_icon_round.png"/>
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\res\mipmap-hdpi\my_icon_round.png"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        severity="Warning"
+        message="Custom view `GLESView` overrides `onTouchEvent` but not `performClick`"
+        category="Accessibility"
+        priority="6"
+        summary="Accessibility in Custom Views"
+        explanation="If a `View` that overrides `onTouchEvent` or uses an `OnTouchListener` does not also implement `performClick` and call it when clicks are detected, the `View` may not handle accessibility actions properly. Logic handling the click actions should ideally be placed in `View#performClick` as some accessibility services invoke `performClick` when a click action should occur."
+        errorLine1="    public boolean onTouchEvent(MotionEvent e)"
+        errorLine2="                   ~~~~~~~~~~~~">
+        <location
+            file="F:\MyRTRProject\MyAndroid\16-Texture\02-3DTexture\02-TwoShape\app\src\main\java\com\sgk\gles_texture_two_shape\GLESView.java"
+            line="103"
+            column="20"/>
+    </issue>
+
+</issues>

@@ -13,9 +13,6 @@
 #include<GL/gl.h>
 #include<GL/glx.h>
 
-// For texture SOIL(Simple Object Image Library)
-#include<SOIL/SOIL.h>
-
 #include"Sphere.h"
 
 #include"vmath.h"

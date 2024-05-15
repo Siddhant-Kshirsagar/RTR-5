@@ -1,0 +1,110 @@
+[
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/drawable-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-mdpi_my_icon_round.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-mdpi/my_icon_round.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-anydpi-v33_ic_launcher.xml.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-anydpi-v33/ic_launcher.xml"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-hdpi_my_icon.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-hdpi/my_icon.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-mdpi_my_icon.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-mdpi/my_icon.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/raw_stone.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/raw/stone.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxhdpi_my_icon.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxhdpi/my_icon.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-hdpi_my_icon_round.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-hdpi/my_icon_round.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/raw_kundali.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/raw/kundali.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xhdpi_my_icon.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xhdpi/my_icon.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxxhdpi_my_icon.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxxhdpi/my_icon.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxhdpi_my_icon_round.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxhdpi/my_icon_round.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xhdpi_my_icon_round.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xhdpi/my_icon_round.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-xxxhdpi_my_icon_round.png.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-xxxhdpi/my_icon_round.png"
+    },
+    {
+        "merged": "com.sgk.gles_texture_two_shape.app-merged_res-29:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.sgk.gles_texture_two_shape.app-main-31:/mipmap-mdpi/ic_launcher.webp"
+    }
+]
