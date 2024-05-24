@@ -697,20 +697,8 @@ void display(void)
 	mat4 translationMatrix = mat4::identity();
 	translationMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
 
-	// rotation matrix
-	mat4 rotationMatrix1 = mat4::identity();
-	rotationMatrix1 = vmath::rotate(cAngle, 1.0f, 0.0f, 0.0f);
 
-	mat4 rotationMatrix2 = mat4::identity();
-	rotationMatrix2 = vmath::rotate(cAngle, 0.0f, 1.0f, 0.0f);
-
-	mat4 rotationMatrix3 = mat4::identity();
-	rotationMatrix3 = vmath::rotate(cAngle, 0.0f, 0.0f, 1.0f);
-
-	mat4 rotationMatrix = mat4::identity();
-	rotationMatrix = rotationMatrix1 * rotationMatrix2 * rotationMatrix3;
-
-	modelViewMatrix = translationMatrix * rotationMatrix;
+	modelViewMatrix = translationMatrix;
 
 	// push above mvp(model view projection) into vertex shader's mvp uniform
 	glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
@@ -736,12 +724,6 @@ void display(void)
 void update(void)
 {
 	//code
-	//cube rotate
-	cAngle = cAngle - 1.0f;
-	if (cAngle <= 0.0f)
-	{
-		cAngle = cAngle + 360.0f;
-	}
 }
 
 void uninitialize(void)

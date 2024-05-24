@@ -908,18 +908,15 @@ void display(void)
 	materialDiffuse[1] = 0.61424f; // g
 	materialDiffuse[2] = 0.07568f; // b
 	materialDiffuse[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 	// specular material
 	materialSpecular[0] = 0.0633f; // r
 	materialSpecular[1] = 0.727811f; // g
 	materialSpecular[2] = 0.633f; // b
 	materialSpecular[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 	// shininess
 	materialShininess = 0.6f * 128;
-	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 	glViewport(col1_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
