@@ -901,7 +901,6 @@ void display(void)
 	materialAmbient[1] = 0.1745f; // g
 	materialAmbient[2] = 0.0215f; // b
 	materialAmbient[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 	// diffuse material
 	materialDiffuse[0] = 0.07568f; // r
@@ -976,25 +975,21 @@ void display(void)
 	materialAmbient[1] = 0.2225f; // g
 	materialAmbient[2] = 0.1575f; // b
 	materialAmbient[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 	// diffuse material
 	materialDiffuse[0] = 0.54f; // r
 	materialDiffuse[1] = 0.89f; // g
 	materialDiffuse[2] = 0.63f; // b
 	materialDiffuse[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 	// specular material
 	materialSpecular[0] = 0.316228f; // r
 	materialSpecular[1] = 0.316228f; // g
 	materialSpecular[2] = 0.316228f; // b
 	materialSpecular[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 	// shininess
 	materialShininess = 0.1f * 128;
-	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 	glViewport(col1_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1054,25 +1049,22 @@ void display(void)
 	materialAmbient[1] = 0.05f; // g
 	materialAmbient[2] = 0.06625f; // b
 	materialAmbient[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 	// diffuse material
 	materialDiffuse[0] = 0.18275f; // r
 	materialDiffuse[1] = 0.17f; // g
 	materialDiffuse[2] = 0.22525f; // b
 	materialDiffuse[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 	// specular material
 	materialSpecular[0] = 0.332741f; // r
 	materialSpecular[1] = 0.328634f; // g
 	materialSpecular[2] = 0.346435f; // b
 	materialSpecular[3] = 1.0f; // a
-	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 	// shininess
 	materialShininess = 0.3f * 128;
-	glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
+
 
 	glViewport(col1_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1133,25 +1125,21 @@ void display(void)
 		materialAmbient[1] = 0.20725f; // g
 		materialAmbient[2] = 0.20725f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 1.0f; // r
 		materialDiffuse[1] = 0.829f; // g
 		materialDiffuse[2] = 0.829f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.296648f; // r
 		materialSpecular[1] = 0.296648f; // g
 		materialSpecular[2] = 0.296648f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.088f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col1_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1211,25 +1199,21 @@ void display(void)
 		materialAmbient[1] = 0.01175f; // g
 		materialAmbient[2] = 0.01175f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.61424f; // r
 		materialDiffuse[1] = 0.04136f; // g
 		materialDiffuse[2] = 0.04136f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.727811f; // r
 		materialSpecular[1] = 0.626959f; // g
 		materialSpecular[2] = 0.626959f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.6f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col1_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1289,25 +1273,21 @@ void display(void)
 		materialAmbient[1] = 0.18725f; // g
 		materialAmbient[2] = 0.1745f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.396f; // r
 		materialDiffuse[1] = 0.74151f; // g
 		materialDiffuse[2] = 0.69102f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.297254f; // r
 		materialSpecular[1] = 0.30829f; // g
 		materialSpecular[2] = 0.306678f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.1f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col1_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1368,25 +1348,21 @@ void display(void)
 		materialAmbient[1] = 0.223529f; // g
 		materialAmbient[2] = 0.027451f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.780392f; // r
 		materialDiffuse[1] = 0.568627f; // g
 		materialDiffuse[2] = 0.113725f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.992157f; // r
 		materialSpecular[1] = 0.941176f; // g
 		materialSpecular[2] = 0.807843f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.21794872f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1446,25 +1422,21 @@ void display(void)
 		materialAmbient[1] = 0.1275f; // g
 		materialAmbient[2] = 0.054f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.714f; // r
 		materialDiffuse[1] = 0.4284f; // g
 		materialDiffuse[2] = 0.18144f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.393548f; // r
 		materialSpecular[1] = 0.271906f; // g
 		materialSpecular[2] = 0.166721f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.2 * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1524,25 +1496,21 @@ void display(void)
 		materialAmbient[1] = 0.25f; // g
 		materialAmbient[2] = 0.25f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.4f; // r
 		materialDiffuse[1] = 0.4f; // g
 		materialDiffuse[2] = 0.4f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.774597f; // r
 		materialSpecular[1] = 0.774597f; // g
 		materialSpecular[2] = 0.774597f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.6f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1602,25 +1570,21 @@ void display(void)
 		materialAmbient[1] = 0.0735f; // g
 		materialAmbient[2] = 0.0225f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.7038f; // r
 		materialDiffuse[1] = 0.27048f; // g
 		materialDiffuse[2] = 0.0828f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.256777f; // r
 		materialSpecular[1] = 0.137622f; // g
 		materialSpecular[2] = 0.086014f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.1f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1680,25 +1644,21 @@ void display(void)
 		materialAmbient[1] = 0.1995f; // g
 		materialAmbient[2] = 0.0745f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.75164f; // r
 		materialDiffuse[1] = 0.60648f; // g
 		materialDiffuse[2] = 0.22648f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.628281f; // r
 		materialSpecular[1] = 0.555802f; // g
 		materialSpecular[2] = 0.366065f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.4f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1758,25 +1718,23 @@ void display(void)
 		materialAmbient[1] = 0.19225f; // g
 		materialAmbient[2] = 0.19225f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.50754f; // r
 		materialDiffuse[1] = 0.50754f; // g
 		materialDiffuse[2] = 0.50754f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
+
 
 		// specular material
 		materialSpecular[0] = 0.508273f; // r
 		materialSpecular[1] = 0.508273f; // g
 		materialSpecular[2] = 0.508273f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+
 
 		// shininess
 		materialShininess = 0.4f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col2_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1836,25 +1794,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.01f; // r
 		materialDiffuse[1] = 0.01f; // g
 		materialDiffuse[2] = 0.01f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.50f; // r
 		materialSpecular[1] = 0.50f; // g
 		materialSpecular[2] = 0.50f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1914,25 +1868,21 @@ void display(void)
 		materialAmbient[1] = 0.1f; // g
 		materialAmbient[2] = 0.06f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.0f; // r
 		materialDiffuse[1] = 0.50980392f; // g
 		materialDiffuse[2] = 0.50980392f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.50196078f; // r
 		materialSpecular[1] = 0.50196078f; // g
 		materialSpecular[2] = 0.50196078f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -1992,25 +1942,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.1f; // r
 		materialDiffuse[1] = 0.35f; // g
 		materialDiffuse[2] = 0.1f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.45f; // r
 		materialSpecular[1] = 0.55f; // g
 		materialSpecular[2] = 0.45f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2070,25 +2016,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.5f; // r
 		materialDiffuse[1] = 0.0f; // g
 		materialDiffuse[2] = 0.0f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.7f; // r
 		materialSpecular[1] = 0.6f; // g
 		materialSpecular[2] = 0.6f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2148,25 +2090,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.55f; // r
 		materialDiffuse[1] = 0.55f; // g
 		materialDiffuse[2] = 0.55f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.70f; // r
 		materialSpecular[1] = 0.70f; // g
 		materialSpecular[2] = 0.70f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2226,25 +2164,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.5f; // r
 		materialDiffuse[1] = 0.5f; // g
 		materialDiffuse[2] = 0.0f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.60f; // r
 		materialSpecular[1] = 0.60f; // g
 		materialSpecular[2] = 0.50f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.25f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col3_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2304,25 +2238,21 @@ void display(void)
 		materialAmbient[1] = 0.02f; // g
 		materialAmbient[2] = 0.02f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.1f; // r
 		materialDiffuse[1] = 0.1f; // g
 		materialDiffuse[2] = 0.1f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.4f; // r
 		materialSpecular[1] = 0.4f; // g
 		materialSpecular[2] = 0.4f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col4_X, row1_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2382,25 +2312,21 @@ void display(void)
 		materialAmbient[1] = 0.05f; // g
 		materialAmbient[2] = 0.05f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.4f; // r
 		materialDiffuse[1] = 0.5f; // g
 		materialDiffuse[2] = 0.5f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.04f; // r
 		materialSpecular[1] = 0.7f; // g
 		materialSpecular[2] = 0.7f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col4_X, row2_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2460,25 +2386,21 @@ void display(void)
 		materialAmbient[1] = 0.05f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.4f; // r
 		materialDiffuse[1] = 0.5f; // g
 		materialDiffuse[2] = 0.4f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.04f; // r
 		materialSpecular[1] = 0.7f; // g
 		materialSpecular[2] = 0.04f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col4_X, row3_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2538,25 +2460,21 @@ void display(void)
 		materialAmbient[1] = 0.0f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.5f; // r
 		materialDiffuse[1] = 0.4f; // g
 		materialDiffuse[2] = 0.4f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.7f; // r
 		materialSpecular[1] = 0.04f; // g
 		materialSpecular[2] = 0.04f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col4_X, row4_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2616,25 +2534,23 @@ void display(void)
 		materialAmbient[1] = 0.05f; // g
 		materialAmbient[2] = 0.05f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.5f; // r
 		materialDiffuse[1] = 0.5f; // g
 		materialDiffuse[2] = 0.5f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.7f; // r
 		materialSpecular[1] = 0.7f; // g
 		materialSpecular[2] = 0.7f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
+
 
 		glViewport(col4_X, row5_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
@@ -2694,25 +2610,21 @@ void display(void)
 		materialAmbient[1] = 0.05f; // g
 		materialAmbient[2] = 0.0f; // b
 		materialAmbient[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbient);
 
 		// diffuse material
 		materialDiffuse[0] = 0.5f; // r
 		materialDiffuse[1] = 0.5f; // g
 		materialDiffuse[2] = 0.4f; // b
 		materialDiffuse[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 
 		// specular material
 		materialSpecular[0] = 0.7f; // r
 		materialSpecular[1] = 0.7f; // g
 		materialSpecular[2] = 0.04f; // b
 		materialSpecular[3] = 1.0f; // a
-		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
 
 		// shininess
 		materialShininess = 0.078125f * 128;
-		glMaterialf(GL_FRONT, GL_SHININESS, materialShininess);
 
 		glViewport(col4_X, row6_Y, (GLsizei)difference_X, (GLsizei)difference_Y);
 
