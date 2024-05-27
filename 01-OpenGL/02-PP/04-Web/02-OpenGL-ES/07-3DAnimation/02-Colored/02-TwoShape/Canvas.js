@@ -9,16 +9,19 @@ var canvas_original_height;
 // WebGL related variable
 const VertexAttributeEnum =
 {
-    AMC_ATTRIBUTE_POSITION: 0
+    AMC_ATTRIBUTE_POSITION: 0,
+    AMC_ATTRIBUTE_COLOR:1,
 };
 
 var shaderProgramObject = null;
 
 var vao_pyramid = null;
 var vbo_positionTriangle = null;
+var vbo_colorTriangle = null;
 
 var vao_cube = null;
 var vbo_positionTriangle = null;
+var vbo_colorCube = null;
 
 var mvpMatrixUniform;
 
@@ -150,10 +153,13 @@ function initialize() {
         "#version 300 es" +
         "\n" +
         "uniform mat4 uMVPMatrix;" +
+        "in vec4 aColor;" +
+        "out vec4 oColor;" +
         "in vec4 aPosition;" +
         "void main(void)" +
         "{" +
         "gl_Position= uMVPMatrix * aPosition;" +
+        "oColor = aColor;" +
         "}";
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
@@ -180,10 +186,11 @@ function initialize() {
         "#version 300 es" +
         "\n" +
         "precision highp float;" +
+        "in vec4 oColor;" +
         "out vec4 FragColor;" +
         "void main(void)" +
         "{" +
-        "FragColor = vec4(1.0f,1.0f,1.0f,1.0f);" +
+        "FragColor = oColor;" +
         "}";
 
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
@@ -212,6 +219,8 @@ function initialize() {
     gl.attachShader(shaderProgramObject, fragmentShaderObject);
 
     gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, "aPosition");
+
+    gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_COLOR, "aColor");
 
     gl.linkProgram(shaderProgramObject);
 
@@ -253,6 +262,24 @@ function initialize() {
         -1.0, -1.0, -1.0,
         -1.0, -1.0, 1.0]);
 
+    // geometry attribute declaration
+    var pyramid_color = new Float32Array([
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+
+        1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0,
+
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+
+        1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0]);
+
 
     var cube_position = new Float32Array([
         // top
@@ -291,6 +318,38 @@ function initialize() {
         -1.0, -1.0, -1.0,
         -1.0, -1.0, 1.0]);
 
+    var cube_color = new Float32Array([
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+
+        1.0, 0.5, 0.0,
+        1.0, 0.5, 0.0,
+        1.0, 0.5, 0.0,
+        1.0, 0.5, 0.0,
+
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+
+        1.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 0.0, 1.0
+    ]);
+
 
     // vao_pyramid
     vao_pyramid = gl.createVertexArray();
@@ -307,6 +366,19 @@ function initialize() {
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
     gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    // vbo_colorTriangle
+    vbo_colorTriangle = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_colorTriangle);
+
+    gl.bufferData(gl.ARRAY_BUFFER, pyramid_color, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_COLOR, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_COLOR);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
@@ -331,6 +403,19 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+    // vbo_color
+    vbo_colorCube = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_colorCube);
+
+    gl.bufferData(gl.ARRAY_BUFFER, cube_color, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_COLOR, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_COLOR);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
     gl.bindVertexArray(null);
 
     // depth initialization
@@ -339,7 +424,7 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();

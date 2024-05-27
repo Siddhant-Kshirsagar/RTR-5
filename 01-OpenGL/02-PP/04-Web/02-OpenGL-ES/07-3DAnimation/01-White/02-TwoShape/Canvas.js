@@ -17,15 +17,15 @@ var shaderProgramObject = null;
 var vao_pyramid = null;
 var vbo_positionTriangle = null;
 
-var vao_square = null;
-var vbo_positionSquare = null;
+var vao_cube = null;
+var vbo_positionTriangle = null;
 
 var mvpMatrixUniform;
 
 var perspectiveProjectionMatrix;
 
 var pAngle = 0.0;
-var rAngle = 0.0;
+var cAngle = 0.0;
 
 
 var requestAnimationFrame =
@@ -253,6 +253,45 @@ function initialize() {
         -1.0, -1.0, -1.0,
         -1.0, -1.0, 1.0]);
 
+
+    var cube_position = new Float32Array([
+        // top
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+
+        // bottom
+        1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+
+        // front
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+
+        // back
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+
+        // right
+        1.0, 1.0, -1.0,
+        1.0, 1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, -1.0, -1.0,
+
+        // left
+        -1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0]);
+
+
     // vao_pyramid
     vao_pyramid = gl.createVertexArray();
 
@@ -264,6 +303,27 @@ function initialize() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
 
     gl.bufferData(gl.ARRAY_BUFFER, pyramid_position, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    gl.bindVertexArray(null);
+
+
+    // vao_cube
+    vao_cube = gl.createVertexArray();
+
+    gl.bindVertexArray(vao_cube);
+
+    // vbo_positionTriangle
+    vbo_positionTriangle = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
+
+    gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -315,8 +375,12 @@ function display() {
     var modelViewProjectionMatrix = mat4.create();
     var translationMatrix = mat4.create();
     var rotationMatrix = mat4.create();
+    var rotationMatrix_X = mat4.create();
+    var rotationMatrix_Y = mat4.create();
+    var rotationMatrix_Z = mat4.create();
+    var scaleMatrix = mat4.create();
 
-    mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
+    mat4.translate(translationMatrix, translationMatrix, [-1.5, 0.0, -5.0]);
 
     mat4.rotateY(rotationMatrix, rotationMatrix,degToRad(pAngle));
 
@@ -331,6 +395,46 @@ function display() {
     gl.drawArrays(gl.TRIANGLES, 0, 12);
 
     gl.bindVertexArray(null);
+
+    modelViewMatrix = mat4.create();
+    modelViewProjectionMatrix = mat4.create();
+    translationMatrix = mat4.create();
+    rotationMatrix = mat4.create();
+    rotationMatrix_X = mat4.create();
+    rotationMatrix_Y = mat4.create();
+    rotationMatrix_Z = mat4.create();
+
+    mat4.translate(translationMatrix, translationMatrix, [1.5, 0.0, -5.0]);
+
+    mat4.rotateX(rotationMatrix_X, rotationMatrix_X, degToRad(cAngle));
+    mat4.rotateY(rotationMatrix_Y, rotationMatrix_Y, degToRad(cAngle));
+    mat4.rotateZ(rotationMatrix_Z, rotationMatrix_Z, degToRad(cAngle));
+
+    mat4.scale(scaleMatrix, scaleMatrix, [0.75, 0.75, 0.75]);
+
+    mat4.multiply(rotationMatrix, rotationMatrix_X, rotationMatrix_Y);
+
+    mat4.multiply(rotationMatrix, rotationMatrix, rotationMatrix_Z);
+
+    mat4.multiply(modelViewMatrix, translationMatrix, rotationMatrix);
+
+    mat4.multiply(modelViewMatrix, modelViewMatrix, scaleMatrix);
+
+    mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+    gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+    gl.bindVertexArray(vao_cube);
+
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 12, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 16, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 20, 4);
+
+    gl.bindVertexArray(null);
+
 
     gl.useProgram(null);
 
@@ -350,6 +454,12 @@ function update() {
     pAngle = pAngle + 1.0;
     if (pAngle >= 360.0) {
         pAngle = pAngle - 360.0;
+    }
+
+    //cube rotate
+    cAngle = cAngle + 1.0;
+    if (cAngle >= 360.0) {
+        cAngle = cAngle - 360.0;
     }
 }
 
