@@ -296,6 +296,8 @@ function initialize() {
 
     loadGLTexture();
 
+    gl.enable(gl.TEXTURE_2D);
+
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
 }

@@ -9,7 +9,10 @@ var canvas_original_height;
 // WebGL related variable
 const VertexAttributeEnum =
 {
-    AMC_ATTRIBUTE_POSITION: 0
+    AMC_ATTRIBUTE_POSITION: 0,
+    AMC_ATTRIBUTE_COLOR: 1,
+    AMC_ATTRIBUTE_TEXCOORD: 2,
+    AMC_ATTRIBUTE_NORMAL:3,
 };
 
 var shaderProgramObject = null;
@@ -19,6 +22,7 @@ var sphere = null;
 var mvpMatrixUniform;
 
 var perspectiveProjectionMatrix;
+
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -223,49 +227,8 @@ function initialize() {
     // get uniform
     mvpMatrixUniform = gl.getUniformLocation(shaderProgramObject, "uMVPMatrix");
 
-    sphere = new MessageChannel();
-    makeSphere(sphere,2.0,30,30);
-
-    // vao_Sphere
-    vao_Sphere = gl.createVertexArray();
-
-    gl.bindVertexArray(vao_Sphere);
-
-    // vbo_positionSphere
-    vbo_positionSphere = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSphere);
-
-    gl.bufferData(gl.ARRAY_BUFFER, Sphere_position, gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    gl.bindVertexArray(null);
-
-
-    // vao_square
-    vao_square = gl.createVertexArray();
-
-    gl.bindVertexArray(vao_square);
-
-    // vbo_positionSquare
-    vbo_positionSquare = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
-
-    gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    gl.bindVertexArray(null);
+    sphere = new Mesh();
+	makeSphere(sphere, 2.0, 50, 50);
 
     // depth initialization
     gl.clearDepth(1.0);
@@ -308,32 +271,10 @@ function display() {
     var modelViewMatrix = mat4.create();
     var modelViewProjectionMatrix = mat4.create();
     var translationMatrix = mat4.create();
-    var rotationMatrix = mat4.create();
 
-    mat4.translate(translationMatrix, translationMatrix, [-1.5, 0.0, -5.0]);
+    mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
 
     mat4.multiply(modelViewMatrix, modelViewMatrix, translationMatrix);
-
-    mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
-
-    gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
-
-    gl.bindVertexArray(vao_Sphere);
-
-    gl.drawArrays(gl.SphereS, 0, 3);
-
-    gl.bindVertexArray(null);
-
-    modelViewMatrix = mat4.create();
-    translationMatrix = mat4.create();
-    rotationMatrix = mat4.create();
-    modelViewProjectionMatrix = mat4.create();
-
-    mat4.translate(translationMatrix, translationMatrix, [1.5, 0.0, -5.0]);
-
-    mat4.rotateX(rotationMatrix, rotationMatrix, degToRad(rAngle));
-
-    mat4.multiply(modelViewMatrix, translationMatrix, rotationMatrix);
 
     mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
 

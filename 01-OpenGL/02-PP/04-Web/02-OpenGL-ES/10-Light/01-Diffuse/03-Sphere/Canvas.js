@@ -12,18 +12,12 @@ const VertexAttributeEnum =
     AMC_ATTRIBUTE_POSITION: 0,
     AMC_ATTRIBUTE_COLOR: 1,
     AMC_ATTRIBUTE_TEXCOORD: 2,
-    AMC_ATTRIBUTE_NORMAL: 3,
+    AMC_ATTRIBUTE_NORMAL:3,
 };
 
 var shaderProgramObject = null;
 
-var vao = null;
-var vbo_position = null;
-var vbo_normal = null;
-
-var mvpMatrixUniform;
-
-var perspectiveProjectionMatrix;
+var sphere = null;
 
 var mvpMatrixUniform = 0;
 var modelViewMatrixUniform = 0;
@@ -33,14 +27,16 @@ var kdUniform = 0; // for material
 var lightPositionUniform = 0;
 var keyPressedUniform = 0;
 
-var bLightingEnable = false;
-var bAnimationEnable = false;
-
 var lightDiffuse = new Float32Array([ 1.0, 1.0, 1.0 ]);
 var materialDiffuse = new Float32Array([ 0.5, 0.5, 0.5]);
 var lightPosition = new Float32Array([ 0.0, 0.0, 2.0, 1.0 ]);
 
-var pAngle = 0.0;
+var bLightingEnable = false;
+
+var mvpMatrixUniform;
+
+var perspectiveProjectionMatrix;
+
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -85,15 +81,10 @@ function main()
 function keyDown(event) {
     // code
     switch (event.keyCode) {
-
-        case 65:
-        case 97:
-            if (bAnimationEnable == false) {
-                bAnimationEnable = true;
-            }
-            else {
-                bAnimationEnable = false;
-            }
+        case 81: // ascii for Q
+        case 113: // ascii for q
+            uninitialize();
+            window.close(); // exit 
             break;
         case 76:
         case 108:
@@ -103,11 +94,6 @@ function keyDown(event) {
             else {
                 bLightingEnable = false;
             }
-            break;
-        case 81: // ascii for Q
-        case 113: // ascii for q
-            uninitialize();
-            window.close(); // exit 
             break;
 
         case 70: // ascii for F
@@ -300,80 +286,8 @@ function initialize() {
     lightPositionUniform = gl.getUniformLocation(shaderProgramObject, "uLightPosition");
     keyPressedUniform = gl.getUniformLocation(shaderProgramObject, "uKeyPressed");
 
-    // geometry attribute declaration
-    var pyramid_position = new Float32Array([
-        // front
-        0.0, 1.0, 0.0,
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
-
-        // right
-        0.0, 1.0, 0.0,
-        1.0, -1.0, 1.0,
-        1.0, -1.0, -1.0,
-
-        // back
-        0.0, 1.0, 0.0,
-        1.0, -1.0, -1.0,
-        -1.0, -1.0, -1.0,
-
-        // left
-        0.0, 1.0, 0.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0
-    ]);
-
-    var pyramid_normal = new Float32Array([
-        0.000000, 0.447214, 0.894427, 
-        0.000000, 0.447214, 0.894427, 
-        0.000000, 0.447214, 0.894427,
-			    
-        0.894427, 0.447214, 0.000000, 
-        0.894427, 0.447214, 0.000000, 
-        0.894427, 0.447214, 0.000000, 
-
-        0.000000, 0.447214, -0.894427, 
-        0.000000, 0.447214, -0.894427, 
-        0.000000, 0.447214, -0.894427, 
-
-        -0.894427, 0.447214, 0.000000, 
-        -0.894427, 0.447214, 0.000000, 
-        -0.894427, 0.447214, 0.000000, 
-    ]);
-
-
-    // vao
-    vao = gl.createVertexArray();
-
-    gl.bindVertexArray(vao);
-
-    // vbo_position
-    vbo_position = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_position);
-
-    gl.bufferData(gl.ARRAY_BUFFER, pyramid_position, gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    // vbo_normal
-    vbo_normal = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_normal);
-
-    gl.bufferData(gl.ARRAY_BUFFER, pyramid_normal, gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_NORMAL, 3, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_NORMAL);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    gl.bindVertexArray(null);
+    sphere = new Mesh();
+	makeSphere(sphere, 2.0, 50, 50);
 
     // depth initialization
     gl.clearDepth(1.0);
@@ -381,7 +295,7 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.0, 1.0, 1.0);
 
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
@@ -414,15 +328,13 @@ function display() {
 
     // transformation
     var modelViewMatrix = mat4.create();
-    var translateMatrix = mat4.create();
-    var rotationMatrix = mat4.create();
+    var modelViewProjectionMatrix = mat4.create();
+    var translationMatrix = mat4.create();
     var modelViewProjectionMatrix = mat4.create();
 
-    mat4.translate(translateMatrix, translateMatrix, [0.0, 0.0, -5.0]);
+    mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
 
-    mat4.rotateY(rotationMatrix, rotationMatrix, pAngle);
-
-    mat4.multiply(modelViewMatrix, translateMatrix, rotationMatrix);
+    mat4.multiply(modelViewMatrix, modelViewMatrix, translationMatrix);
 
     mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
 
@@ -441,28 +353,18 @@ function display() {
         gl.uniform1i(keyPressedUniform, 0);
     }
 
-    gl.bindVertexArray(vao);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 12);
-
-    gl.bindVertexArray(null);
+    sphere.draw();
 
     gl.useProgram(null);
 
-    if (bAnimationEnable == true) {
-        // update for animation 
-        update();
-    }
+    // update for animation 
+    update();
     // do the double buffering
     requestAnimationFrame(display, canvas);
 }
 
 function update() {
     // code
-    pAngle = pAngle + 0.02;
-    if (pAngle >= 360.0) {
-        pAngle = pAngle - 360.0;
-    }
 }
 
 function uninitialize() {
@@ -492,13 +394,9 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
-    if (vbo_position != null) {
-        gl.deleteBuffer(vbo_position);
-        vbo_position = null;
-    }
-
-    if (vao != null) {
-        gl.deleteVertexArrray(vao);
-        vao = null;
+    if (sphere)
+    {
+        sphere.deallocate();
+        sphere = null;
     }
 }
