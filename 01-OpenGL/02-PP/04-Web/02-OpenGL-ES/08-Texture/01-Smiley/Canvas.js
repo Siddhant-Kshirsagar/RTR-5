@@ -292,7 +292,7 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     loadGLTexture();
 
