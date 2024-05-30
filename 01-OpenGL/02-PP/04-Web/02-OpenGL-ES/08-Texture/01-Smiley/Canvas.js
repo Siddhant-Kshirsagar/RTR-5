@@ -23,9 +23,9 @@ var mvpMatrixUniform;
 
 var perspectiveProjectionMatrix;
 
-var smiley_texture = 0;
+var smiley_texture;
 
-var textureSamplerUniform = 0;
+var textureSamplerUniform;
 
 
 var requestAnimationFrame =
@@ -296,20 +296,19 @@ function initialize() {
 
     loadGLTexture();
 
-    gl.enable(gl.TEXTURE_2D);
-
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
 }
 
 function loadGLTexture() {
+
     smiley_texture = gl.createTexture();
 
     smiley_texture.image = new Image();
 
     smiley_texture.image.src = "Smiley.png";
 
-    smiley_texture.image.onLoad = function () {
+    smiley_texture.image.onload = function () {
         gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -318,11 +317,15 @@ function loadGLTexture() {
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, smiley_texture.image);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, smiley_texture.image);
+
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, smiley_texture.image);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, smiley_texture.image);
 
         gl.generateMipmap(gl.TEXTURE_2D);
 
-        gl.bindTexture(gl.TEXTURE_2D, 0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 }
 
