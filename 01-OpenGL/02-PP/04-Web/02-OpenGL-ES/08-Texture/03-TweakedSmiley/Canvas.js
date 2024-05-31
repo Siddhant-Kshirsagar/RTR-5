@@ -402,15 +402,6 @@ function display() {
     {   
         var squareTexCoords = new Float32Array([1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0]);
 
-        // squareTexCoords[0] = 1.0;
-        // squareTexCoords[1] = 1.0;
-        // squareTexCoords[2] = 0.0;
-        // squareTexCoords[3] = 1.0;
-        // squareTexCoords[4] = 0.0;
-        // squareTexCoords[5] = 0.0;
-        // squareTexCoords[6] = 1.0;
-        // squareTexCoords[7] = 0.0;
-
         gl.uniform1i(keyPressedUniform, 1);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
@@ -422,15 +413,6 @@ function display() {
     else if (glPressedKey == 2)
     {
         var squareTexCoords = new Float32Array([0.5,0.5,0.0,0.5,0.0,0.0,0.5,0.0]);
-
-        // squareTexCoords[0] = 0.5;
-        // squareTexCoords[1] = 0.5;
-        // squareTexCoords[2] = 0.0;
-        // squareTexCoords[3] = 0.5;
-        // squareTexCoords[4] = 0.0;
-        // squareTexCoords[5] = 0.0;
-        // squareTexCoords[6] = 0.5;
-        // squareTexCoords[7] = 0.0;
 
         gl.uniform1i(keyPressedUniform, 1);
 
@@ -444,15 +426,6 @@ function display() {
     {
         var squareTexCoords = new Float32Array([2.0,2.0,0.0,2.0,0.0,0.0,2.0,0.0]);
 
-        // squareTexCoords[0] = 2.0;
-        // squareTexCoords[1] = 2.0;
-        // squareTexCoords[2] = 0.0;
-        // squareTexCoords[3] = 2.0;
-        // squareTexCoords[4] = 0.0;
-        // squareTexCoords[5] = 0.0;
-        // squareTexCoords[6] = 2.0;
-        // squareTexCoords[7] = 0.0;
-
         gl.uniform1i(keyPressedUniform, 1);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
@@ -464,15 +437,6 @@ function display() {
     else if (glPressedKey == 4)
     {
         var squareTexCoords = new Float32Array([0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5]);
-
-        // squareTexCoords[0] = 0.5;
-        // squareTexCoords[1] = 0.5;
-        // squareTexCoords[2] = 0.5;
-        // squareTexCoords[3] = 0.5;
-        // squareTexCoords[4] = 0.5;
-        // squareTexCoords[5] = 0.5;
-        // squareTexCoords[6] = 0.5;
-        // squareTexCoords[7] = 0.5;
 
         gl.uniform1i(keyPressedUniform, 1);
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
