@@ -10,21 +10,25 @@ var canvas_original_height;
 const VertexAttributeEnum =
 {
     AMC_ATTRIBUTE_POSITION: 0,
-    AMC_ATTRIBUTE_COLOR: 1,
-    AMC_ATTRIBUTE_TEXCOORD:2,
+    AMC_ATTRIBUTE_TEXCOORD: 1,
 };
 
 var shaderProgramObject = null;
 
-var vao_cube = null;
-var vbo_positionCube = null;
-var vbo_texcoordCube = null;
+var vao_pyramid = null;
+var vbo_positionPyramid = null;
+var vbo_texcoordPyramid = null;
 
 var mvpMatrixUniform;
 
 var perspectiveProjectionMatrix;
 
-var cAngle = 0.0;
+var stone_texture;
+
+var textureSamplerUniform;
+
+var pAngle = 0.0;
+
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -149,12 +153,12 @@ function initialize() {
         "\n" +
         "uniform mat4 uMVPMatrix;" +
         "in vec4 aPosition;" +
-        "in vec4 aColor;" +
-        "out vec4 oColor;" +
+        "in vec2 aTexCoord;" +
+        "out vec2 oTexCoord;" +
         "void main(void)" +
         "{" +
         "gl_Position= uMVPMatrix * aPosition;" +
-        "oColor = aColor;" +
+        "oTexCoord = aTexCoord;" +
         "}";
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
@@ -181,11 +185,12 @@ function initialize() {
         "#version 300 es" +
         "\n" +
         "precision highp float;" +
-        "in vec4 oColor;" +
+        "in vec2 oTexCoord;" +
+        "uniform sampler2D uTextureSampler;" +
         "out vec4 FragColor;" +
         "void main(void)" +
         "{" +
-        "FragColor = oColor;" +
+        "FragColor = texture(uTextureSampler,oTexCoord);" +
         "}";
 
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
@@ -215,6 +220,8 @@ function initialize() {
 
     gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, "aPosition");
 
+    gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, "aTexCoord");
+
     gl.linkProgram(shaderProgramObject);
 
     if (gl.getProgramParameter(shaderProgramObject, gl.LINK_STATUS) == false) {
@@ -233,88 +240,57 @@ function initialize() {
     // get uniform
     mvpMatrixUniform = gl.getUniformLocation(shaderProgramObject, "uMVPMatrix");
 
+    textureSamplerUniform = gl.getUniformLocation(shaderProgramObject, "uTextureSampler");
+
     // geometry attribute declaration
-    var cube_position = new Float32Array([
-        // top
-        1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
+    var Pyramid_position = new Float32Array([
+         0.0,  1.0,  0.0, 
+         -1.0, -1.0,  1.0, 
+          1.0, -1.0,  1.0, 
 
-        // bottom
-        1.0, -1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
+          0.0,  1.0,  0.0, 
+          1.0, -1.0,  1.0, 
+          1.0, -1.0, -1.0, 
 
-        // front
-        1.0, 1.0, 1.0,
-        -1.0, 1.0, 1.0,
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
+          0.0,  1.0,  0.0, 
+          1.0, -1.0, -1.0, 
+         -1.0, -1.0, -1.0, 
 
-        // back
-        1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
+          0.0,  1.0,  0.0, 
+         -1.0, -1.0, -1.0, 
+         -1.0, -1.0,  1.0, 
+        ]);
 
-        // right
-        1.0, 1.0, -1.0,
-        1.0, 1.0, 1.0,
-        1.0, -1.0, 1.0,
-        1.0, -1.0, -1.0,
+    var Pyramid_texcoord = new Float32Array([
 
-        // left
-        -1.0, 1.0, 1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0]);
-
-    var cube_texcoord = new Float32Array([
-       
-		1.0, 1.0, 
-		0.0, 1.0, 
+		0.5, 1.0, 
 		0.0, 0.0, 
 		1.0, 0.0, 
 
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
+		0.5, 1.0, 
 		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
+		0.0, 0.0, 
+
+		0.5, 1.0, 
 		0.0, 0.0, 
 		1.0, 0.0, 
 
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
+		0.5, 1.0, 
 		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
 		0.0, 0.0, 
-		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
     ]);
 
-    // vao_cube
-    vao_cube = gl.createVertexArray();
+    // vao_pyramid
+    vao_pyramid = gl.createVertexArray();
 
-    gl.bindVertexArray(vao_cube);
+    gl.bindVertexArray(vao_pyramid);
 
-    // vbo_positionTriangle
-    vbo_positionTriangle = gl.createBuffer();
+    // vbo_positionPyramid
+    vbo_positionPyramid = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionPyramid);
 
-    gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, Pyramid_position, gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -322,14 +298,14 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-    // vbo_color
-    vbo_texcoordCube = gl.createBuffer();
+    // vbo_texcoordPyramid
+    vbo_texcoordPyramid = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordCube);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordPyramid);
 
-    gl.bufferData(gl.ARRAY_BUFFER, cube_texcoord, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, Pyramid_texcoord, gl.STATIC_DRAW);
 
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, 2, gl.FLOAT, false, 0, 0);
 
     gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD);
 
@@ -345,8 +321,39 @@ function initialize() {
     // set clear color
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
+    loadGLTexture();
+
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
+}
+
+function loadGLTexture() {
+
+    stone_texture = gl.createTexture();
+
+    stone_texture.image = new Image();
+
+    stone_texture.image.src = "Stone.png";
+
+    stone_texture.image.onload = function () {
+        gl.bindTexture(gl.TEXTURE_2D, stone_texture);
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, stone_texture.image);
+
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, stone_texture.image);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, stone_texture.image);
+
+        gl.generateMipmap(gl.TEXTURE_2D);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
 }
 
 function resize() {
@@ -379,19 +386,10 @@ function display() {
     var modelViewProjectionMatrix = mat4.create();
     var translationMatrix = mat4.create();
     var rotationMatrix = mat4.create();
-    var rotationMatrix_X = mat4.create();
-    var rotationMatrix_Y = mat4.create();
-    var rotationMatrix_Z = mat4.create();
 
     mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
 
-    mat4.rotateX(rotationMatrix_X, rotationMatrix_X, degToRad(cAngle));
-    mat4.rotateY(rotationMatrix_Y, rotationMatrix_Y, degToRad(cAngle));
-    mat4.rotateZ(rotationMatrix_Z, rotationMatrix_Z, degToRad(cAngle));
-
-    mat4.multiply(rotationMatrix, rotationMatrix_X, rotationMatrix_Y);
-
-    mat4.multiply(rotationMatrix, rotationMatrix, rotationMatrix_Z);
+    mat4.rotateY(rotationMatrix, rotationMatrix,degToRad(pAngle));
 
     mat4.multiply(modelViewMatrix, translationMatrix, rotationMatrix);
 
@@ -399,14 +397,14 @@ function display() {
 
     gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
 
-    gl.bindVertexArray(vao_cube);
+    // for texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, stone_texture);
+    gl.uniform1i(textureSamplerUniform, 0);
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 12, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 16, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 20, 4);
+    gl.bindVertexArray(vao_pyramid);
+
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 12);
 
     gl.bindVertexArray(null);
 
@@ -424,10 +422,10 @@ function degToRad(degrees) {
 
 function update() {
     // code
-    //cube rotate
-    cAngle = cAngle + 1.0;
-    if (cAngle >= 360.0) {
-        cAngle = cAngle - 360.0;
+    //pyramid rotate
+    pAngle = pAngle + 1.0;
+    if (pAngle >= 360.0) {
+        pAngle = pAngle - 360.0;
     }
 }
 
@@ -458,23 +456,23 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
-    if (vbo_positionSquare != null) {
-        gl.deleteBuffer(vbo_positionSquare);
-        vbo_positionSquare = null;
+    if (vbo_texcoordPyramid != null) {
+        gl.deleteBuffer(vbo_texcoordPyramid);
+        vbo_texcoordPyramid = null;
     }
 
-    if (vao_square != null) {
-        gl.deleteVertexArrray(vao_square);
-        vao_square = null;
+    if (vbo_positionPyramid != null) {
+        gl.deleteBuffer(vbo_positionPyramid);
+        vbo_positionPyramid = null;
     }
 
-    if (vbo_positionTriangle != null) {
-        gl.deleteBuffer(vbo_positionTriangle);
-        vbo_positionTriangle = null;
+    if (vao_pyramid != null) {
+        gl.deleteVertexArrray(vao_pyramid);
+        vao_pyramid = null;
     }
 
-    if (vao_cube != null) {
-        gl.deleteVertexArrray(vao_cube);
-        vao_cube = null;
+    if (stone_texture != 0) {
+        gl.deleteTextures(1, stone_texture);
+        stone_texture = 0;
     }
 }

@@ -67,7 +67,7 @@ var bLightingEnable = false;
 
 var perspectiveProjectionMatrix;
 
-var chooseShader = 0;
+var chooseShader;
 
 
 var requestAnimationFrame =
@@ -134,7 +134,7 @@ function keyDown(event) {
 
         case 70: // ascii for F
         case 102: // ascii for f
-           chooseShader = 1;
+            chooseShader = 1;
             break;
 
         case 86:

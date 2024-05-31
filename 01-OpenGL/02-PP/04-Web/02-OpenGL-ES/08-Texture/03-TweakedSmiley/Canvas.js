@@ -10,21 +10,27 @@ var canvas_original_height;
 const VertexAttributeEnum =
 {
     AMC_ATTRIBUTE_POSITION: 0,
-    AMC_ATTRIBUTE_COLOR: 1,
-    AMC_ATTRIBUTE_TEXCOORD:2,
+    AMC_ATTRIBUTE_TEXCOORD: 1,
 };
 
 var shaderProgramObject = null;
 
-var vao_cube = null;
-var vbo_positionCube = null;
-var vbo_texcoordCube = null;
+var vao_square = null;
+var vbo_positionSquare = null;
+var vbo_texcoordSquare = null;
 
 var mvpMatrixUniform;
+var keyPressedUniform;
+var textureSamplerUniform;
+
+var glPressedKey = 0;
 
 var perspectiveProjectionMatrix;
 
-var cAngle = 0.0;
+var smiley_texture;
+
+
+
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -78,6 +84,26 @@ function keyDown(event) {
         case 70: // ascii for F
         case 102: // ascii for f
             toggleFullscreen();
+            break;
+            
+        case 31:
+            glKeyPressed = 1;
+            break;
+
+        case 32:
+            glKeyPressed = 2;
+            break;
+
+        case 33:
+            glKeyPressed = 3;
+            break;
+
+        case 34:
+            glKeyPressed = 4;
+            break;
+
+        default :
+            glKeyPressed = 0;
             break;
     }
 }
@@ -149,12 +175,12 @@ function initialize() {
         "\n" +
         "uniform mat4 uMVPMatrix;" +
         "in vec4 aPosition;" +
-        "in vec4 aColor;" +
-        "out vec4 oColor;" +
+        "in vec2 aTexCoord;" +
+        "out vec2 oTexCoord;" +
         "void main(void)" +
         "{" +
         "gl_Position= uMVPMatrix * aPosition;" +
-        "oColor = aColor;" +
+        "oTexCoord = aTexCoord;" +
         "}";
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
@@ -180,12 +206,21 @@ function initialize() {
     var fragmentShaderSourceCode =
         "#version 300 es" +
         "\n" +
-        "precision highp float;" +
-        "in vec4 oColor;" +
-        "out vec4 FragColor;" +
-        "void main(void)" +
-        "{" +
-        "FragColor = oColor;" +
+        "precision highp float;"+
+        "in vec2 oTexCoord;"+
+        "uniform highp sampler2D uTextureSampler;"+
+        "uniform int uKeyPressed;"+
+        "out vec4 FragColor;"+
+        "void main(void)"+
+        "{"+
+        "if(uKeyPressed == 0)"+
+        "{"+
+        "FragColor = vec4(1.0,1.0,1.0,1.0);"+
+        "}"+
+        "else"+
+        "{"+
+        "FragColor = texture(uTextureSampler,oTexCoord);"+
+        "}"+
         "}";
 
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
@@ -215,6 +250,8 @@ function initialize() {
 
     gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, "aPosition");
 
+    gl.bindAttribLocation(shaderProgramObject, VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, "aTexCoord");
+
     gl.linkProgram(shaderProgramObject);
 
     if (gl.getProgramParameter(shaderProgramObject, gl.LINK_STATUS) == false) {
@@ -233,88 +270,28 @@ function initialize() {
     // get uniform
     mvpMatrixUniform = gl.getUniformLocation(shaderProgramObject, "uMVPMatrix");
 
+    textureSamplerUniform = gl.getUniformLocation(shaderProgramObject, "uTextureSampler");
+
+    keyPressedUniform = gl.getUniformLocation(shaderProgramObject,"uKeyPressed");
+
     // geometry attribute declaration
-    var cube_position = new Float32Array([
-        // top
-        1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
+    var square_position = new Float32Array([
+        1.0, 1.0, 0.0,
+        -1.0, 1.0, 0.0,
+        -1.0, -1.0, 0.0,
+        1.0, -1.0, 0.0]);
 
-        // bottom
-        1.0, -1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
+    // vao_square
+    vao_square = gl.createVertexArray();
 
-        // front
-        1.0, 1.0, 1.0,
-        -1.0, 1.0, 1.0,
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
+    gl.bindVertexArray(vao_square);
 
-        // back
-        1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
+    // vbo_positionSquare
+    vbo_positionSquare = gl.createBuffer();
 
-        // right
-        1.0, 1.0, -1.0,
-        1.0, 1.0, 1.0,
-        1.0, -1.0, 1.0,
-        1.0, -1.0, -1.0,
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
 
-        // left
-        -1.0, 1.0, 1.0,
-        -1.0, 1.0, -1.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0]);
-
-    var cube_texcoord = new Float32Array([
-       
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-		
-		1.0, 1.0, 
-		0.0, 1.0, 
-		0.0, 0.0, 
-		1.0, 0.0, 
-    ]);
-
-    // vao_cube
-    vao_cube = gl.createVertexArray();
-
-    gl.bindVertexArray(vao_cube);
-
-    // vbo_positionTriangle
-    vbo_positionTriangle = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
-
-    gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -322,14 +299,14 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-    // vbo_color
-    vbo_texcoordCube = gl.createBuffer();
+    // vbo_texcoordSquare
+    vbo_texcoordSquare = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordCube);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
 
-    gl.bufferData(gl.ARRAY_BUFFER, cube_texcoord, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, 8*4, gl.DYNAMIC_DRAW);
 
-    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, 2, gl.FLOAT, false, 0, 0);
 
     gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD);
 
@@ -345,8 +322,35 @@ function initialize() {
     // set clear color
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
+    loadGLTexture();
+
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
+}
+
+function loadGLTexture() {
+
+    smiley_texture = gl.createTexture();
+
+    smiley_texture.image = new Image();
+
+    smiley_texture.image.src = "Smiley.png";
+
+    smiley_texture.image.onload = function () {
+        gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, smiley_texture.image);
+
+        gl.generateMipmap(gl.TEXTURE_2D);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
 }
 
 function resize() {
@@ -368,6 +372,10 @@ function resize() {
 }
 
 function display() {
+
+    //variable declaration
+    var squareTexCoords = [8];
+
     // code
 
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -377,36 +385,84 @@ function display() {
     // transformation
     var modelViewMatrix = mat4.create();
     var modelViewProjectionMatrix = mat4.create();
-    var translationMatrix = mat4.create();
-    var rotationMatrix = mat4.create();
-    var rotationMatrix_X = mat4.create();
-    var rotationMatrix_Y = mat4.create();
-    var rotationMatrix_Z = mat4.create();
 
-    mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
-
-    mat4.rotateX(rotationMatrix_X, rotationMatrix_X, degToRad(cAngle));
-    mat4.rotateY(rotationMatrix_Y, rotationMatrix_Y, degToRad(cAngle));
-    mat4.rotateZ(rotationMatrix_Z, rotationMatrix_Z, degToRad(cAngle));
-
-    mat4.multiply(rotationMatrix, rotationMatrix_X, rotationMatrix_Y);
-
-    mat4.multiply(rotationMatrix, rotationMatrix, rotationMatrix_Z);
-
-    mat4.multiply(modelViewMatrix, translationMatrix, rotationMatrix);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -3.0]);
 
     mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
 
     gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
 
-    gl.bindVertexArray(vao_cube);
+    // for texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
+    gl.uniform1i(textureSamplerUniform, 0);
+
+    if (glPressedKey == 1)
+    {
+        squareTexCoords[0] = 1.0;
+        squareTexCoords[1] = 1.0;
+        squareTexCoords[2] = 0.0;
+        squareTexCoords[3] = 1.0;
+        squareTexCoords[4] = 0.0;
+        squareTexCoords[5] = 0.0;
+        squareTexCoords[6] = 1.0;
+        squareTexCoords[7] = 0.0;
+
+        gl.uniform1i(keyPressedUniform, 1);
+    }
+    else if (glPressedKey == 2)
+    {
+        squareTexCoords[0] = 0.5;
+        squareTexCoords[1] = 0.5;
+        squareTexCoords[2] = 0.0;
+        squareTexCoords[3] = 0.5;
+        squareTexCoords[4] = 0.0;
+        squareTexCoords[5] = 0.0;
+        squareTexCoords[6] = 0.5;
+        squareTexCoords[7] = 0.0;
+
+        gl.uniform1i(keyPressedUniform, 1);
+    }
+    else if (glPressedKey == 3)
+    {
+        squareTexCoords[0] = 2.0;
+        squareTexCoords[1] = 2.0;
+        squareTexCoords[2] = 0.0;
+        squareTexCoords[3] = 2.0;
+        squareTexCoords[4] = 0.0;
+        squareTexCoords[5] = 0.0;
+        squareTexCoords[6] = 2.0;
+        squareTexCoords[7] = 0.0;
+
+        gl.uniform1i(keyPressedUniform, 1);
+    }
+    else if (glPressedKey == 4)
+    {
+        squareTexCoords[0] = 0.5;
+        squareTexCoords[1] = 0.5;
+        squareTexCoords[2] = 0.5;
+        squareTexCoords[3] = 0.5;
+        squareTexCoords[4] = 0.5;
+        squareTexCoords[5] = 0.5;
+        squareTexCoords[6] = 0.5;
+        squareTexCoords[7] = 0.5;
+
+        glUniform1i(keyPressedUniform, 1);
+    }
+    else
+    {
+        gl.uniform1i(keyPressedUniform, 0);
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
+
+    gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    gl.bindVertexArray(vao_square);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 12, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 16, 4);
-    gl.drawArrays(gl.TRIANGLE_FAN, 20, 4);
 
     gl.bindVertexArray(null);
 
@@ -418,17 +474,8 @@ function display() {
     requestAnimationFrame(display, canvas);
 }
 
-function degToRad(degrees) {
-    return ((degrees * Math.PI) / 180.0);
-}
-
 function update() {
     // code
-    //cube rotate
-    cAngle = cAngle + 1.0;
-    if (cAngle >= 360.0) {
-        cAngle = cAngle - 360.0;
-    }
 }
 
 function uninitialize() {
@@ -458,6 +505,11 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
+    if (vbo_texcoordSquare != null) {
+        gl.deleteBuffer(vbo_texcoordSquare);
+        vbo_texcoordSquare = null;
+    }
+
     if (vbo_positionSquare != null) {
         gl.deleteBuffer(vbo_positionSquare);
         vbo_positionSquare = null;
@@ -468,13 +520,8 @@ function uninitialize() {
         vao_square = null;
     }
 
-    if (vbo_positionTriangle != null) {
-        gl.deleteBuffer(vbo_positionTriangle);
-        vbo_positionTriangle = null;
-    }
-
-    if (vao_cube != null) {
-        gl.deleteVertexArrray(vao_cube);
-        vao_cube = null;
+    if (smiley_texture != 0) {
+        gl.deleteTextures(1, smiley_texture);
+        smiley_texture = 0;
     }
 }

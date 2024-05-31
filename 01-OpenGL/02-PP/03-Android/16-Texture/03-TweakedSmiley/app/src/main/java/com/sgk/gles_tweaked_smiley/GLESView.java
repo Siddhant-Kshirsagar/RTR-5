@@ -324,6 +324,8 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
         // get shader uniform location
         mvpMatrixUniform = GLES32.glGetUniformLocation(shaderProgramObject,"uMVPMatrix");
 
+        textureSamplerUniform = GLES32.glGetUniformLocation(shaderProgramObject, "uTextureSampler");
+
         keyPressedUniform = GLES32.glGetUniformLocation(shaderProgramObject,"uKeyPressed");
 
         // geometry / shape

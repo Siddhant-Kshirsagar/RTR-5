@@ -747,7 +747,7 @@ void display(void)
 
 			modelViewMatrix = viewMatrix * modelMatrix;
 
-			// draw arm
+			// draw sun
 			// push above mvp(model view projection) into vertex shader's mvp uniform
 			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 
@@ -790,7 +790,7 @@ void display(void)
 
 			modelViewMatrix = viewMatrix * modelMatrix;
 
-			// draw arm
+			// draw earth
 			// push above mvp(model view projection) into vertex shader's mvp uniform
 			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 
@@ -836,7 +836,7 @@ void display(void)
 
 			modelViewMatrix = viewMatrix * modelMatrix;
 
-			// draw arm
+			// draw moon
 			// push above mvp(model view projection) into vertex shader's mvp uniform
 			glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, modelViewMatrix);
 

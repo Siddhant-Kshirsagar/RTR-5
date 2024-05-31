@@ -11,16 +11,17 @@ const VertexAttributeEnum =
 {
     AMC_ATTRIBUTE_POSITION: 0,
     AMC_ATTRIBUTE_COLOR:1,
+    AMC_ATTRIBUTE_COLOR:2,
 };
 
 var shaderProgramObject = null;
 
 var vao_pyramid = null;
-var vbo_positionTriangle = null;
-var vbo_colorTriangle = null;
+var vbo_positionPyramid = null;
+var vbo_colorPyramid = null;
 
 var vao_cube = null;
-var vbo_positionTriangle = null;
+var vbo_positionCube = null;
 var vbo_colorCube = null;
 
 var mvpMatrixUniform;
@@ -29,6 +30,9 @@ var perspectiveProjectionMatrix;
 
 var pAngle = 0.0;
 var cAngle = 0.0;
+
+var stone_texture;
+var kundali_texture;
 
 
 var requestAnimationFrame =
@@ -278,7 +282,7 @@ function initialize() {
 
         1.0, 0.0, 0.0,
         0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0]);
+        0.0, 1.0, 0.0 ]);
 
 
     var cube_position = new Float32Array([
@@ -356,10 +360,10 @@ function initialize() {
 
     gl.bindVertexArray(vao_pyramid);
 
-    // vbo_positionTriangle
-    vbo_positionTriangle = gl.createBuffer();
+    // vbo_positionPyramid
+    vbo_positionPyramid = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionPyramid);
 
     gl.bufferData(gl.ARRAY_BUFFER, pyramid_position, gl.STATIC_DRAW);
 
@@ -369,10 +373,10 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-    // vbo_colorTriangle
-    vbo_colorTriangle = gl.createBuffer();
+    // vbo_colorPyramid
+    vbo_colorPyramid = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_colorTriangle);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_colorPyramid);
 
     gl.bufferData(gl.ARRAY_BUFFER, pyramid_color, gl.STATIC_DRAW);
 
@@ -390,10 +394,10 @@ function initialize() {
 
     gl.bindVertexArray(vao_cube);
 
-    // vbo_positionTriangle
-    vbo_positionTriangle = gl.createBuffer();
+    // vbo_positionPyramid
+    vbo_positionCube = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionCube);
 
     gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
 
@@ -520,7 +524,6 @@ function display() {
 
     gl.bindVertexArray(null);
 
-
     gl.useProgram(null);
 
     // update for animation 
@@ -575,19 +578,29 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
-    if (vbo_positionSquare != null) {
-        gl.deleteBuffer(vbo_positionSquare);
-        vbo_positionSquare = null;
+    if (vbo_colorCube != null) {
+        gl.deleteBuffer(vbo_colorCube);
+        vbo_colorCube = null;
     }
 
-    if (vao_square != null) {
-        gl.deleteVertexArrray(vao_square);
-        vao_square = null;
+    if (vbo_positionCube != null) {
+        gl.deleteBuffer(vbo_positionCube);
+        vbo_positionCube = null;
     }
 
-    if (vbo_positionTriangle != null) {
-        gl.deleteBuffer(vbo_positionTriangle);
-        vbo_positionTriangle = null;
+    if (vao_cube != null) {
+        gl.deleteVertexArrray(vao_cube);
+        vao_cube = null;
+    }
+
+    if (vbo_colorPyramid != null) {
+        gl.deleteBuffer(vbo_colorPyramid);
+        vbo_colorPyramid = null;
+    }
+
+    if (vbo_positionPyramid != null) {
+        gl.deleteBuffer(vbo_positionPyramid);
+        vbo_positionPyramid = null;
     }
 
     if (vao_pyramid != null) {
