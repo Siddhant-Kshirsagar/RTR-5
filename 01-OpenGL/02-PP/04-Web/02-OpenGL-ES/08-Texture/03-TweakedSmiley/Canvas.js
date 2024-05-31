@@ -86,24 +86,24 @@ function keyDown(event) {
             toggleFullscreen();
             break;
             
-        case 31:
-            glKeyPressed = 1;
+        case 49:
+            glPressedKey = 1;
             break;
 
-        case 32:
-            glKeyPressed = 2;
+        case 50:
+            glPressedKey = 2;
             break;
 
-        case 33:
-            glKeyPressed = 3;
+        case 51:
+            glPressedKey = 3;
             break;
 
-        case 34:
-            glKeyPressed = 4;
+        case 52:
+            glPressedKey = 4;
             break;
 
         default :
-            glKeyPressed = 0;
+            glPressedKey = 0;
             break;
     }
 }
@@ -304,7 +304,7 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
 
-    gl.bufferData(gl.ARRAY_BUFFER, 8*4, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, null, gl.DYNAMIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_TEXCOORD, 2, gl.FLOAT, false, 0, 0);
 
@@ -373,9 +373,6 @@ function resize() {
 
 function display() {
 
-    //variable declaration
-    var squareTexCoords = [8];
-
     // code
 
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -397,70 +394,98 @@ function display() {
     gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
     gl.uniform1i(textureSamplerUniform, 0);
 
+   
+
+    gl.bindVertexArray(vao_square);
+
     if (glPressedKey == 1)
-    {
-        squareTexCoords[0] = 1.0;
-        squareTexCoords[1] = 1.0;
-        squareTexCoords[2] = 0.0;
-        squareTexCoords[3] = 1.0;
-        squareTexCoords[4] = 0.0;
-        squareTexCoords[5] = 0.0;
-        squareTexCoords[6] = 1.0;
-        squareTexCoords[7] = 0.0;
+    {   
+        var squareTexCoords = new Float32Array([1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0]);
+
+        // squareTexCoords[0] = 1.0;
+        // squareTexCoords[1] = 1.0;
+        // squareTexCoords[2] = 0.0;
+        // squareTexCoords[3] = 1.0;
+        // squareTexCoords[4] = 0.0;
+        // squareTexCoords[5] = 0.0;
+        // squareTexCoords[6] = 1.0;
+        // squareTexCoords[7] = 0.0;
 
         gl.uniform1i(keyPressedUniform, 1);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
     else if (glPressedKey == 2)
     {
-        squareTexCoords[0] = 0.5;
-        squareTexCoords[1] = 0.5;
-        squareTexCoords[2] = 0.0;
-        squareTexCoords[3] = 0.5;
-        squareTexCoords[4] = 0.0;
-        squareTexCoords[5] = 0.0;
-        squareTexCoords[6] = 0.5;
-        squareTexCoords[7] = 0.0;
+        var squareTexCoords = new Float32Array([0.5,0.5,0.0,0.5,0.0,0.0,0.5,0.0]);
+
+        // squareTexCoords[0] = 0.5;
+        // squareTexCoords[1] = 0.5;
+        // squareTexCoords[2] = 0.0;
+        // squareTexCoords[3] = 0.5;
+        // squareTexCoords[4] = 0.0;
+        // squareTexCoords[5] = 0.0;
+        // squareTexCoords[6] = 0.5;
+        // squareTexCoords[7] = 0.0;
 
         gl.uniform1i(keyPressedUniform, 1);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
     else if (glPressedKey == 3)
     {
-        squareTexCoords[0] = 2.0;
-        squareTexCoords[1] = 2.0;
-        squareTexCoords[2] = 0.0;
-        squareTexCoords[3] = 2.0;
-        squareTexCoords[4] = 0.0;
-        squareTexCoords[5] = 0.0;
-        squareTexCoords[6] = 2.0;
-        squareTexCoords[7] = 0.0;
+        var squareTexCoords = new Float32Array([2.0,2.0,0.0,2.0,0.0,0.0,2.0,0.0]);
+
+        // squareTexCoords[0] = 2.0;
+        // squareTexCoords[1] = 2.0;
+        // squareTexCoords[2] = 0.0;
+        // squareTexCoords[3] = 2.0;
+        // squareTexCoords[4] = 0.0;
+        // squareTexCoords[5] = 0.0;
+        // squareTexCoords[6] = 2.0;
+        // squareTexCoords[7] = 0.0;
 
         gl.uniform1i(keyPressedUniform, 1);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
     else if (glPressedKey == 4)
     {
-        squareTexCoords[0] = 0.5;
-        squareTexCoords[1] = 0.5;
-        squareTexCoords[2] = 0.5;
-        squareTexCoords[3] = 0.5;
-        squareTexCoords[4] = 0.5;
-        squareTexCoords[5] = 0.5;
-        squareTexCoords[6] = 0.5;
-        squareTexCoords[7] = 0.5;
+        var squareTexCoords = new Float32Array([0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5]);
 
-        glUniform1i(keyPressedUniform, 1);
+        // squareTexCoords[0] = 0.5;
+        // squareTexCoords[1] = 0.5;
+        // squareTexCoords[2] = 0.5;
+        // squareTexCoords[3] = 0.5;
+        // squareTexCoords[4] = 0.5;
+        // squareTexCoords[5] = 0.5;
+        // squareTexCoords[6] = 0.5;
+        // squareTexCoords[7] = 0.5;
+
+        gl.uniform1i(keyPressedUniform, 1);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
     else
     {
         gl.uniform1i(keyPressedUniform, 0);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordSquare);
-
-    gl.bufferData(gl.ARRAY_BUFFER, squareTexCoords, gl.DYNAMIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    gl.bindVertexArray(vao_square);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
