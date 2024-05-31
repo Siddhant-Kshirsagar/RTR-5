@@ -67,7 +67,7 @@ var bLightingEnable = false;
 
 var perspectiveProjectionMatrix;
 
-var chooseShader;
+var chooseShader = 'v';
 
 
 var requestAnimationFrame =
@@ -134,12 +134,14 @@ function keyDown(event) {
 
         case 70: // ascii for F
         case 102: // ascii for f
-            chooseShader = 1;
+            chooseShader = 'f';
+            console.log("F Key is pressed.\n");
             break;
 
-        case 86:
+        case 86: // ascii for V
         case 118:
-            chooseShader = 0;
+            chooseShader = 'v';
+            console.log("V key is pressed.\n");
             break;
     }
 }
@@ -350,44 +352,36 @@ function initialize() {
     {
         // vertex shader
         var vertexShaderSourceCode_PF =
-            "#version 300 es" +
-            "\n" +
-            "precision highp float;" +
-            "in vec4 aPosition;"+
-                "in vec3 aNormal;"+
-                "uniform mat4 uModelMatrix;"+
-                "uniform mat4 uViewMatrix;"+
-                "uniform mat4 uProjectionMatrix;"+
-                "uniform vec3 uLightAmbient;"+
-                "uniform vec3 uLightDiffuse;"+
-                "uniform vec3 uLightSpecular;"+
-                "uniform vec4 uLightPosition;"+
-                "uniform vec3 uMaterialAmbient;"+
-                "uniform vec3 uMaterialDiffuse;"+
-                "uniform vec3 uMaterialSpecular;"+
-                "uniform float uMaterialShineness;"+
-                "uniform int uKeyPressed;"+
-                "out vec3 oPhongADSLight;"+
-                "void main(void)"+
-                "{"+
-                "if(uKeyPressed == 1)"+
-                "{"+
-                "vec4 eyeCoordinates = uViewMatrix * uModelMatrix * aPosition;"+
-                "vec3 transformedNormals = normalize(mat3(uViewMatrix * uModelMatrix) * aNormal);"+
-                "vec3 lightDirection = normalize(vec3(uLightPosition-eyeCoordinates));"+
-                "vec3 reflectionVector = reflect(-lightDirection,transformedNormals);"+
-                "vec3 viewerVector = normalize(-eyeCoordinates.xyz);"+
-                "vec3 lightAmbient = uLightAmbient * uMaterialAmbient;"+
-                "vec3 lightDiffuse = uLightDiffuse * uMaterialDiffuse * max(dot(lightDirection,transformedNormals),0.0);"+
-                "vec3 lightSpecular = uLightSpecular * uMaterialSpecular * pow(max(dot(reflectionVector,viewerVector),0.0),uMaterialShineness);"+
-                "oPhongADSLight = lightAmbient + lightDiffuse + lightSpecular;"+
-                "}"+
-                "else"+
-                "{"+
-                "oPhongADSLight = vec3(0.0,0.0,0.0);"+
-                "}"+
-                "gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;"+
-                "}";
+        "#version 300 es" +
+        "\n" +
+        "precision highp float;" +
+        "in vec4 aPosition;"+
+        "in vec3 aNormal;"+
+        "uniform mat4 uModelMatrix;"+
+        "uniform mat4 uViewMatrix;"+
+        "uniform mat4 uProjectionMatrix;"+
+        "uniform vec4 uLightPosition;"+
+        "uniform int uKeyPressed;"+
+        "out vec3 oTransformedNormals;"+
+        "out vec3 oLightDirection;"+
+        "out vec3 oViewerVector;"+
+        "void main(void)"+
+        "{"+
+        "if(uKeyPressed == 1)"+
+        "{"+
+        "vec4 eyeCoordinates = uViewMatrix * uModelMatrix * aPosition;"+
+        "oTransformedNormals = mat3(uViewMatrix * uModelMatrix) * aNormal;"+
+        "oLightDirection = vec3(uLightPosition-eyeCoordinates);"+
+        "oViewerVector = -eyeCoordinates.xyz;"+
+        "}"+
+        "else"+
+        "{"+
+        "oTransformedNormals = vec3(0.0,0.0,0.0);"+
+        "oLightDirection = vec3(0.0,0.0,0.0);"+
+        "oViewerVector = vec3(0.0,0.0,0.0);"+
+        "}"+
+        "gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;"+
+        "}";
 
         var vertexShaderObject_PF = gl.createShader(gl.VERTEX_SHADER);
 
@@ -410,23 +404,42 @@ function initialize() {
 
         // fragment shader
         var fragmentShaderSourceCode_PF =
-            "#version 300 es" +
-            "\n" +
-            "precision highp float;" +
-            "in vec3 oPhongADSLight;"+
-            "uniform highp int uKeyPressed;"+
-            "out vec4 FragColor;"+
-            "void main(void)"+
-            "{"+
-            "if(uKeyPressed == 1)"+
-            "{"+
-            "FragColor = vec4(oPhongADSLight,1.0);"+
-            "}"+
-            "else"+
-            "{"+
-            "FragColor = vec4(1.0,1.0,1.0,1.0);"+
-            "}"+
-            "}";
+        "#version 300 es" +
+        "\n" +
+        "precision highp float;" +
+        "in vec3 oTransformedNormals;"+
+        "in vec3 oLightDirection;"+
+        "in vec3 oViewerVector;"+
+        "uniform vec3 uLightAmbient;"+
+        "uniform vec3 uLightDiffuse;"+
+        "uniform vec3 uLightSpecular;"+
+        "uniform vec3 uMaterialAmbient;"+
+        "uniform vec3 uMaterialDiffuse;"+
+        "uniform vec3 uMaterialSpecular;"+
+        "uniform float uMaterialShineness;"+
+        "uniform highp int uKeyPressed;"+
+        "out vec4 FragColor;"+
+        "void main(void)"+
+        "{"+
+        "vec3 phongADSLight;"+
+        "if(uKeyPressed == 1)"+
+        "{"+
+        "vec3 normalizeTransformedNormals = normalize(oTransformedNormals);"+
+        "vec3 normalizeLightDirection = normalize(oLightDirection);"+
+        "vec3 normalizeViewerVector = normalize(oViewerVector);"+
+        "vec3 lightAmbient = uLightAmbient * uMaterialAmbient;"+
+        "vec3 lightDiffuse = uLightDiffuse * uMaterialDiffuse * max(dot(normalizeLightDirection,normalizeTransformedNormals),0.0);"+
+        "vec3 reflectionVector = reflect(-normalizeLightDirection,normalizeTransformedNormals);"+
+        "vec3 lightSpecular = uLightSpecular * uMaterialSpecular * pow(max(dot(reflectionVector,normalizeViewerVector),0.0),uMaterialShineness);"+
+        "phongADSLight = lightAmbient + lightDiffuse + lightSpecular;"+
+        "}"+
+        "else"+
+        "{"+
+        "phongADSLight = vec3(1.0,1.0,1.0);"+
+        "}"+
+        "FragColor = vec4(phongADSLight,1.0);"+
+        "}";
+
 
         var fragmentShaderObject_PF = gl.createShader(gl.FRAGMENT_SHADER);
 
@@ -496,7 +509,7 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
@@ -525,53 +538,15 @@ function display() {
 
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
-    if(chooseShader == 0)
+    if(chooseShader == 'v')
     {
         gl.useProgram(shaderProgramObject_PV);
 
-        // transformation
-        var modelMatrix = mat4.create();
-        var viewMatrix = mat4.create();
-
-        var translationMatrix = mat4.create();
-
-        mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
-
-        mat4.multiply(modelMatrix, modelMatrix, translationMatrix);
-
-        // push above mvp(model view projection) into vertex shader's mvp uniform
-        gl.uniformMatrix4fv(modelMatrixUniform_PV, false, modelMatrix);
-
-        gl.uniformMatrix4fv(viewMatrixUniform_PV, false, viewMatrix);
-
-        gl.uniformMatrix4fv(projectionMatrixUniform_PV, false, perspectiveProjectionMatrix);
-
-        if (bLightingEnable == true)
-        {
-            gl.uniform1i(keyPressedUniform_PV, 1);
-
-            gl.uniform3fv(lightAmbientUniform_PV, lightAmbient);
-            gl.uniform3fv(lightDiffuseUniform_PV, lightDiffuse);
-            gl.uniform3fv(lightSpecularUniform_PV, lightSpecular);
-            gl.uniform4fv(lightPositionUniform_PV, lightPosition);
-
-            gl.uniform3fv(materialAmbientUniform_PV, materialAmbient);
-            gl.uniform3fv(materialDiffuseUniform_PV, materialDiffuse);
-            gl.uniform3fv(materialSpecularUniform_PV, materialSpecular);
-            gl.uniform1f(materialShininessUniform_PV, materialShininess);
-        }
-        else
-        {
-            gl.uniform1i(keyPressedUniform_PV, 0);
-        }
-
-        sphere.draw();
-
-        gl.useProgram(null);
     }
-    else
+    else if(chooseShader == 'f')
     {
         gl.useProgram(shaderProgramObject_PF);
+    }
 
         // transformation
         var modelMatrix = mat4.create();
@@ -583,40 +558,77 @@ function display() {
 
         mat4.multiply(modelMatrix, modelMatrix, translationMatrix);
 
-        // push above mvp(model view projection) into vertex shader's mvp uniform
-        gl.uniformMatrix4fv(modelMatrixUniform_PF, false, modelMatrix);
+        
 
-        gl.uniformMatrix4fv(viewMatrixUniform_PF, false, viewMatrix);
-
-        gl.uniformMatrix4fv(projectionMatrixUniform_PF, false, perspectiveProjectionMatrix);
-
-        if (bLightingEnable == true)
+        if(chooseShader == 'v')
         {
-            gl.uniform1i(keyPressedUniform_PF, 1);
+            // push above mvp(model view projection) into vertex shader's mvp uniform
+            gl.uniformMatrix4fv(modelMatrixUniform_PV, false, modelMatrix);
 
-            gl.uniform3fv(lightAmbientUniform_PF, lightAmbient);
-            gl.uniform3fv(lightDiffuseUniform_PF, lightDiffuse);
-            gl.uniform3fv(lightSpecularUniform_PF, lightSpecular);
-            gl.uniform4fv(lightPositionUniform_PF, lightPosition);
+            gl.uniformMatrix4fv(viewMatrixUniform_PV, false, viewMatrix);
 
-            gl.uniform3fv(materialAmbientUniform_PF, materialAmbient);
-            gl.uniform3fv(materialDiffuseUniform_PF, materialDiffuse);
-            gl.uniform3fv(materialSpecularUniform_PF, materialSpecular);
-            gl.uniform1f(materialShininessUniform_PF, materialShininess);
+            gl.uniformMatrix4fv(projectionMatrixUniform_PV, false, perspectiveProjectionMatrix);
+
+            if (bLightingEnable == true)
+            {
+                gl.uniform1i(keyPressedUniform_PV, 1);
+    
+                gl.uniform3fv(lightAmbientUniform_PV, lightAmbient);
+                gl.uniform3fv(lightDiffuseUniform_PV, lightDiffuse);
+                gl.uniform3fv(lightSpecularUniform_PV, lightSpecular);
+                gl.uniform4fv(lightPositionUniform_PV, lightPosition);
+    
+                gl.uniform3fv(materialAmbientUniform_PV, materialAmbient);
+                gl.uniform3fv(materialDiffuseUniform_PV, materialDiffuse);
+                gl.uniform3fv(materialSpecularUniform_PV, materialSpecular);
+                gl.uniform1f(materialShininessUniform_PV, materialShininess);
+            }
+            else
+            {
+                gl.uniform1i(keyPressedUniform_PV, 0);
+            }
+    
+
         }
-        else
+        else if(chooseShader == 'f')
         {
-            gl.uniform1i(keyPressedUniform_PF, 0);
+            // push above mvp(model view projection) into vertex shader's mvp uniform
+            gl.uniformMatrix4fv(modelMatrixUniform_PF, false, modelMatrix);
+
+            gl.uniformMatrix4fv(viewMatrixUniform_PF, false, viewMatrix);
+
+            gl.uniformMatrix4fv(projectionMatrixUniform_PF, false, perspectiveProjectionMatrix);
+
+                 
+            if (bLightingEnable == true)
+            {
+                gl.uniform1i(keyPressedUniform_PF, 1);
+    
+                gl.uniform3fv(lightAmbientUniform_PF, lightAmbient);
+                gl.uniform3fv(lightDiffuseUniform_PF, lightDiffuse);
+                gl.uniform3fv(lightSpecularUniform_PF, lightSpecular);
+                gl.uniform4fv(lightPositionUniform_PF, lightPosition);
+    
+                gl.uniform3fv(materialAmbientUniform_PF, materialAmbient);
+                gl.uniform3fv(materialDiffuseUniform_PF, materialDiffuse);
+                gl.uniform3fv(materialSpecularUniform_PF, materialSpecular);
+                gl.uniform1f(materialShininessUniform_PF, materialShininess);
+            }
+            else
+            {
+                gl.uniform1i(keyPressedUniform_PF, 0);
+            }
         }
 
         sphere.draw();
 
         gl.useProgram(null);
-    }
+    
     // update for animation 
     update();
     // do the double buffering
     requestAnimationFrame(display, canvas);
+
 }
 
 function update() {

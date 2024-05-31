@@ -393,7 +393,6 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
     void loadGLTexture()
     {
         // code
-
         makeCheckImage();
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(checkImage.length * 4);
