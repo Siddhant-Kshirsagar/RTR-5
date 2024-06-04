@@ -17,7 +17,11 @@ const VertexAttributeEnum =
 
 var shaderProgramObject = null;
 
-var sphere = null;
+var vao_pyramid = null;
+var vbo_positionPyramid = null;
+var vbo_normalPyramid = null;
+
+var pAngle = 0.0;
 
 var modelMatrixUniform = 0;
 var viewMatrixUniform = 0;
@@ -35,10 +39,10 @@ var materialShininessUniform = 0;
 
 var keyPressedUniform = 0;
 
-var lightAmbient = new Float32Array([ 0.1,0.1,0.1 ]);
-var lightDiffuse = new Float32Array([ 1.0,1.0,1.0 ]);
-var lightSpecular = new Float32Array([ 1.0,1.0,1.0 ]);
-var lightPosition = new Float32Array([ 100.0,100.0,100.0,1.0 ]);
+var lightAmbient = [];
+var lightDiffuse = [];
+var lightSpecular = [];
+var lightPosition = [];
 
 var materialAmbient = new Float32Array([ 0.0,0.0,0.0 ]);
 var materialDiffuse = new Float32Array([ 0.5,0.2,0.7 ]);
@@ -313,6 +317,7 @@ function initialize() {
         console.log("Shader Program linked successfully.\n");
     }
 
+
     // get shader uniform location
     modelMatrixUniform = gl.getUniformLocation(shaderProgramObject, "uModelMatrix");
     viewMatrixUniform = gl.getUniformLocation(shaderProgramObject, "uViewMatrix");
@@ -327,8 +332,79 @@ function initialize() {
     materialShininessUniform = gl.getUniformLocation(shaderProgramObject, "uMaterialShineness");
     keyPressedUniform = gl.getUniformLocation(shaderProgramObject, "uKeyPressed");
 
-    sphere = new Mesh();
-	makeSphere(sphere, 2.0, 50, 50);
+    // geometry attribute declaration
+    var pyramid_position = new Float32Array([
+    // front
+    0.0, 1.0, 0.0,
+    -1.0, -1.0, 1.0,
+    1.0, -1.0, 1.0,
+
+    // right
+    0.0, 1.0, 0.0,
+    1.0, -1.0, 1.0,
+    1.0, -1.0, -1.0,
+
+    // back
+    0.0, 1.0, 0.0,
+    1.0, -1.0, -1.0,
+    -1.0, -1.0, -1.0,
+
+    // left
+    0.0, 1.0, 0.0,
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0, 1.0]);
+
+    var pyramid_normal = new Float32Array([
+        
+		0.000000, 0.447214,  0.894427,
+		0.000000, 0.447214,  0.894427, 
+		0.000000, 0.447214,  0.894427, 
+		
+		0.894427, 0.447214,  0.000000, 
+		0.894427, 0.447214,  0.000000, 
+		0.894427, 0.447214,  0.000000, 
+		
+		0.000000, 0.447214, -0.894427, 
+		0.000000, 0.447214, -0.894427, 
+		0.000000, 0.447214, -0.894427, 
+		
+	   -0.894427, 0.447214,  0.000000, 
+	   -0.894427, 0.447214,  0.000000, 
+	   -0.894427, 0.447214,  0.000000, 
+    ]);
+
+    // vao_pyramid
+    vao_pyramid = gl.createVertexArray();
+
+    gl.bindVertexArray(vao_pyramid);
+
+    // vbo_positionPyramid
+    vbo_positionPyramid = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionPyramid);
+
+    gl.bufferData(gl.ARRAY_BUFFER, pyramid_position, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    // vbo_normalPyramid
+    vbo_normalPyramid = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_normalPyramid);
+
+    gl.bufferData(gl.ARRAY_BUFFER, pyramid_normal, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_NORMAL, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(VertexAttributeEnum.AMC_ATTRIBUTE_NORMAL);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    gl.bindVertexArray(null);
 
     // depth initialization
     gl.clearDepth(1.0);
@@ -336,10 +412,18 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     // initialize projection matrix
     perspectiveProjectionMatrix = mat4.create();
+
+    lightAmbient = new Array[4];
+    lightDiffuse = new Array[4];
+    lightSpecular = new Array[4];
+
+    lightPosition = new Array[4];
+
+    lightAmbient[0] = []
 }
 
 function resize() {
@@ -370,12 +454,14 @@ function display() {
     // transformation
     var modelMatrix = mat4.create();
     var viewMatrix = mat4.create();
-
     var translationMatrix = mat4.create();
+    var rotationMatrix = mat4.create();
 
     mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
 
-    mat4.multiply(modelMatrix, modelMatrix, translationMatrix);
+    mat4.rotateY(rotationMatrix, rotationMatrix,degToRad(pAngle));
+
+    mat4.multiply(modelMatrix, translationMatrix, rotationMatrix);
 
     // push above mvp(model view projection) into vertex shader's mvp uniform
     gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
@@ -403,18 +489,36 @@ function display() {
         gl.uniform1i(keyPressedUniform, 0);
     }
 
-    sphere.draw();
+    gl.bindVertexArray(vao_pyramid);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 12);
+
+    gl.bindVertexArray(null);
 
     gl.useProgram(null);
 
     // update for animation 
-    update();
+    if(bAnimationEnable)
+    {
+        update();
+    }
+    
     // do the double buffering
     requestAnimationFrame(display, canvas);
 }
 
+
+function degToRad(degrees) {
+    return ((degrees * Math.PI) / 180.0);
+}
+
 function update() {
     // code
+    //pyramid rotate
+    pAngle = pAngle + 1.0;
+    if (pAngle >= 360.0) {
+        pAngle = pAngle - 360.0;
+    }
 }
 
 function uninitialize() {
@@ -444,9 +548,14 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
-    if (sphere)
-    {
-        sphere.deallocate();
-        sphere = null;
+    if (vbo_positionPyramid != null) {
+        gl.deleteBuffer(vbo_positionPyramid);
+        vbo_positionPyramid = null;
     }
+
+    if (vao_pyramid != null) {
+        gl.deleteVertexArrray(vao_pyramid);
+        vao_pyramid = null;
+    }
+
 }

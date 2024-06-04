@@ -15,18 +15,13 @@ const VertexAttributeEnum =
 var shaderProgramObject = null;
 
 var vao_pyramid = null;
-var vbo_positionTriangle = null;
-
-var vao_square = null;
-var vbo_positionSquare = null;
+var vbo_positionPyramid = null;
 
 var mvpMatrixUniform;
 
 var perspectiveProjectionMatrix;
 
 var pAngle = 0.0;
-var rAngle = 0.0;
-
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -258,10 +253,10 @@ function initialize() {
 
     gl.bindVertexArray(vao_pyramid);
 
-    // vbo_positionTriangle
-    vbo_positionTriangle = gl.createBuffer();
+    // vbo_positionPyramid
+    vbo_positionPyramid = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionTriangle);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionPyramid);
 
     gl.bufferData(gl.ARRAY_BUFFER, pyramid_position, gl.STATIC_DRAW);
 
@@ -380,19 +375,9 @@ function uninitialize() {
         shaderProgramObject = null;
     }
 
-    if (vbo_positionSquare != null) {
-        gl.deleteBuffer(vbo_positionSquare);
-        vbo_positionSquare = null;
-    }
-
-    if (vao_square != null) {
-        gl.deleteVertexArrray(vao_square);
-        vao_square = null;
-    }
-
-    if (vbo_positionTriangle != null) {
-        gl.deleteBuffer(vbo_positionTriangle);
-        vbo_positionTriangle = null;
+    if (vbo_positionPyramid != null) {
+        gl.deleteBuffer(vbo_positionPyramid);
+        vbo_positionPyramid = null;
     }
 
     if (vao_pyramid != null) {
