@@ -526,7 +526,7 @@ int initialize(void)
 		// step 13 : bind attribute location with the shader program object
 		glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
 
-		//glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
+		glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
 
 		// step 14 : link the shader program
 		glLinkProgram(shaderProgramObject);
@@ -572,6 +572,8 @@ int initialize(void)
 
 		// get shader uniform location
 		mvpMatrixUniform = glGetUniformLocation(shaderProgramObject, "uMVPMatrix");
+
+		//colorUniform = glGetUniformLocation(shaderProgramObject, "uColor");
 
 		// step 16: declare position and color array 
 

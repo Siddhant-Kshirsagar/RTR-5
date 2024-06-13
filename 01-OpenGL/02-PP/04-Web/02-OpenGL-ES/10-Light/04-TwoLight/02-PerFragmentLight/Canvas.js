@@ -210,48 +210,48 @@ function initialize() {
         "\n" +
         "precision highp float;" +
         "in vec4 aPosition;"+
-            "in vec3 aNormal;"+
-            "uniform mat4 uModelMatrix;"+
-            "uniform mat4 uViewMatrix;"+
-            "uniform mat4 uProjectionMatrix;"+
-            "uniform vec3 uLightAmbient[2];"+
-            "uniform vec3 uLightDiffuse[2];"+
-            "uniform vec3 uLightSpecular[2];"+
-            "uniform vec4 uLightPosition[2];"+
-            "uniform vec3 uMaterialAmbient;"+
-            "uniform vec3 uMaterialDiffuse;"+
-            "uniform vec3 uMaterialSpecular;"+
-            "uniform float uMaterialShineness;"+
-            "uniform int uKeyPressed;"+
-            "out vec3 oPhongADSLight;"+
-            "void main(void)"+
-            "{"+
-            "if(uKeyPressed == 1)"+
-            "{"+
-            "vec4 eyeCoordinates = uViewMatrix * uModelMatrix * aPosition;"+
-            "vec3 transformedNormals = normalize(mat3(uViewMatrix * uModelMatrix) * aNormal);"+
-            "vec3 lightAmbient[2];"+
-            "vec3 lightDirection[2];"+
-            "vec3 lightDiffuse[2];"+
-            "vec3 reflectionVector[2];"+
-            "vec3 lightSpecular[2];"+
-            "for(int i = 0; i<2; i++)"+
-            "{"+
-            "lightAmbient[i] = uLightAmbient[i] * uMaterialAmbient;"+
-            "lightDirection[i] = normalize(vec3(uLightPosition[i]-eyeCoordinates));"+
-            "lightDiffuse[i] = uLightDiffuse[i] * uMaterialDiffuse * max(dot(lightDirection[i],transformedNormals),0.0);"+
-            "reflectionVector[i] = reflect(-lightDirection[i],transformedNormals);"+
-            "vec3 viewerVector = normalize(-eyeCoordinates.xyz);"+
-            "lightSpecular[i] = uLightSpecular[i] * uMaterialSpecular * pow(max(dot(reflectionVector[i],viewerVector),0.0),uMaterialShineness);"+
-            "oPhongADSLight =  oPhongADSLight + lightAmbient[i] + lightDiffuse[i] + lightSpecular[i];"+
-            "}"+
-            "}"+
-            "else"+
-            "{"+
-            "oPhongADSLight = vec3(0.0,0.0,0.0);"+
-            "}"+
-            "gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;"+
-            "}";
+        "in vec3 aNormal;"+
+        "uniform mat4 uModelMatrix;"+
+        "uniform mat4 uViewMatrix;"+
+        "uniform mat4 uProjectionMatrix;"+
+        "uniform vec3 uLightAmbient[2];"+
+        "uniform vec3 uLightDiffuse[2];"+
+        "uniform vec3 uLightSpecular[2];"+
+        "uniform vec4 uLightPosition[2];"+
+        "uniform vec3 uMaterialAmbient;"+
+        "uniform vec3 uMaterialDiffuse;"+
+        "uniform vec3 uMaterialSpecular;"+
+        "uniform float uMaterialShineness;"+
+        "uniform int uKeyPressed;"+
+        "out vec3 oPhongADSLight;"+
+        "void main(void)"+
+        "{"+
+        "if(uKeyPressed == 1)"+
+        "{"+
+        "vec4 eyeCoordinates = uViewMatrix * uModelMatrix * aPosition;"+
+        "vec3 transformedNormals = normalize(mat3(uViewMatrix * uModelMatrix) * aNormal);"+
+        "vec3 lightAmbient[2];"+
+        "vec3 lightDirection[2];"+
+        "vec3 lightDiffuse[2];"+
+        "vec3 reflectionVector[2];"+
+        "vec3 lightSpecular[2];"+
+        "for(int i = 0; i<2; i++)"+
+        "{"+
+        "lightAmbient[i] = uLightAmbient[i] * uMaterialAmbient;"+
+        "lightDirection[i] = normalize(vec3(uLightPosition[i]-eyeCoordinates));"+
+        "lightDiffuse[i] = uLightDiffuse[i] * uMaterialDiffuse * max(dot(lightDirection[i],transformedNormals),0.0);"+
+        "reflectionVector[i] = reflect(-lightDirection[i],transformedNormals);"+
+        "vec3 viewerVector = normalize(-eyeCoordinates.xyz);"+
+        "lightSpecular[i] = uLightSpecular[i] * uMaterialSpecular * pow(max(dot(reflectionVector[i],viewerVector),0.0),uMaterialShineness);"+
+        "oPhongADSLight =  oPhongADSLight + lightAmbient[i] + lightDiffuse[i] + lightSpecular[i];"+
+        "}"+
+        "}"+
+        "else"+
+        "{"+
+        "oPhongADSLight = vec3(0.0,0.0,0.0);"+
+        "}"+
+        "gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;"+
+        "}";
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
 

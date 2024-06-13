@@ -28,7 +28,7 @@ var texture_checkerboard;
 var CHECKIMAGEWIDTH = 64;
 var CHECKIMAGEHEIGHT = 64;
 
-var checkImage = [CHECKIMAGEHEIGHT][CHECKIMAGEWIDTH * 4];
+var checkImage = new Uint8Array(CHECKIMAGEHEIGHT * CHECKIMAGEWIDTH * 4);
 
 var textureSamplerUniform;
 
@@ -297,7 +297,7 @@ function initialize() {
     gl.depthFunc(gl.LEQUAL);
 
     // set clear color
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.75, 0.75, 0.75, 1.0);
 
     loadGLTexture();
 
@@ -311,27 +311,24 @@ function loadGLTexture() {
 
     makeCheckImage();
     
-    smiley_texture = gl.createTexture();
+    texture_checkerboard = gl.createTexture();
 
-    smiley_texture.image = new Image();
-
-    smiley_texture.image.src = "Smiley.png";
-
-    smiley_texture.image.onload = function () {
-        gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
+        gl.bindTexture(gl.TEXTURE_2D, texture_checkerboard);
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, smiley_texture.image);
-
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, CHECKIMAGEWIDTH, CHECKIMAGEHEIGHT,0, gl.RGBA, gl.UNSIGNED_BYTE, checkImage);
 
         gl.bindTexture(gl.TEXTURE_2D, null);
-    }
+
 }
 
 function makeCheckImage()
@@ -344,12 +341,13 @@ function makeCheckImage()
     {
         for (j = 0; j < CHECKIMAGEWIDTH; j++)
         {
-            c = ((i & 8) ^ (j&8)) * 255;
+            c = (((i & 0x8)==0) ^ ((j&0x8)==0)) * 255;
 
-            checkImage[(i * 64 + j) * 4 + 0] = c;
-            checkImage[(i * 64 + j) * 4 + 1] = c;
-            checkImage[(i * 64 + j) * 4 + 2] = c;
-            checkImage[(i * 64 + j) * 4 + 3] = 0xff;
+            let index = (i * CHECKIMAGEWIDTH +j) *4;
+            checkImage[index] = c;
+            checkImage[index + 1] = c;
+            checkImage[index + 2] = c;
+            checkImage[index + 3] = 0xff;
 
         }
     }
@@ -392,7 +390,7 @@ function display() {
 
     // for texture
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, smiley_texture);
+    gl.bindTexture(gl.TEXTURE_2D, texture_checkerboard);
     gl.uniform1i(textureSamplerUniform, 0);
 
     gl.bindVertexArray(vao_square);
@@ -450,8 +448,8 @@ function uninitialize() {
         vao_square = null;
     }
 
-    if (smiley_texture != 0) {
-        gl.deleteTextures(1, smiley_texture);
-        smiley_texture = 0;
+    if (texture_checkerboard != 0) {
+        gl.deleteTextures(1, texture_checkerboard);
+        texture_checkerboard = 0;
     }
 }
