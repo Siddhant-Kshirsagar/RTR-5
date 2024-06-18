@@ -19,7 +19,10 @@ var vao_square = null;
 var vbo_positionSquare = null;
 var vbo_texcoordSquare = null;
 
+
 var mvpMatrixUniform;
+var keyPressedUniform;
+var textureSamplerUniform;
 
 var perspectiveProjectionMatrix;
 
@@ -30,7 +33,6 @@ var CHECKIMAGEHEIGHT = 64;
 
 var checkImage = new Uint8Array(CHECKIMAGEHEIGHT * CHECKIMAGEWIDTH * 4);
 
-var textureSamplerUniform;
 
 
 var requestAnimationFrame =
@@ -245,12 +247,9 @@ function initialize() {
 
     textureSamplerUniform = gl.getUniformLocation(shaderProgramObject, "uTextureSampler");
 
+    keyPressedUniform = gl.getUniformLocation(shaderProgramObject,"uKeyPressed");
+
     // geometry attribute declaration
-    var square_position = new Float32Array([
-        1.0, 1.0, 0.0,
-        -1.0, 1.0, 0.0,
-        -1.0, -1.0, 0.0,
-        1.0, -1.0, 0.0]);
 
     var square_texcoord = new Float32Array([
         1.0, 1.0,
@@ -268,7 +267,7 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
 
-    gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, null, gl.DYNAMIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -395,9 +394,55 @@ function display() {
 
     gl.bindVertexArray(vao_square);
 
+    var square_position = new Float32Array([
+        0.0,1.0,0.0,
+        -2.0,1.0,0.0
+        ,-2.0,-1.0,0.0,
+        0.0,-1.0, 0.0]);
+
+        gl.uniform1i(keyPressedUniform, 1);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.DYNAMIC_DRAW);
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
     gl.bindVertexArray(null);
+
+    var modelViewMatrix = mat4.create();
+    var modelViewProjectionMatrix = mat4.create();
+
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -3.0]);
+
+    mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+    gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+    // for texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture_checkerboard);
+    gl.uniform1i(textureSamplerUniform, 0);
+
+    gl.bindVertexArray(vao_square);
+
+    var square_position = new Float32Array([
+        2.41421,1.0,-1.41421,
+        1.0,1.0,0.0,
+        1.0,-1.0,0.0,
+        2.41421,-1.0,-1.41421]);
+
+    gl.uniform1i(keyPressedUniform, 1);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
+
+    gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
     gl.useProgram(null);
 
