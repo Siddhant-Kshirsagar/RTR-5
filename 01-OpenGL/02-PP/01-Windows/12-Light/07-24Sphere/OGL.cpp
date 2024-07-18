@@ -843,57 +843,6 @@ void display(void)
 	// step 1 : use shader program
 	glUseProgram(shaderProgramObject_PF);
 
-	// sphere
-	{
-		// Transformation
-		mat4 translationMatrix = mat4::identity();
-		translationMatrix = vmath::translate(0.0f, 0.0f, -2.0f);
-
-		mat4 modelMatrix = mat4::identity();
-		modelMatrix = translationMatrix;
-
-		mat4 viewMatrix = mat4::identity();
-
-		// push above mvp(model view projection) into vertex shader's mvp uniform
-		glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, modelMatrix);
-
-		glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, viewMatrix);
-
-		glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, perspectiveProjectionMatrix);
-
-		// step 2 : bind with VAO(vertex array object)
-		// *** bind vao ***
-		glBindVertexArray(vao_sphere);
-
-		if (bLightingEnable == TRUE)
-		{
-			glUniform1i(keyPressedUniform, 1);
-
-			glUniform3fv(lightAmbientUniform[0], 1, light[0].ambient);
-			glUniform3fv(lightDiffuseUniform[0], 1, light[0].diffuse);
-			glUniform3fv(lightSpecularUniform[0], 1, light[0].specular);
-			glUniform4fv(lightPositionUniform[0], 1, light[0].position);
-
-			glUniform3fv(materialAmbientUniform, 1, materialAmbient);
-			glUniform3fv(materialDiffuseUniform, 1, materialDiffuse);
-			glUniform3fv(materialSpecularUniform, 1, materialSpecular);
-			glUniform1f(materialShininessUniform, materialShininess);
-
-		}
-		else
-		{
-			glUniform1i(keyPressedUniform, 0);
-		}
-
-		// *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_elementSphere);
-
-		glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
-
-		// *** unbind vao ***
-		glBindVertexArray(0);
-	}
-
 	// first column of Precious Stone
 	// emerad
 	// ambient material
