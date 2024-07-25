@@ -772,6 +772,12 @@ void uninitialize(void)
 	}
 
 	// pyramid 
+	// delete vbo for position
+	if (vbo_colorPyramid)
+	{
+		glDeleteBuffers(1, &vbo_colorPyramid);
+		vbo_colorPyramid = 0;
+	}
 
 	// delete vbo for position
 	if (vbo_positionPyramid)
