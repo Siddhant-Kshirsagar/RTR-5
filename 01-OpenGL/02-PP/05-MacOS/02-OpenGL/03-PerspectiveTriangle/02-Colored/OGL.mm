@@ -14,14 +14,16 @@ CVReturn MyDisplayLinkCallback(CVDisplayLinkRef,const CVTimeStamp*, const CVTime
 #define WIN_WIDTH 800
 #define WIN_HEIGHT 600
 
+int width;
+int height;
+
 // Global variable declaration
 FILE *gpFILE = NULL;
 
-GLfloat pAngle = 0.0f;
-
 enum
 {
-	AMC_ATTRIBUTE_POSITION = 0
+	AMC_ATTRIBUTE_POSITION = 0,
+    AMC_ATTRIBUTE_COLOR,
 };
 
 @interface AppDelegate:NSObject <NSApplicationDelegate,NSWindowDelegate>
@@ -82,7 +84,7 @@ int main(int argc, char* argv[])
     fprintf(gpFILE,"\n---------------------------\n");
 
 
-    // Step 1: Declare recpAngle for frame/border of window
+    // Step 1: Declare rectangle for frame/border of window
     NSRect win_rect = NSMakeRect(0.0,0.0,800.0,600.0);
 
     // Step 2: Create window
@@ -95,7 +97,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: White Pyramid"];
+    [window setTitle: @"SGK: Perspective Colored Triangle"];
 
     // center the window
     [window center];
@@ -148,11 +150,10 @@ int main(int argc, char* argv[])
     CVDisplayLinkRef displayLink;
     // OpenGL related variable 
     GLuint shaderProgramObject;
+    GLuint vao;
+    GLuint vbo_position;
+    GLuint vbo_color;
 
-    GLuint vao_pyramid;
-    GLuint vbo_positionPyramid;
-    
-   
     GLuint mvpMatrixUniform;
 
     // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
@@ -259,8 +260,8 @@ int main(int argc, char* argv[])
 
     NSRect rect = [self bounds];
 
-    int width = rect.size.width;
-    int height = rect.size.height;
+    width = rect.size.width;
+    height = rect.size.height;
 
     // call user defined function resize 
     [self resize:width : height];
@@ -285,9 +286,12 @@ int main(int argc, char* argv[])
 		"\n" \
 		"uniform mat4 uMVPMatrix;" \
 		"in vec4 aPosition;" \
+		"in vec4 aColor;" \
+		"out vec4 oColor;" \
 		"void main(void)" \
 		"{" \
 		"gl_Position= uMVPMatrix * aPosition;" \
+		"oColor = aColor;" \
 		"}";
 
 	// step 2 : create vertex shader object
@@ -344,10 +348,11 @@ int main(int argc, char* argv[])
 	const GLchar *fragmentShaderCode =
 		"#version 410 core" \
 		"\n" \
+		"in vec4 oColor;" \
 		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = vec4(1.0,1.0,1.0,1.0);" \
+		"FragColor = oColor;" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -407,6 +412,8 @@ int main(int argc, char* argv[])
 
 	// step 13 : bind attribute location with the shader program object
 	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
+	
+	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
 
 	// step 14 : link the shader program
 	glLinkProgram(shaderProgramObject);
@@ -457,48 +464,52 @@ int main(int argc, char* argv[])
 	// step 16: declare position
 
 	// position array inline initialization
-	const GLfloat pyramid_position[] =
+	const GLfloat triangle_position[] =
 	{
-		// front
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f,
-
-		// right
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, -1.0f,
-
-		// back
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-
-		// left
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, 1.0f
+		0.0f,1.0f,0.0f, // glVertex3f() 1 st call for triangle 
+		-1.0f,-1.0f,0.0f, // glVertex3f() 2nd call for triangle
+		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
 	};
 
+    // color array inline initialization
+	const GLfloat triangle_color[] =
+	{
+		1.0f,0.0f,0.0f, // glColor3f() 1st  call for triangle
+		0.0f,1.0f,0.0f, // glColor3f() 2nd  call for triangle
+		0.0f,0.0f,1.0f // glColor3f() 3rd  call for triangle
+	};
 
-	// for Pyramid
 	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao_pyramid);
+	glGenVertexArrays(1, &vao);
 
 	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao_pyramid);
+	glBindVertexArray(vao);
 
 	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_positionPyramid);
+	glGenBuffers(1, &vbo_position);
 
 	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionPyramid);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_position);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_position), pyramid_position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_position), triangle_position, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	glEnableVertexAttribArray(AMC_ATTRIBUTE_POSITION);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// VBO(Vertex Buffer Object) for color
+	glGenBuffers(1, &vbo_color);
+
+	//  bind with VBO( Vertex Buffer Object) for color
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_color), triangle_color, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -511,7 +522,7 @@ int main(int argc, char* argv[])
 	glDepthFunc(GL_LEQUAL);// compulsory
 
     // step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f,  1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f,  0.0f, 1.0f);
 
     // initialize orthographic projection matrix 
 	perspectiveProjectionMatrix = vmath::mat4::identity();
@@ -554,15 +565,8 @@ int main(int argc, char* argv[])
     // step 1 : use shader program
 	glUseProgram(shaderProgramObject);
 
-	// Pyramid
 	// Transformation
-	mat4 modelViewMatrix = mat4::identity();
-	mat4 translationMatrix = mat4::identity();
-	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
-	mat4 rotationMatrix = mat4::identity();
-	rotationMatrix = vmath::rotate(pAngle, 0.0f, 1.0f, 0.0f);
-
-	modelViewMatrix = translationMatrix * rotationMatrix;
+	mat4 modelViewMatrix = vmath::translate(0.0f,0.0f,-3.0f);
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -571,10 +575,10 @@ int main(int argc, char* argv[])
 	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao_pyramid);
+	glBindVertexArray(vao);
 
 	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLES, 0, 12);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	// unbind vao 
 	glBindVertexArray(0);
@@ -585,13 +589,6 @@ int main(int argc, char* argv[])
 -(void)myupdate
 {
     //code
-	//triangle rotate
-	pAngle = pAngle + 1.0f;
-	if (pAngle >= 360.0f)
-	{
-		pAngle = pAngle - 360.0f;
-	}
-
 }
 
 -(void)uninitialize
@@ -638,20 +635,25 @@ int main(int argc, char* argv[])
 		shaderProgramObject = 0;
 	}
 
-	// pyramid 
+    // delete vbo for color 
+	if (vbo_color)
+	{
+		glDeleteBuffers(1, &vbo_color);
+		vbo_color = 0;
+	}
 
 	// delete vbo for position
-	if (vbo_positionPyramid)
+	if (vbo_position)
 	{
-		glDeleteBuffers(1, &vbo_positionPyramid);
-		vbo_positionPyramid = 0;
+		glDeleteBuffers(1, &vbo_position);
+		vbo_position = 0;
 	}
 
 	// delete vao 
-	if (vao_pyramid)
+	if (vao)
 	{
-		glDeleteVertexArrays(1, &vao_pyramid);
-		vao_pyramid = 0;
+		glDeleteVertexArrays(1, &vao);
+		vao = 0;
 	}
 }
 
@@ -670,7 +672,6 @@ int main(int argc, char* argv[])
     CGLLockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
 
     [self display];
-	[self myupdate];
 
     CGLFlushDrawable((CGLContextObj)[[self openGLContext]CGLContextObj]);
 

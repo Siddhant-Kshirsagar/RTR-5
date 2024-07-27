@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: Bluescreen"];
+    [window setTitle: @"SGK: Perspective White Rectangle"];
 
     // center the window
     [window center];

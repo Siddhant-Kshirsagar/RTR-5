@@ -656,7 +656,7 @@ int main(int argc, char* argv[])
 
 					glDeleteShader(pShader[i]);
 
-					pShader[i] = NULL;
+					pShader[i] = 0;
 				}
 
 				free(pShader);

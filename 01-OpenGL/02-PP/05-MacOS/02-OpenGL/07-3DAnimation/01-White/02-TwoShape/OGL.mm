@@ -18,6 +18,7 @@ CVReturn MyDisplayLinkCallback(CVDisplayLinkRef,const CVTimeStamp*, const CVTime
 FILE *gpFILE = NULL;
 
 GLfloat pAngle = 0.0f;
+GLfloat cAngle = 0.0f;
 
 enum
 {
@@ -95,7 +96,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: White Pyramid"];
+    [window setTitle: @"SGK: Two3DShapes White"];
 
     // center the window
     [window center];
@@ -148,10 +149,14 @@ int main(int argc, char* argv[])
     CVDisplayLinkRef displayLink;
     // OpenGL related variable 
     GLuint shaderProgramObject;
-
-    GLuint vao_pyramid;
-    GLuint vbo_positionPyramid;
     
+	// for pyramid
+	GLuint vao_pyramid;
+	GLuint vbo_positionPyramid;
+
+	// for cube
+	GLuint vao_cube;
+	GLuint vbo_positionCube;
    
     GLuint mvpMatrixUniform;
 
@@ -480,6 +485,44 @@ int main(int argc, char* argv[])
 		-1.0f, -1.0f, 1.0f
 	};
 
+	const GLfloat cube_position[] =
+	{
+		// top
+		1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+
+		// bottom
+		1.0f, -1.0f, -1.0f,
+	   -1.0f, -1.0f, -1.0f,
+	   -1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+
+		// front
+		1.0f, 1.0f, 1.0f,
+	   -1.0f, 1.0f, 1.0f,
+	   -1.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f,
+
+		// back
+		1.0f, 1.0f, -1.0f,
+	   -1.0f, 1.0f, -1.0f,
+	   -1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		// right
+		1.0f, 1.0f, -1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		// left
+		-1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f, 1.0f,
+	};
 
 	// for Pyramid
 	// step 17 : create VAO (vertex array object) 
@@ -504,6 +547,29 @@ int main(int argc, char* argv[])
 
 	glBindVertexArray(0);
 
+	// for cube
+	// step 17 : create VAO (vertex array object) 
+	glGenVertexArrays(1, &vao_cube);
+
+	// step 18 : bind with VAO (vertex array object)
+	glBindVertexArray(vao_cube);
+
+	// step 19 : VBO(Vertex Buffer Object) for position
+	glGenBuffers(1, &vbo_positionCube);
+
+	// step 20 : bind with VBO( Vertex Buffer Object) for position
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionCube);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_position), cube_position, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_POSITION);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
     // set depth
     //for enable depth
 	glClearDepth(1.0f); // compulsory
@@ -511,7 +577,7 @@ int main(int argc, char* argv[])
 	glDepthFunc(GL_LEQUAL);// compulsory
 
     // step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f,  1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f,  0.0f, 1.0f);
 
     // initialize orthographic projection matrix 
 	perspectiveProjectionMatrix = vmath::mat4::identity();
@@ -558,7 +624,7 @@ int main(int argc, char* argv[])
 	// Transformation
 	mat4 modelViewMatrix = mat4::identity();
 	mat4 translationMatrix = mat4::identity();
-	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
+	translationMatrix = vmath::translate(-1.5f, 0.0f, -6.0f);
 	mat4 rotationMatrix = mat4::identity();
 	rotationMatrix = vmath::rotate(pAngle, 0.0f, 1.0f, 0.0f);
 
@@ -579,17 +645,69 @@ int main(int argc, char* argv[])
 	// unbind vao 
 	glBindVertexArray(0);
 
+	// cube
+	// Transformation
+	modelViewMatrix = mat4::identity();
+
+	translationMatrix = mat4::identity();
+	translationMatrix = vmath::translate(1.5f, 0.0f, -6.0f);
+
+	// scale matrix
+	mat4 scaleMatrix = mat4::identity();
+	scaleMatrix = vmath::scale(0.75f, 0.75f, 0.75f);
+
+	mat4 rotationMatrix1 = mat4::identity();
+	rotationMatrix1 = vmath::rotate(cAngle, 1.0f, 0.0f, 0.0f);
+
+	mat4 rotationMatrix2 = mat4::identity();
+	rotationMatrix2 = vmath::rotate(cAngle, 0.0f, 1.0f, 0.0f);
+
+	mat4 rotationMatrix3 = mat4::identity();
+	rotationMatrix3 = vmath::rotate(cAngle, 0.0f, 0.0f, 1.0f);
+
+
+	rotationMatrix = rotationMatrix1 * rotationMatrix2 * rotationMatrix3;
+
+	modelViewMatrix = translationMatrix * scaleMatrix * rotationMatrix;
+
+	// order of multiplication is very important
+	modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
+
+	// push above mvp(model view projection) into vertex shader's mvp uniform
+	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
+
+	// step 2 : bind with VAO(vertex array object)
+	glBindVertexArray(vao_cube);
+
+	// step 3 : draw geometry / shape / model /scene
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
+
+	// unbind vao 
+	glBindVertexArray(0);
+
 	glUseProgram(0);
 }
 
 -(void)myupdate
 {
     //code
-	//triangle rotate
+	//pyramid rotate
 	pAngle = pAngle + 1.0f;
 	if (pAngle >= 360.0f)
 	{
 		pAngle = pAngle - 360.0f;
+	}
+
+	//cube rotate
+	cAngle = cAngle - 1.0f;
+	if (cAngle <= 0.0f)
+	{
+		cAngle = cAngle + 360.0f;
 	}
 
 }
@@ -638,6 +756,24 @@ int main(int argc, char* argv[])
 		shaderProgramObject = 0;
 	}
 
+	// cube 
+
+	// delete vbo for position
+	if (vbo_positionCube)
+	{
+		glDeleteBuffers(1, &vbo_positionCube);
+		vbo_positionCube = 0;
+	}
+
+	// delete vao 
+	if (vao_cube)
+	{
+		glDeleteVertexArrays(1, &vao_cube);
+		vao_cube = 0;
+	}
+
+
+
 	// pyramid 
 
 	// delete vbo for position
@@ -653,6 +789,7 @@ int main(int argc, char* argv[])
 		glDeleteVertexArrays(1, &vao_pyramid);
 		vao_pyramid = 0;
 	}
+
 }
 
 -(void)drawRect:(NSRect)dirtyRect

@@ -17,8 +17,6 @@ CVReturn MyDisplayLinkCallback(CVDisplayLinkRef,const CVTimeStamp*, const CVTime
 // Global variable declaration
 FILE *gpFILE = NULL;
 
-GLfloat pAngle = 0.0f;
-
 enum
 {
 	AMC_ATTRIBUTE_POSITION = 0
@@ -82,7 +80,7 @@ int main(int argc, char* argv[])
     fprintf(gpFILE,"\n---------------------------\n");
 
 
-    // Step 1: Declare recpAngle for frame/border of window
+    // Step 1: Declare rectangle for frame/border of window
     NSRect win_rect = NSMakeRect(0.0,0.0,800.0,600.0);
 
     // Step 2: Create window
@@ -95,7 +93,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: White Pyramid"];
+    [window setTitle: @"SGK: Two2DShapes"];
 
     // center the window
     [window center];
@@ -148,11 +146,12 @@ int main(int argc, char* argv[])
     CVDisplayLinkRef displayLink;
     // OpenGL related variable 
     GLuint shaderProgramObject;
+    GLuint vao_triangle;
+    GLuint vbo_position_triangle;
 
-    GLuint vao_pyramid;
-    GLuint vbo_positionPyramid;
-    
-   
+    GLuint vao_square;
+    GLuint vbo_position_square;
+
     GLuint mvpMatrixUniform;
 
     // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
@@ -457,44 +456,58 @@ int main(int argc, char* argv[])
 	// step 16: declare position
 
 	// position array inline initialization
-	const GLfloat pyramid_position[] =
+	const GLfloat triangle_position[] =
 	{
-		// front
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f,
-
-		// right
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, -1.0f,
-
-		// back
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-
-		// left
-		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, 1.0f
+		0.0f,1.0f,0.0f, // glVertex3f() 1 st call for triangle
+		-1.0f,-1.0f,0.0f, // glVertex3f() 2nd call for triangle
+		1.0f,-1.0f,0.0f // glVertex3f() 3rd  call for triangle
 	};
 
+    const GLfloat square_position[] =
+	{
+		1.0f,1.0f,0.0f, // glVertex3f() 1st call for square
+		-1.0f,1.0f,0.0f,// glVertex3f() 2nd call for square
+		-1.0f,-1.0f,0.0f,// glVertex3f() 3rd call for square
+		1.0f,-1.0f,0.0f// glVertex3f() 4th call for square
+	};
 
-	// for Pyramid
-	// step 17 : create VAO (vertex array object) 
-	glGenVertexArrays(1, &vao_pyramid);
+	// step 17 : create vao_triangle (vertex array object) 
+	glGenVertexArrays(1, &vao_triangle);
 
-	// step 18 : bind with VAO (vertex array object)
-	glBindVertexArray(vao_pyramid);
+	// step 18 : bind with vao_triangle (vertex array object)
+	glBindVertexArray(vao_triangle);
 
 	// step 19 : VBO(Vertex Buffer Object) for position
-	glGenBuffers(1, &vbo_positionPyramid);
+	glGenBuffers(1, &vbo_position_triangle);
 
 	// step 20 : bind with VBO( Vertex Buffer Object) for position
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_positionPyramid);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_position_triangle);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_position), pyramid_position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_position), triangle_position, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_POSITION);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
+    // for square
+
+    // step 17 : create vao_triangle (vertex array object) 
+	glGenVertexArrays(1, &vao_square);
+
+	// step 18 : bind with vao_triangle (vertex array object)
+	glBindVertexArray(vao_square);
+
+	// step 19 : VBO(Vertex Buffer Object) for position
+	glGenBuffers(1, &vbo_position_square);
+
+	// step 20 : bind with VBO( Vertex Buffer Object) for position
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_position_square);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(square_position), square_position, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(AMC_ATTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -554,15 +567,10 @@ int main(int argc, char* argv[])
     // step 1 : use shader program
 	glUseProgram(shaderProgramObject);
 
-	// Pyramid
+	// Triangle
 	// Transformation
 	mat4 modelViewMatrix = mat4::identity();
-	mat4 translationMatrix = mat4::identity();
-	translationMatrix = vmath::translate(0.0f, 0.0f, -6.0f);
-	mat4 rotationMatrix = mat4::identity();
-	rotationMatrix = vmath::rotate(pAngle, 0.0f, 1.0f, 0.0f);
-
-	modelViewMatrix = translationMatrix * rotationMatrix;
+	modelViewMatrix = vmath::translate(-1.5f, 0.0f, -6.0f);
 
 	// order of multiplication is very important
 	mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
@@ -571,10 +579,31 @@ int main(int argc, char* argv[])
 	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
 	// step 2 : bind with VAO(vertex array object)
-	glBindVertexArray(vao_pyramid);
+	glBindVertexArray(vao_triangle);
 
 	// step 3 : draw geometry / shape / model /scene
-	glDrawArrays(GL_TRIANGLES, 0, 12);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	// unbind vao 
+	glBindVertexArray(0);
+
+	// Square
+	// Transformation
+	modelViewMatrix = mat4::identity();
+
+	modelViewMatrix = vmath::translate(1.5f, 0.0f, -6.0f);
+
+	// order of multiplication is very important
+	modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
+
+	// push above mvp(model view projection) into vertex shader's mvp uniform
+	glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
+
+	// step 2 : bind with VAO(vertex array object)
+	glBindVertexArray(vao_square);
+
+	// step 3 : draw geometry / shape / model /scene
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	// unbind vao 
 	glBindVertexArray(0);
@@ -585,13 +614,6 @@ int main(int argc, char* argv[])
 -(void)myupdate
 {
     //code
-	//triangle rotate
-	pAngle = pAngle + 1.0f;
-	if (pAngle >= 360.0f)
-	{
-		pAngle = pAngle - 360.0f;
-	}
-
 }
 
 -(void)uninitialize
@@ -638,20 +660,34 @@ int main(int argc, char* argv[])
 		shaderProgramObject = 0;
 	}
 
-	// pyramid 
-
+	// for square
 	// delete vbo for position
-	if (vbo_positionPyramid)
+	if (vbo_position_square)
 	{
-		glDeleteBuffers(1, &vbo_positionPyramid);
-		vbo_positionPyramid = 0;
+		glDeleteBuffers(1, &vbo_position_square);
+		vbo_position_square = 0;
 	}
 
-	// delete vao 
-	if (vao_pyramid)
+	// delete vao_square 
+	if (vao_square)
 	{
-		glDeleteVertexArrays(1, &vao_pyramid);
-		vao_pyramid = 0;
+		glDeleteVertexArrays(1, &vao_square);
+		vao_square = 0;
+	}
+
+	// for triangle
+	// delete vbo for position
+	if (vbo_position_triangle)
+	{
+		glDeleteBuffers(1, &vbo_position_triangle);
+		vbo_position_triangle = 0;
+	}
+
+	// delete vao_triangle 
+	if (vao_triangle)
+	{
+		glDeleteVertexArrays(1, &vao_triangle);
+		vao_triangle = 0;
 	}
 }
 
@@ -670,7 +706,6 @@ int main(int argc, char* argv[])
     CGLLockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
 
     [self display];
-	[self myupdate];
 
     CGLFlushDrawable((CGLContextObj)[[self openGLContext]CGLContextObj]);
 

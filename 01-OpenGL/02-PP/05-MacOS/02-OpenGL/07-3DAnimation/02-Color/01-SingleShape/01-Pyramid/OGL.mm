@@ -21,7 +21,8 @@ GLfloat pAngle = 0.0f;
 
 enum
 {
-	AMC_ATTRIBUTE_POSITION = 0
+	AMC_ATTRIBUTE_POSITION = 0,
+	AMC_ATTRIBUTE_COLOR,
 };
 
 @interface AppDelegate:NSObject <NSApplicationDelegate,NSWindowDelegate>
@@ -95,7 +96,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: White Pyramid"];
+    [window setTitle: @"SGK: Colored Pyramid"];
 
     // center the window
     [window center];
@@ -151,6 +152,7 @@ int main(int argc, char* argv[])
 
     GLuint vao_pyramid;
     GLuint vbo_positionPyramid;
+	GLuint vbo_colorPyramid;
     
    
     GLuint mvpMatrixUniform;
@@ -285,9 +287,12 @@ int main(int argc, char* argv[])
 		"\n" \
 		"uniform mat4 uMVPMatrix;" \
 		"in vec4 aPosition;" \
+		"in vec4 aColor;" \
+		"out vec4 oColor;" \
 		"void main(void)" \
 		"{" \
 		"gl_Position= uMVPMatrix * aPosition;" \
+		"oColor = aColor;" \
 		"}";
 
 	// step 2 : create vertex shader object
@@ -344,10 +349,11 @@ int main(int argc, char* argv[])
 	const GLchar *fragmentShaderCode =
 		"#version 410 core" \
 		"\n" \
+		"in vec4 oColor;" \
 		"out vec4 FragColor;" \
 		"void main(void)" \
 		"{" \
-		"FragColor = vec4(1.0,1.0,1.0,1.0);" \
+		"FragColor = oColor;" \
 		"}";
 	
 	// step 7 : create fragment shader object
@@ -407,6 +413,8 @@ int main(int argc, char* argv[])
 
 	// step 13 : bind attribute location with the shader program object
 	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_POSITION, "aPosition");
+
+	glBindAttribLocation(shaderProgramObject, AMC_ATTRIBUTE_COLOR, "aColor");
 
 	// step 14 : link the shader program
 	glLinkProgram(shaderProgramObject);
@@ -480,6 +488,25 @@ int main(int argc, char* argv[])
 		-1.0f, -1.0f, 1.0f
 	};
 
+	// color array inline initialization
+	const GLfloat pyramid_color[] =
+	{
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f
+	};
 
 	// for Pyramid
 	// step 17 : create VAO (vertex array object) 
@@ -502,6 +529,20 @@ int main(int argc, char* argv[])
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	// VBO(Vertex Buffer Object) for color
+	glGenBuffers(1, &vbo_colorPyramid);
+
+	//  bind with VBO( Vertex Buffer Object) for color
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_colorPyramid);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_color), pyramid_color, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(AMC_ATTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glEnableVertexAttribArray(AMC_ATTRIBUTE_COLOR);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	glBindVertexArray(0);
 
     // set depth
@@ -511,7 +552,7 @@ int main(int argc, char* argv[])
 	glDepthFunc(GL_LEQUAL);// compulsory
 
     // step 7 : - set clear color of window to blue (here OpenGL Start)
-	glClearColor(0.0f, 0.0f,  1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f,  0.0f, 1.0f);
 
     // initialize orthographic projection matrix 
 	perspectiveProjectionMatrix = vmath::mat4::identity();
@@ -639,6 +680,13 @@ int main(int argc, char* argv[])
 	}
 
 	// pyramid 
+
+	// delete vbo for position
+	if (vbo_colorPyramid)
+	{
+		glDeleteBuffers(1, &vbo_colorPyramid);
+		vbo_colorPyramid = 0;
+	}
 
 	// delete vbo for position
 	if (vbo_positionPyramid)
