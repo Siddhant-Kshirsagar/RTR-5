@@ -288,7 +288,8 @@ function initialize() {
         1.0,-1.0,0.0 // glVertex3f() 3rd  call for triangle
     ]);
 
-    var circle_position = [];
+    // var circle_position = [];
+    var circle_position = new Float32Array(360 * 3);
 
     var i = 0;
     for (var iAngle = 0; iAngle < 360; iAngle = iAngle + 1)
@@ -297,19 +298,19 @@ function initialize() {
         var y = 0.0 + 1.0 * Math.sin((iAngle * Math.PI) / 180.0);
         var z = 0.0;
 
-        circle_position.push(x);
-        i++;
-        circle_position.push(y);
-        i++;
-        circle_position.push(z);
-        i++;
+        // circle_position.push(x);
+        // i++;
+        // circle_position.push(y);
+        // i++;
+        // circle_position.push(z);
+        // i++;
 
-        // circle_position[i]= x;
-        // i++;
-        // circle_position[i] = y;
-        // i++;
-        // circle_position[i] = z;
-        // i++;
+        circle_position[i]= x;
+        i++;
+        circle_position[i] = y;
+        i++;
+        circle_position[i] = z;
+        i++;
     }
 
     console.log(circle_position.length);
