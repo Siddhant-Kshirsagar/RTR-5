@@ -28,7 +28,7 @@ var matrixStackTop = -1;
 
 var MODEL_VIEW_MATRIX_STACK = 32;
 
-var matrixStack = new Float32Array(MODEL_VIEW_MATRIX_STACK);
+var matrixStack = [];
 
 var year = 0;
 var day = 0;
@@ -89,6 +89,27 @@ function keyDown(event) {
         case 102: // ascii for f
             toggleFullscreen();
             break;
+
+        case 89: // ascii for Y
+        case 121: // ascii for y
+        year = (year + 3) % 360;
+		break;
+
+        case 68: // ascii for D
+        case 100: // ascii for d
+        day = (day + 3) % 360;
+        break;
+	
+		case 77: // ascii for M
+        case 109: // ascii for m
+			mDay = (mDay + 3) % 360;
+			break;
+
+		case 78: // ascii for N
+        case 110: // ascii for n
+			mYear = (mYear + 3) % 360;
+			break;
+
     }
 }
 
@@ -288,16 +309,21 @@ function display() {
     var modelViewMatrix = mat4.create();
     var modelViewProjectionMatrix = mat4.create();
     var translationMatrix = mat4.create();
+    var rotationMatrix = mat4.create();
     var modelMatrix = mat4.create();
+    var scaleMatrix = mat4.create();
 
    
     pushMatrix(modelMatrix);
     {
-        mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -5.0]);
+        mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -12.0]);
         mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
     
         pushMatrix(modelMatrix);
         {
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[1.5,1.5,1.5]);
+
             mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
 
             mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
@@ -308,6 +334,70 @@ function display() {
 
             sphere.draw();
         }
+        modelMatrix = popMatrix();
+
+     
+        rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(year));
+
+        translationMatrix = mat4.create();
+        mat4.translate(translationMatrix,translationMatrix,[4.5,0.0,0.0]);
+       
+        mat4.multiply(modelMatrix,rotationMatrix,translationMatrix);
+
+        rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(day));
+
+        mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+        pushMatrix(modelMatrix);
+        {
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.5,0.5,0.5]);
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            gl.uniform4f(colorUniform,0.4,0.9,1.0,1.0);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
+
+        rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(mYear));
+
+        translationMatrix = mat4.create();
+        mat4.translate(translationMatrix,translationMatrix,[3.5,0.0,0.0]);
+       
+        mat4.multiply(modelMatrix,rotationMatrix,translationMatrix);
+
+        rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(mDay));
+
+        mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+        pushMatrix(modelMatrix);
+        {
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.25,0.25,0.25]);
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            gl.uniform4f(colorUniform,1.0,1.0,1.0,1.0);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
     }
     modelMatrix = popMatrix();
 
@@ -323,6 +413,10 @@ function update() {
     // code
 }
 
+function degToRad(degrees) {
+    return ((degrees * Math.PI) / 180.0);
+}
+
 function initiailzeMatrixStack()
 {
     // code  
@@ -334,22 +428,26 @@ function initiailzeMatrixStack()
   
 }
 
+// function pushMatrix(matrix) {
+//     matrixStack.push(matrix.slice(0));
+// }
+
+// function popMatrix() {
+//     return matrixStack.pop();
+// }
+
 function pushMatrix(matrix)
 {
-    console.log(" Inside push matrix"+matrixStackTop);
     if(matrixStackTop >= MODEL_VIEW_MATRIX_STACK - 1)
     {
         console.log("Error - Execeeded matrix stack limit \n");
-        // uninitialize();
-        return(null);
+        uninitialize();
     }
     else
     {
         matrixStack[matrixStackTop] = matrix;
         matrixStackTop++;
     }
-
-    
 }
 
 function popMatrix()
@@ -358,7 +456,6 @@ function popMatrix()
     {
         console.log("Error - Matrix stack is empty\n");
         uninitialize();
-        return(null);
     }
 
     matrixStack[matrixStackTop] = mat4.create();
@@ -376,7 +473,7 @@ function uninitialize() {
 
         gl.useProgram(shaderProgramObject);
 
-        var shaderObject = gl.getAttachedShader();
+        var shaderObject = gl.getAttachedShaders(shaderProgramObject);
 
         if (shaderObject && shaderObject.length > 0) {
             for (let i = 0; i < shaderObject.length; i++) {
