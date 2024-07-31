@@ -25,18 +25,14 @@ var mvpMatrixUniform_Cube;
 
 var perspectiveProjectionMatrix_Cube;
 
-var textureSamplerUniform_Cube;
+var texture_FBO;
+
+var textureSamplerUniform;
 
 var cAngle = 0.0;
 
-var WIN_WIDTH = 800;
-var WIN_HEIGHT = 600;
 
-var FBO_HEIGHT = 512;
-var FBO_WIDTH = 512;
-
-// for three light
-
+// for sphere
 var shaderProgramObject_PV_Sphere = null;
 var shaderProgramObject_PF_Sphere = null;
 
@@ -104,8 +100,6 @@ var materialShininess = 50.0;
 
 var bLightingEnable = false;
 
-var mvpMatrixUniform_Sphere;
-
 var perspectiveProjectionMatrix_Sphere;
 
 var lightAngleZero = 0.0;
@@ -118,10 +112,14 @@ var chooseShader = 'v';
 var winWidth = 0;
 var winHeight = 0;
 
+var FBO_HEIGHT = 512;
+var FBO_WIDTH = 512;
+
 var FBO = 0; // Frame Buffer Object
 var RBO = 0; // Render Buffer Object
 var texture_FBO = 0;
 var bFBOResult = false;
+
 
 var requestAnimationFrame =
     window.requestAnimationFrame || // google chrome
@@ -168,12 +166,29 @@ function keyDown(event) {
     switch (event.keyCode) {
         case 81: // ascii for Q
         case 113: // ascii for q
-            uninitialize_Cube();
+            uninitialize_Sphere();
             window.close(); // exit 
+            break;
+        case 76:
+        case 108:
+            if (bLightingEnable == false) {
+                bLightingEnable = true;
+            }
+            else {
+                bLightingEnable = false;
+            }
             break;
 
         case 70: // ascii for F
         case 102: // ascii for f
+            chooseShader = 'f';
+            break;
+        case 86:
+        case 118:
+            chooseShader = 'v';
+            break;
+
+        case 27:
             toggleFullscreen();
             break;
     }
@@ -253,6 +268,7 @@ function initialize_Cube() {
         "gl_Position= uMVPMatrix * aPosition;" +
         "oTexCoord = aTexCoord;" +
         "}";
+
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
 
     gl.shaderSource(vertexShaderObject, vertexShaderSourceCode);
@@ -332,11 +348,11 @@ function initialize_Cube() {
     // get uniform
     mvpMatrixUniform_Cube = gl.getUniformLocation(shaderProgramObject_Cube, "uMVPMatrix");
 
-    textureSamplerUniform_Cube = gl.getUniformLocation(shaderProgramObject_Cube, "uTextureSampler");
+    textureSamplerUniform = gl.getUniformLocation(shaderProgramObject_Cube, "uTextureSampler");
 
     // geometry attribute declaration
-    var cube_position = new Float32Array([
-        // top
+    var Cube_position = new Float32Array([
+         // top
         1.0, 1.0, -1.0,
         -1.0, 1.0, -1.0,
         -1.0, 1.0, 1.0,
@@ -370,39 +386,40 @@ function initialize_Cube() {
         -1.0, 1.0, 1.0,
         -1.0, 1.0, -1.0,
         -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0]);
+        -1.0, -1.0, 1.0
+        ]);
 
     var Cube_texcoord = new Float32Array([
-    
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
-        
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
-        
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
-        
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
-        
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
-    
-        1.0, 1.0, 
-        0.0, 1.0, 
-        0.0, 0.0, 
-        1.0, 0.0, 
+		
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
+		
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
+		
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
+		
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
+		
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
+	
+		1.0, 1.0, 
+		0.0, 1.0, 
+		0.0, 0.0, 
+		1.0, 0.0, 
     ]);
 
     // vao_cube
@@ -415,7 +432,7 @@ function initialize_Cube() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionCube);
 
-    gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, Cube_position, gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -423,7 +440,7 @@ function initialize_Cube() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-    // vbo_texcoordSquare
+    // vbo_texcoordCube
     vbo_texcoordCube = gl.createBuffer();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcoordCube);
@@ -446,9 +463,6 @@ function initialize_Cube() {
     // set clear color
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
-    // enable texture
-	// gl.enable(gl.TEXTURE_2D);
-
     // initialize_Cube projection matrix
     perspectiveProjectionMatrix_Cube = mat4.create();
 
@@ -456,13 +470,25 @@ function initialize_Cube() {
 
     if(createFBO(FBO_WIDTH,FBO_HEIGHT) == true)
     {
-        bFBOResult = initialize_Sphere(FBO_WIDTH,FBO_HEIGHT);
+        bFBOResult = initialize_Sphere();
         console.log("initialize_Sphere Complete"+bFBOResult);
     }
 }
 
-function initialize_Sphere(textureWidth, textureHeight) {
+function initialize_Sphere() {
     // code
+    gl = canvas.getContext("webgl2");
+    if (gl == null) {
+        console.log("Getting WebGL2 context failed.\n");
+    }
+    else {
+        console.log("Getting WebGL2 context succeeded.\n");
+    }
+
+    // set WebGL2 context's viewportWidth and viewportHeight of window
+    gl.viewportWidth = canvas.width;
+    gl.viewportHeight = canvas.height;
+
     // per vertex lighting 
     {
         // vertex shader
@@ -526,7 +552,7 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Vertex Shader Compilation Error : " + error;
                 alert(log);
-                uninitialize();
+                uninitialize_Sphere();
             }
         }
         else {
@@ -565,7 +591,7 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Fragment Shader Compilation Error : " + error;
                 alert(log);
-                uninitialize();
+                uninitialize_Sphere();
             }
         }
         else {
@@ -590,8 +616,8 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Shader Program Linking Error : " + error;
                 alert(log);
-                uninitialize();
-            }_PV_Sphere
+                uninitialize_Sphere();
+            }
         }
         else {
             console.log("Shader Program linked successfully.\n");
@@ -674,7 +700,7 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Vertex Shader Compilation Error : " + error;
                 alert(log);
-                uninitialize();
+                uninitialize_Sphere();
             }
         }
         else {
@@ -742,7 +768,7 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Fragment Shader Compilation Error : " + error;
                 alert(log);
-                uninitialize();
+                uninitialize_Sphere();
             }
         }
         else {
@@ -767,7 +793,7 @@ function initialize_Sphere(textureWidth, textureHeight) {
             if (error.length > 0) {
                 var log = "Shader Program Linking Error : " + error;
                 alert(log);
-                uninitialize();
+                uninitialize_Sphere();
             }_PV_Sphere
         }
         else {
@@ -812,10 +838,8 @@ function initialize_Sphere(textureWidth, textureHeight) {
     // set clear color
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    // initialize projection matrix
-    perspectiveProjectionMatrix = mat4.create();
-
-    resize_Sphere(WIN_WIDTH, WIN_HEIGHT);
+    // initialize_Sphere projection matrix
+    perspectiveProjectionMatrix_Sphere = mat4.create();
 
     return(true);
 }
@@ -829,6 +853,7 @@ function createFBO(textureWidth,textureHeight)
     // step 1 : check capacity of render buffer
     // gl.getIntegerv(gl.MAX_RENDERBUFFER_SIZE, maxRenderBufferSize);
     maxRenderBufferSize =  gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+
     console.log("max render buffer size"+maxRenderBufferSize);
 
     if(maxRenderBufferSize < textureWidth || maxRenderBufferSize <textureHeight)
@@ -887,7 +912,8 @@ function createFBO(textureWidth,textureHeight)
 }
 
 
-function resize_Cube(width,height) {
+
+function resize_Cube() {
     // code
     if (gbFullScreen == true) {
         canvas.width = window.innerWidth;
@@ -898,35 +924,31 @@ function resize_Cube(width,height) {
         canvas.height = canvas_original_height;
     }
 
-    // console.log("width="+width+"height="+height);
     winWidth = canvas.width;
     winHeight = canvas.height;
 
     // set viewport 
-    gl.viewport(0, 0, winWidth, winHeight);
+    gl.viewport(0, 0, canvas.width, canvas.height);
 
     // set projection
     mat4.perspective(perspectiveProjectionMatrix_Cube, 45.0, parseFloat(canvas.width)/parseFloat(canvas.height), 0.1, 100.0);
 }
 
 function resize_Sphere(width,height) {
-    // code
-    if (height <= 0)
+	if (height <= 0)
     {
         height = 1;
     }
-    
-    // console.log("Width="+width+"Height="+height);
+
     // set viewport 
     gl.viewport(0, 0, width, height);
 
     // set projection
-    mat4.perspective(perspectiveProjectionMatrix_Cube, 45.0, parseFloat(canvas.width)/parseFloat(canvas.height), 0.1, 100.0);
+    mat4.perspective(perspectiveProjectionMatrix_Sphere, 45.0, parseFloat(width)/parseFloat(height), 0.1, 100.0);
 }
 
 function display_Cube() {
     // code
-
     // render FBO(Frame Buffer Object) scene
     if(bFBOResult == true)
     {
@@ -969,12 +991,10 @@ function display_Cube() {
 
     gl.uniformMatrix4fv(mvpMatrixUniform_Cube, false, modelViewProjectionMatrix);
 
-    // texture related code
-	gl.activeTexture(gl.TEXTURE0);
-
-	gl.bindTexture(gl.TEXTURE_2D, texture_FBO);
-
-	gl.uniform1i(textureSamplerUniform_Cube, 0);
+    // for texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture_FBO);
+    gl.uniform1i(textureSamplerUniform, 0);
 
     gl.bindVertexArray(vao_cube);
 
@@ -985,9 +1005,8 @@ function display_Cube() {
     gl.drawArrays(gl.TRIANGLE_FAN, 16, 4);
     gl.drawArrays(gl.TRIANGLE_FAN, 20, 4);
 
-    gl.bindVertexArray(null);
 
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindVertexArray(null);
 
     gl.useProgram(null);
 
@@ -996,8 +1015,8 @@ function display_Cube() {
     // do the double buffering
     requestAnimationFrame(display_Cube, canvas);
 }
-function display_Sphere(textureWidth,textureHeight)
-{
+
+function display_Sphere(textureWidth,textureHeight) {
     // code
     // Bind with FBO
 	gl.bindFramebuffer(gl.FRAMEBUFFER, FBO);
@@ -1029,7 +1048,7 @@ function display_Sphere(textureWidth,textureHeight)
 
         gl.uniformMatrix4fv(viewMatrixUniform_PV_Sphere, false, viewMatrix);
 
-        gl.uniformMatrix4fv(projectionMatrixUniform_PV_Sphere, false, perspectiveProjectionMatrix);
+        gl.uniformMatrix4fv(projectionMatrixUniform_PV_Sphere, false, perspectiveProjectionMatrix_Sphere);
 
         if (bLightingEnable == true)
         {
@@ -1083,7 +1102,7 @@ function display_Sphere(textureWidth,textureHeight)
 
         gl.uniformMatrix4fv(viewMatrixUniform_PF_Sphere, false, viewMatrix);
 
-        gl.uniformMatrix4fv(projectionMatrixUniform_PF_Sphere, false, perspectiveProjectionMatrix);
+        gl.uniformMatrix4fv(projectionMatrixUniform_PF_Sphere, false, perspectiveProjectionMatrix_Sphere);
 
         if (bLightingEnable == true)
         {
@@ -1118,23 +1137,10 @@ function display_Sphere(textureWidth,textureHeight)
 
         gl.useProgram(null);
     }
-
-    // unBind frame buffer
+    // update_Sphere for animation 
+    update_Sphere();
+      // unBind frame buffer
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-}
-
-function degToRad(degrees) {
-    return ((degrees * Math.PI) / 180.0);
-}
-
-function update_Cube() {
-    // code
-    //cube rotate
-    cAngle = cAngle + 1.0;
-    if (cAngle >= 360.0) {
-        cAngle = cAngle - 360.0;
-    }
 }
 
 function update_Sphere() {
@@ -1179,8 +1185,22 @@ function update_Sphere() {
         }
 }
 
+function degToRad(degrees) {
+    return ((degrees * Math.PI) / 180.0);
+}
+
+function update_Cube() {
+    // code
+    //Cube rotate
+    cAngle = cAngle + 1.0;
+    if (cAngle >= 360.0) {
+        cAngle = cAngle - 360.0;
+    }
+}
+
 function uninitialize_Cube() {
     //code
+    uninitialize_Sphere();
 
     if (shaderProgramObject_Cube) {
 
@@ -1206,14 +1226,9 @@ function uninitialize_Cube() {
         shaderProgramObject_Cube = null;
     }
 
-    if (vbo_positionSquare != null) {
-        gl.deleteBuffer(vbo_positionSquare);
-        vbo_positionSquare = null;
-    }
-
-    if (vao_square != null) {
-        gl.deleteVertexArrray(vao_square);
-        vao_square = null;
+    if (vbo_texcoordCube != null) {
+        gl.deleteBuffer(vbo_texcoordCube);
+        vbo_texcoordCube = null;
     }
 
     if (vbo_positionCube != null) {
@@ -1225,4 +1240,70 @@ function uninitialize_Cube() {
         gl.deleteVertexArrray(vao_cube);
         vao_cube = null;
     }
+
+    if (texture_FBO != 0) {
+        gl.deleteTextures(1, texture_FBO);
+        texture_FBO = 0;
+    }
 }
+
+
+function uninitialize_Sphere() {
+    //code
+
+    if (shaderProgramObject_PV_Sphere) {
+
+        gl.useProgram(shaderProgramObject_PV_Sphere);
+
+        var shaderObject = gl.getAttachedShaders(shaderProgramObject_PV_Sphere);
+
+        if (shaderObject && shaderObject.length > 0) {
+            for (let i = 0; i < shaderObject.length; i++) {
+
+                gl.detachShader(shaderProgramObject_PV_Sphere, shaderObject[i]);
+
+                gl.deleteShader(shaderObject[i]);
+
+                shaderObject[i] = null;
+            }
+        }
+
+        gl.useProgram(null);
+
+        gl.deleteProgram(shaderProgramObject_PV_Sphere);
+
+        shaderProgramObject_PV_Sphere = null;
+    }
+
+    if (shaderProgramObject_PF_Sphere) {
+
+        gl.useProgram(shaderProgramObject_PF_Sphere);
+
+        var shaderObject = gl.getAttachedShaders(shaderProgramObject_PF_Sphere);
+
+        if (shaderObject && shaderObject.length > 0) {
+            for (let i = 0; i < shaderObject.length; i++) {
+
+                gl.detachShader(shaderProgramObject_PF_Sphere, shaderObject[i]);
+
+                gl.deleteShader(shaderObject[i]);
+
+                shaderObject[i] = null;
+            }
+        }
+
+        gl.useProgram(null);
+
+        gl.deleteProgram(shaderProgramObject_PF_Sphere);
+
+        shaderProgramObject_PV_Sphere = null;
+    }
+
+    if (sphere)
+    {
+        sphere.deallocate();
+        sphere = null;
+    }
+}
+
+
