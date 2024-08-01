@@ -867,8 +867,8 @@ void uninitialize(void)
 		shaderProgramObject = 0;
 	}
 
-	// cube 
-	// 
+	// pyramid 
+	// delete vbo for normal
 	if (vbo_normal)
 	{
 		glDeleteBuffers(1, &vbo_normal);
