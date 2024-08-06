@@ -338,14 +338,16 @@ function display() {
         }
         modelMatrix = popMatrix();
 
-        // do transformation for elbow
+
+        // do transformation for arm
+
         translationMatrix = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
 
-        rotationMatrix = mat4.create();
-        mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(elbow));
-
         mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+        rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(elbow));
 
         mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
 
@@ -358,7 +360,6 @@ function display() {
         {
             scaleMatrix = mat4.create();
             mat4.scale(scaleMatrix,scaleMatrix,[2.0,0.5,1.0]);
-            
             mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
             
             mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
@@ -370,6 +371,39 @@ function display() {
             sphere.draw();
         }
         modelMatrix = popMatrix();
+
+        // // do transformation for elbow
+        // translationMatrix = mat4.create();
+        // mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
+
+        // rotationMatrix = mat4.create();
+        // mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(elbow));
+
+        // mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+        // mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+        // translationMatrix = mat4.create();
+        // mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
+
+        // mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+    
+        // pushMatrix(modelMatrix);
+        // {
+        //     scaleMatrix = mat4.create();
+        //     mat4.scale(scaleMatrix,scaleMatrix,[2.0,0.5,1.0]);
+            
+        //     mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            
+        //     mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+        //     mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+        //     gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+        //     sphere.draw();
+        // }
+        // modelMatrix = popMatrix();
 
     }
     modelMatrix = popMatrix();
@@ -401,46 +435,49 @@ function initiailzeMatrixStack()
   
 }
 
-function pushMatrix(matrix) {
-    matrixStack.push(matrix.slice(0));
-}
-
-function popMatrix() {
-    return matrixStack.pop();
-}
-
-// function pushMatrix(matrix)
-// {
-//     if(matrixStackTop >= MODEL_VIEW_MATRIX_STACK - 1)
-//     {
-//         console.log("Error - Execeeded matrix stack limit \n");
-//         uninitialize();
-//     }
-//     else
-//     {
-//         matrixStack[matrixStackTop] = matrix;
-//         matrixStackTop++;
-//     }
+// function pushMatrix(matrix) {
+//     matrixStack.push(matrix.slice(0));
 // }
 
-// function popMatrix()
-// {
-//     if(matrixStackTop<0)
-//     {
-//         console.log("Error - Matrix stack is empty\n");
-//         uninitialize();
-//     }
-//     else
-//     {
-//         matrixStack[matrixStackTop] = mat4.create();
-//         matrixStackTop--;
-    
-//         // var matrix = matrixStack[matrixStackTop];
-    
-//         return(matrixStack[matrixStackTop]);
-//     }
-
+// function popMatrix() {
+//     return matrixStack.pop();
 // }
+
+function pushMatrix(matrix)
+{
+    if(matrixStackTop >= MODEL_VIEW_MATRIX_STACK - 1)
+    {
+        console.log("Error - Execeeded matrix stack limit \n");
+        uninitialize();
+    }
+    else
+    {
+        matrixStack[matrixStackTop] = matrix;
+        // matrixStack.push(matrix);
+        matrixStackTop++;
+    }
+}
+
+function popMatrix()
+{
+    if(matrixStackTop<0)
+    {
+        console.log("Error - Matrix stack is empty\n");
+        uninitialize();
+    }
+    else
+    {
+        // matrixStack.pop();
+        matrixStack[matrixStackTop] = mat4.create();
+        matrixStackTop--;
+    
+        // var matrix = matrixStack[matrixStackTop];
+    
+        // return(matrixStack[matrixStackTop]);
+        return(matrixStack.pop());
+    }
+
+}
 
 function uninitialize() {
     //code
