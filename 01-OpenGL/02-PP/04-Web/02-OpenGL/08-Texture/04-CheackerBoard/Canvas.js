@@ -21,7 +21,6 @@ var vbo_texcoordSquare = null;
 
 
 var mvpMatrixUniform;
-var keyPressedUniform;
 var textureSamplerUniform;
 
 var perspectiveProjectionMatrix;
@@ -247,15 +246,14 @@ function initialize() {
 
     textureSamplerUniform = gl.getUniformLocation(shaderProgramObject, "uTextureSampler");
 
-    keyPressedUniform = gl.getUniformLocation(shaderProgramObject,"uKeyPressed");
-
     // geometry attribute declaration
-
+    var square_position = new Float32Array();
     var square_texcoord = new Float32Array([
         1.0, 1.0,
         0.0, 1.0,
         0.0, 0.0,
         1.0, 0.0]);
+    
 
     // vao_square
     vao_square = gl.createVertexArray();
@@ -267,7 +265,7 @@ function initialize() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
 
-    gl.bufferData(gl.ARRAY_BUFFER, null, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, square_position, gl.DYNAMIC_DRAW);
 
     gl.vertexAttribPointer(VertexAttributeEnum.AMC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
 
@@ -400,7 +398,6 @@ function display() {
         ,-2.0,-1.0,0.0,
         0.0,-1.0, 0.0]);
 
-        gl.uniform1i(keyPressedUniform, 1);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
     
@@ -433,8 +430,6 @@ function display() {
         1.0,1.0,0.0,
         1.0,-1.0,0.0,
         2.41421,-1.0,-1.41421]);
-
-    gl.uniform1i(keyPressedUniform, 1);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo_positionSquare);
 

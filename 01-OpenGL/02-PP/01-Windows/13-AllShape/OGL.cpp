@@ -59,8 +59,6 @@ GLuint vbo_positionSquare = 0;
 GLuint vao_circle = 0;
 GLuint vbo_positionCircle = 0;
 
-std::vector<float> circlePoints;
-
 GLuint mvpMatrixUniform = 0;
 GLuint colorUniform = 0;
 // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
@@ -573,7 +571,7 @@ int initialize(void)
 		// get shader uniform location
 		mvpMatrixUniform = glGetUniformLocation(shaderProgramObject, "uMVPMatrix");
 
-		//colorUniform = glGetUniformLocation(shaderProgramObject, "uColor");
+		colorUniform = glGetUniformLocation(shaderProgramObject, "uColor");
 
 		// step 16: declare position and color array 
 
