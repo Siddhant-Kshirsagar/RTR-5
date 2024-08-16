@@ -190,7 +190,7 @@ function initialize() {
         "in vec4 aPosition;"+
         "void main(void)"+
         "{"+
-        "gl_PointSize = 10.0;"+
+        "gl_PointSize = uPointSize;"+
         "gl_Position= uMVPMatrix * aPosition;"+
         "}";
 
@@ -595,11 +595,13 @@ function drawLine()
         lineCount = lineCount + 1;
         if (lineCount % 5 == 0)
         {
-            gl.lineWidth(2.0);
+            // gl.lineWidth(2.0);
+            gl.uniform1f(pointSizeUniform,2.0);
         }
         else
         {
-            gl.lineWidth(1.0);
+            // gl.lineWidth(1.0);
+            gl.uniform1f(pointSizeUniform,1.0);
         }
 
         modelViewMatrix = mat4.create();
@@ -625,13 +627,16 @@ function drawLine()
     {
         lineCount = lineCount + 1;
         if (lineCount % 5 == 0)
-        {
-            gl.lineWidth(1.0);
-        }
-        else
-        {
-            gl.lineWidth(0.1);
-        }
+            if (lineCount % 5 == 0)
+            {
+                // gl.lineWidth(2.0);
+                gl.uniform1f(pointSizeUniform,2.0);
+            }
+            else
+            {
+                // gl.lineWidth(1.0);
+                gl.uniform1f(pointSizeUniform,1.0);
+            }
 
         modelViewMatrix = mat4.create();
         translationMatrix = mat4.create();
@@ -656,13 +661,16 @@ function drawLine()
     {
         lineCount = lineCount + 1;
         if (lineCount % 5 == 0)
-        {
-            gl.lineWidth(2.0);
-        }
-        else
-        {
-            gl.lineWidth(1.0);
-        }
+            if (lineCount % 5 == 0)
+            {
+                // gl.lineWidth(2.0);
+                gl.uniform1f(pointSizeUniform,2.0);
+            }
+            else
+            {
+                // gl.lineWidth(1.0);
+                gl.uniform1f(pointSizeUniform,1.0);
+            }
 
         modelViewMatrix = mat4.create();
         translationMatrix = mat4.create();
