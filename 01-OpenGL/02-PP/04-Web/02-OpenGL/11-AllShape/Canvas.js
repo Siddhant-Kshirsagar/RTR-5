@@ -190,8 +190,8 @@ function initialize() {
         "in vec4 aPosition;"+
         "void main(void)"+
         "{"+
+        "gl_PointSize = 10.0;"+
         "gl_Position= uMVPMatrix * aPosition;"+
-        "gl_PointSize = uPointSize;"+
         "}";
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
@@ -626,11 +626,11 @@ function drawLine()
         lineCount = lineCount + 1;
         if (lineCount % 5 == 0)
         {
-            gl.lineWidth(2.0);
+            gl.lineWidth(1.0);
         }
         else
         {
-            gl.lineWidth(1.0);
+            gl.lineWidth(0.1);
         }
 
         modelViewMatrix = mat4.create();

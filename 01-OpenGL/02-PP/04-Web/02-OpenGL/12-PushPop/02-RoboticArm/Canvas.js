@@ -329,7 +329,47 @@ function display() {
             scaleMatrix = mat4.create();
             mat4.scale(scaleMatrix,scaleMatrix,[2.0,0.5,1.0]);
             mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
             
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            sphere.draw();
+        }
+        modelMatrix = mat4.create();
+        modelMatrix = popMatrix();
+
+
+        // do transformation for arm
+
+        translationMatrix = mat4.create();
+        mat4.translate(translationMatrix, translationMatrix, [2.0, 0.0, 0.0]);
+
+        mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+        rotationMatrix = mat4.create();
+        mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(elbow));
+
+        mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+        translationMatrix = mat4.create();
+        mat4.translate(translationMatrix, translationMatrix, [2.0, 0.0, 0.0]);
+
+        mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+        pushMatrix(modelMatrix);
+        {
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[2.0,0.5,1.0]);
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
             mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
 
             mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
@@ -338,30 +378,33 @@ function display() {
 
             sphere.draw();
         }
+        modelMatrix = mat4.create();
         modelMatrix = popMatrix();
 
-
-        // do transformation for arm
-
+       // draw palm of hand
         translationMatrix = mat4.create();
-        mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
-
-        mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+        mat4.translate(translationMatrix, translationMatrix, [2.0, 0.0, 0.0]);
 
         rotationMatrix = mat4.create();
-        mat4.rotateY(rotationMatrix,rotationMatrix,degToRad(elbow));
+        mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(wrist));
+
+        mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
 
         mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
 
         translationMatrix = mat4.create();
-        mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
+        mat4.translate(translationMatrix, translationMatrix, [0.65, 0.0, 0.0]);
 
         mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
-
+    
         pushMatrix(modelMatrix);
         {
             scaleMatrix = mat4.create();
-            mat4.scale(scaleMatrix,scaleMatrix,[2.0,0.5,1.0]);
+            mat4.scale(scaleMatrix,scaleMatrix,[0.5,0.5,0.5]);
+            
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
             mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
             
             mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
@@ -374,38 +417,160 @@ function display() {
         }
         modelMatrix = popMatrix();
 
-    //    // draw palm of hand
-    //     translationMatrix = mat4.create();
-    //     mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
+        // draw thumb
+        pushMatrix(modelMatrix);
+        {
+            rotationMatrix = mat4.create();
+            mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(90.0));
 
-    //     rotationMatrix = mat4.create();
-    //     mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(wrist));
+            mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
 
-    //     mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+            translationMatrix = mat4.create();
+            mat4.translate(translationMatrix, translationMatrix, [0.9, 0.0, 0.0]);
 
-    //     mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+            mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
 
-    //     translationMatrix = mat4.create();
-    //     mat4.translate(translationMatrix, translationMatrix, [1.0, 0.0, 0.0]);
-
-    //     mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
-    
-    //     pushMatrix(modelMatrix);
-    //     {
-    //         scaleMatrix = mat4.create();
-    //         mat4.scale(scaleMatrix,scaleMatrix,[0.5,0.5,0.5]);
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.35,0.15,0.25]);
             
-    //         mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
             
-    //         mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
 
-    //         mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
 
-    //         gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
 
-    //         sphere.draw();
-    //     }
-    //     modelMatrix = popMatrix();
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
+
+        // draw index finger
+        pushMatrix(modelMatrix);
+        {
+            rotationMatrix = mat4.create();
+            mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(15.0));
+
+            mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+            translationMatrix = mat4.create();
+            mat4.translate(translationMatrix, translationMatrix, [0.9, 0.35, 0.0]);
+
+            mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.45,0.125,0.225]);
+            
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
+
+        // draw middle finger
+        pushMatrix(modelMatrix);
+        {
+            rotationMatrix = mat4.create();
+            mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(5.0));
+
+            mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+            translationMatrix = mat4.create();
+            mat4.translate(translationMatrix, translationMatrix, [1.0, 0.1, 0.0]);
+
+            mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.5,0.15,0.25]);
+            
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
+
+        // draw ring finger
+        pushMatrix(modelMatrix);
+        {
+            rotationMatrix = mat4.create();
+            mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(-5.0));
+
+            mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+            translationMatrix = mat4.create();
+            mat4.translate(translationMatrix, translationMatrix, [1.0, -0.1, 0.0]);
+
+            mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.45,0.125,0.225]);
+            
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
+
+        // draw pinky finger
+        pushMatrix(modelMatrix);
+        {
+            rotationMatrix = mat4.create();
+            mat4.rotateZ(rotationMatrix,rotationMatrix,degToRad(-10.0));
+
+            mat4.multiply(modelMatrix,modelMatrix,rotationMatrix);
+
+            translationMatrix = mat4.create();
+            mat4.translate(translationMatrix, translationMatrix, [0.9, -0.3, 0.0]);
+
+            mat4.multiply(modelMatrix,modelMatrix,translationMatrix);
+
+            scaleMatrix = mat4.create();
+            mat4.scale(scaleMatrix,scaleMatrix,[0.4,0.1,0.2]);
+            
+            modelViewMatrix = mat4.create();
+            modelViewProjectionMatrix = mat4.create();
+
+            mat4.multiply(modelMatrix, modelMatrix, scaleMatrix);
+            
+            mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
+
+            mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+
+            gl.uniformMatrix4fv(mvpMatrixUniform, false, modelViewProjectionMatrix);
+
+            sphere.draw();
+        }
+        modelMatrix = popMatrix();
 
     }
     modelMatrix = popMatrix();
@@ -437,13 +602,13 @@ function initiailzeMatrixStack()
   
 }
 
-// function pushMatrix(matrix) {
-//     matrixStack.push(matrix.slice(0));
-// }
+function pushMatrix(matrix) {
+    matrixStack.push(matrix.slice(0));
+}
 
-// function popMatrix() {
-//     return matrixStack.pop();
-// }
+function popMatrix() {
+    return matrixStack.pop();
+}
 
 // function pushMatrix(matrix)
 // {
@@ -473,8 +638,8 @@ function initiailzeMatrixStack()
 //         matrixStack[matrixStackTop] = mat4.create();
 //         matrixStackTop--;
     
-//         // return(matrixStack[matrixStackTop]);
-//         return(matrixStack.pop());
+//         return(matrixStack[matrixStackTop]);
+//         // return(matrixStack.pop());
 //     }
 
 // }
