@@ -775,7 +775,7 @@ void uninitialize(void)
 	}
 
 	// sphere 
-	// 	// delete vbo for normal
+	// 	// delete vbo for elements
 	if (vbo_elementSphere)
 	{
 		glDeleteBuffers(1, &vbo_elementSphere);

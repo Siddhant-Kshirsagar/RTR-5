@@ -100,8 +100,8 @@ function keyDown(event) {
             uninitialize();
             window.close(); // exit 
             break;
-        case 76:
-        case 108:
+        case 76: // ascii for L
+        case 108: // ascii for l
             if (bLightingEnable == false) {
                 bLightingEnable = true;
             }
