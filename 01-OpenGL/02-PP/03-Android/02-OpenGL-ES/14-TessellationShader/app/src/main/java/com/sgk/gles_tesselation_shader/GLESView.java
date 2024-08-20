@@ -517,13 +517,13 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
 
         if(uiNumberOfLineSegment == 30)
         {
-            float lightColor[]= { 1.0f,0.0f,0.0f,0.0f};
-            GLES32.glUniform4fv(lineColorUniform, 1,lightColor,0);
+            float lineColor[]= { 1.0f,0.0f,0.0f,0.0f};
+            GLES32.glUniform4fv(lineColorUniform, 1,lineColor,0);
         }
         else
         {
-            float lightColor[]= { 1.0f,1.0f,0.0f,0.0f};
-            GLES32.glUniform4fv(lineColorUniform, 1,lightColor,0);
+            float lineColor[]= { 1.0f,1.0f,0.0f,0.0f};
+            GLES32.glUniform4fv(lineColorUniform, 1,lineColor,0);
         }
 
        
