@@ -115,7 +115,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
     {
         // code
         rotateBodyPart = rotateBodyPart + 1;
-        if(rotateBodyPart > 3)
+        if(rotateBodyPart >= 3)
         {
             rotateBodyPart = 0;
         }
@@ -466,38 +466,46 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
         float[] translationMatrix = new float[16];
         float[] rotationMatrix = new float[16];
         float[] scaleMatrix = new float[16];
+        float[] modelMatrix = new float[16];
         float[] modelViewMatrix = new float[16];
+        float[] viewMatrix = new float[16];
+        
 
         Matrix.setIdentityM(translationMatrix,0);
         Matrix.setIdentityM(rotationMatrix,0);
         Matrix.setIdentityM(scaleMatrix,0);
+        Matrix.setIdentityM(modelMatrix,0);
         Matrix.setIdentityM(modelViewMatrix,0);
+        Matrix.setIdentityM(viewMatrix,0);
 
         
 
-        pushMatrix(modelViewMatrix);
+        pushMatrix(modelMatrix);
         {
             Matrix.translateM(translationMatrix,0,0.0f,0.0f,-10.0f);
 
-            Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,translationMatrix,0);
+            Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
-            pushMatrix(modelViewMatrix);
+            pushMatrix(modelMatrix);
             {
-
+                // draw sholder
                 Matrix.rotateM(rotationMatrix,0,sholder,0.0f,0.0f,1.0f);
 
                 Matrix.translateM(translationMatrix,0,1.0f,0.0f,0.0f);
 
-                Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,rotationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
 
-                Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,translationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
-                pushMatrix(modelViewMatrix);
+                pushMatrix(modelMatrix);
                 {
                     Matrix.scaleM(scaleMatrix,0,2.0f,0.5f,1.0f);
-                    Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,scaleMatrix,0);
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
 
                     GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
 
                     GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
 
@@ -516,30 +524,36 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
                     // unbind vao_sphere
                     GLES32.glBindVertexArray(0);
                 }
-                modelViewMatrix = popMatrix();
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
 
+                // draw elbow
                 Matrix.setIdentityM(translationMatrix,0);
                 Matrix.translateM(translationMatrix,0,1.0f,0.0f,0.0f);
+
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
                 Matrix.setIdentityM(rotationMatrix,0);
                 Matrix.rotateM(rotationMatrix,0,elbow,0.0f,0.0f,1.0f);
 
-                Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,translationMatrix,0);
-
-                Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,rotationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
 
                 Matrix.setIdentityM(translationMatrix,0);
                 Matrix.translateM(translationMatrix,0,1.0f,0.0f,0.0f);
 
-                Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,translationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
-                pushMatrix(modelViewMatrix);
+                pushMatrix(modelMatrix);
                 {
                     Matrix.setIdentityM(scaleMatrix,0);
                     Matrix.scaleM(scaleMatrix,0,2.0f, 0.5f, 1.0f);
-                    Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,scaleMatrix,0);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
 
                     GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
 
                     GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
 
@@ -559,50 +573,279 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
                     // unbind vao_sphere
                     GLES32.glBindVertexArray(0);
                 }
-                modelViewMatrix = popMatrix();
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
 
-                // Matrix.setIdentityM(rotationMatrix,0);
-                // Matrix.rotateM(rotationMatrix,0,mYear,0.0f,1.0f,0.0f);
+                // draw palm of hand
+                Matrix.setIdentityM(translationMatrix,0);
+                Matrix.translateM(translationMatrix,0,1.0f,0.0f,0.0f);
 
-                // Matrix.setIdentityM(translationMatrix,0);
-                // Matrix.translateM(translationMatrix,0,0.8f,0.0f,0.0f);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
-                // Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,rotationMatrix,0);
+                Matrix.setIdentityM(rotationMatrix,0);
+                Matrix.rotateM(rotationMatrix,0,wrist,0.0f,0.0f,1.0f);
 
-                // Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,translationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
 
-                // Matrix.setIdentityM(rotationMatrix,0);
-                // Matrix.rotateM(rotationMatrix,0,mDay,0.0f,1.0f,0.0f);
+                Matrix.setIdentityM(translationMatrix,0);
+                Matrix.translateM(translationMatrix,0,0.25f,0.0f,0.0f);
 
-                // Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,rotationMatrix,0);
+                Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
 
-                // pushMatrix(modelViewMatrix);
-                // {
-                //     Matrix.setIdentityM(scaleMatrix,0);
-                //     Matrix.scaleM(scaleMatrix,0,0.25f, 0.25f, 0.25f);
-                //     Matrix.multiplyMM(modelViewMatrix,0,modelViewMatrix,0,scaleMatrix,0);
+                
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.5f, 0.5f, 0.5f);
 
-                //     GLES32.glUniform4f(colorUniform,1.0f, 1.0f, 1.0f,1.0f);
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
 
-                //     GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
 
-                //     GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
 
-                //     // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
 
-                //     // step 2 : bind with VAO(vertex array object)
-                //     // bind with vao_sphere
-                //     GLES32.glBindVertexArray(vao_sphere[0]);
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
 
-                //     // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
-                //     GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
 
-                //     GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
 
-                //     // unbind vao_sphere
-                //     GLES32.glBindVertexArray(0);
-                // }
-                // modelViewMatrix = popMatrix();
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
+                // draw thumb
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(rotationMatrix,0);
+                    Matrix.rotateM(rotationMatrix,0,90.0f,0.0f,0.0f,1.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
+
+                    Matrix.setIdentityM(translationMatrix,0);
+                    Matrix.translateM(translationMatrix,0,0.45f,0.0f,0.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
+
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.35f, 0.2f, 0.25f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
+
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
+
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
+                // draw index finger
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(rotationMatrix,0);
+                    Matrix.rotateM(rotationMatrix,0,10.0f,0.0f,0.0f,1.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
+
+                    Matrix.setIdentityM(translationMatrix,0);
+                    Matrix.translateM(translationMatrix,0,0.45f,0.15f,0.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
+
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.45f, 0.15f, 0.25f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
+
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
+
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
+                // draw middle finger
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(rotationMatrix,0);
+                    Matrix.rotateM(rotationMatrix,0,0.0f,0.0f,0.0f,1.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
+
+                    Matrix.setIdentityM(translationMatrix,0);
+                    Matrix.translateM(translationMatrix,0,0.525f,0.05f,0.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
+
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.5f, 0.15f, 0.25f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
+
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
+
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
+                // draw ring finger
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(rotationMatrix,0);
+                    Matrix.rotateM(rotationMatrix,0,-10.0f,0.0f,0.0f,1.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
+
+                    Matrix.setIdentityM(translationMatrix,0);
+                    Matrix.translateM(translationMatrix,0,0.475f,-0.05f,0.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
+
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.5f, 0.15f, 0.25f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
+
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
+
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
+                // draw pinky finger
+                pushMatrix(modelMatrix);
+                {
+                    Matrix.setIdentityM(rotationMatrix,0);
+                    Matrix.rotateM(rotationMatrix,0,-20.0f,0.0f,0.0f,1.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,rotationMatrix,0);
+
+                    Matrix.setIdentityM(translationMatrix,0);
+                    Matrix.translateM(translationMatrix,0,0.4f,-0.15f,0.0f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,translationMatrix,0);
+
+                    Matrix.setIdentityM(scaleMatrix,0);
+                    Matrix.scaleM(scaleMatrix,0,0.3f, 0.1f, 0.2f);
+
+                    Matrix.multiplyMM(modelMatrix,0,modelMatrix,0,scaleMatrix,0);
+
+                    GLES32.glUniform4f(colorUniform,0.8f, 0.6f, 0.4f,1.0f);
+
+                    Matrix.setIdentityM(modelViewMatrix,0);
+                    Matrix.multiplyMM(modelViewMatrix,0,viewMatrix,0,modelMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(modelViewMatrixUniform,1,false,modelViewMatrix,0);
+
+                    GLES32.glUniformMatrix4fv(projectionMatrixUniform,1,false,perspectiveProjectionMatrix,0);
+
+                    // GLES32.glPolygonMode(GLES32.GL_FRONT_AND_BACK, GLES32.GL_LINE);
+
+                    // step 2 : bind with VAO(vertex array object)
+                    // bind with vao_sphere
+                    GLES32.glBindVertexArray(vao_sphere[0]);
+
+                    // *** draw, either by glDrawTriangles() or glDrawArrays() or glDrawElements()
+                    GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vbo_sphere_element[0]);
+
+                    GLES32.glDrawElements(GLES32.GL_TRIANGLES, numElements, GLES32.GL_UNSIGNED_SHORT, 0);
+
+                    // unbind vao_sphere
+                    GLES32.glBindVertexArray(0);
+                }
+                Matrix.setIdentityM(modelMatrix,0);
+                modelMatrix = popMatrix();
+
             }
             modelViewMatrix = popMatrix();
         }
@@ -656,7 +899,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
             uninitialize();
         }
 
-        matrixStack[matrixStackTop] = matrix;
+        matrixStack[matrixStackTop] = matrix.clone();
 
         System.out.println("SGK: Current Matrix length: "+matrixStack[matrixStackTop]);
 
@@ -679,7 +922,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
 
         matrixStackTop--;
 
-        float[] matrix = matrixStack[matrixStackTop];
+        float[] matrix = matrixStack[matrixStackTop].clone();
 
         return matrix;
     }

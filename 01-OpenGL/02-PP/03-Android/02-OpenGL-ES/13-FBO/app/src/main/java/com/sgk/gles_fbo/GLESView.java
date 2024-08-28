@@ -1136,7 +1136,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
         // step 1 : check capacity of render buffer
         GLES32.glGetIntegerv(GLES32.GL_MAX_RENDERBUFFER_SIZE, maxRenderBufferSize,0);
 
-        if (maxRenderBufferSize[0] < textureWidth || maxRenderBufferSize[-0] < textureHeight)
+        if (maxRenderBufferSize[0] < textureWidth || maxRenderBufferSize[0] < textureHeight)
         {
             System.out.println("SGK: Texture Size Overflow\n");
             return(false);

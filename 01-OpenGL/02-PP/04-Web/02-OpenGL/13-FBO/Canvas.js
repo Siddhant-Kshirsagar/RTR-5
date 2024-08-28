@@ -924,9 +924,6 @@ function resize_Cube() {
         canvas.height = canvas_original_height;
     }
 
-    winWidth = canvas.width;
-    winHeight = canvas.height;
-
     // set viewport 
     gl.viewport(0, 0, canvas.width, canvas.height);
 
@@ -957,7 +954,7 @@ function display_Cube() {
         update_Sphere();
     }
 
-    resize_Cube(winWidth,winHeight);
+    resize_Cube();
 
     // reset color to white to compenset the change by display_Sphere
 	gl.clearColor(1.0, 1.0, 1.0, 1.0);
