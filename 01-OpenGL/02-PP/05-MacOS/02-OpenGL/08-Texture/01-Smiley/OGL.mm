@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
                                            defer : NO];
 
     // Give title to the window
-    [window setTitle: @"SGK: Perspective White Rectangle"];
+    [window setTitle: @"SGK: Smiley"];
 
     // center the window
     [window center];
