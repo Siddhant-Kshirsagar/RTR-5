@@ -64,10 +64,10 @@ GLuint modelMatrixUniform = 0;
 GLuint viewMatrixUniform = 0;
 GLuint projectionMatrixUniform = 0;
 
-GLuint lightAmbientUniform[3];
-GLuint lightDiffuseUniform[3];
-GLuint lightSpecularUniform[3];
-GLuint lightPositionUniform[3];
+GLuint lightAmbientUniform[1];
+GLuint lightDiffuseUniform[1];
+GLuint lightSpecularUniform[1];
+GLuint lightPositionUniform[1];
 
 GLuint materialDiffuseUniform = 0;  
 GLuint materialAmbientUniform = 0;
