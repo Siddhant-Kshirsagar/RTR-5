@@ -519,7 +519,19 @@ int main(int argc, char* argv[])
 	}
 
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-
+    
+    // set orthographic projection matrix
+	if (width <= height)
+	{
+		orthographicProjectionMatrix =  vmath::ortho(-100.0f, 100.0f,
+			-100.0f * (((GLfloat)height) / ((GLfloat)width)),
+			100.0f * (((GLfloat)height) / ((GLfloat)width)), -100.0f, 100.0f);
+	}
+	else
+	{
+		orthographicProjectionMatrix = vmath::ortho(-100.0f * ((GLfloat)width / (GLfloat)height),
+			100.0f * ((GLfloat)width / (GLfloat)height), -100.0f, 100.0f, -100.0f, 100.0f);
+	}
 }
 
 -(void)display
