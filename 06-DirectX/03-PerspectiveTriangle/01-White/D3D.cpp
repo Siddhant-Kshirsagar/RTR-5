@@ -38,21 +38,24 @@ IDXGISwapChain *gpIDXGISwapChain = NULL;
 ID3D11Device *gpID3D11Device = NULL;
 ID3D11DeviceContext *gpID3D11DeviceContext = NULL;
 ID3D11RenderTargetView *gpID3D11RenderTargetView = NULL;
+ID3D11DepthStencilView *gpID3D11DepthStencilView = NULL;
 
 ID3D11VertexShader *gpID3D11VertexShader = NULL;
 ID3D11PixelShader *gpID3D11PixelShader = NULL;
 ID3D11InputLayout *gpID3D11InputLayout = NULL;
 ID3D11Buffer *gpID3D11Buffer_PositionBuffer = NULL;
 ID3D11Buffer *gpID3D11Buffer_ConstantBuffer = NULL;
+ID3D11RasterizerState *gpID3D11RasterizerState = NULL;
 
 
 struct CBUFFER
 {
 	XMMATRIX WorldViewProjectionMatrix; // similar to OpenGL model is equal to 'world' word
-	XMMATRIX perspectiveProjectionMatrix; 
 };
 
 XMMATRIX perspectiveProjectionMatrix;
+
+int numOfElements = 0;
 
 float clearColor[4];
 
@@ -448,10 +451,15 @@ HRESULT initialize(void)
 		"{" \
 		"float4x4 worldViewProjectionMatrix;" \
 		"}" \
-		"float4 main(float4 pos:POSITION) : SV_POSITION" \
+		"struct vertex_output" \
 		"{" \
-		"float4 position = mul(worldViewProjectionMatrix,pos);" \
-		"return(position);" \
+		"float4 position:SV_POSITION;" \
+		"};" \
+		"vertex_output main(float4 pos:POSITION)" \
+		"{" \
+		"vertex_output output;" \
+		"output.position = mul(worldViewProjectionMatrix,pos);" \
+		"return(output);" \
 		"}";
 
 	ID3DBlob *pID3DBlob_VertexShaderSourceCode = NULL;
@@ -511,9 +519,13 @@ HRESULT initialize(void)
 
 	// Pixel Shader
 	const char *pixelShaderSourceCode =
-		"float4 main(void): SV_TARGET" \
+		"struct vertex_output" \
+		"{" \
+		"float4 position:SV_POSITION;" \
+		"};" \
+		"float4 main(vertex_output input): SV_TARGET" \
 		"{"
-		"float4 color = float4(1.0f,1.0f,1.0f,1.0f);"\
+		"float4 color = float4(1.0,1.0,1.0,1.0);"\
 		"return color;" \
 		"}";
 
@@ -588,19 +600,20 @@ HRESULT initialize(void)
 
 	// initialize input element structure
 	// similiar to glBindAttribLocation()
-	D3D11_INPUT_ELEMENT_DESC d3dInputElementDesc;
-	ZeroMemory((void *)&d3dInputElementDesc, sizeof(D3D11_INPUT_ELEMENT_DESC));
+	D3D11_INPUT_ELEMENT_DESC d3dInputElementDesc[1];
+	ZeroMemory((void *)d3dInputElementDesc, sizeof(D3D11_INPUT_ELEMENT_DESC)* _ARRAYSIZE(d3dInputElementDesc));
 
-	d3dInputElementDesc.SemanticName = "POSITION";
-	d3dInputElementDesc.SemanticIndex = 0;
-	d3dInputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	d3dInputElementDesc.InputSlot = 0;
-	d3dInputElementDesc.AlignedByteOffset = 0;
-	d3dInputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	d3dInputElementDesc.InstanceDataStepRate = 0;
+	// position
+	d3dInputElementDesc[0].SemanticName = "POSITION";
+	d3dInputElementDesc[0].SemanticIndex = 0;
+	d3dInputElementDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	d3dInputElementDesc[0].InputSlot = 0;
+	d3dInputElementDesc[0].AlignedByteOffset = 0;
+	d3dInputElementDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	d3dInputElementDesc[0].InstanceDataStepRate = 0;
 
 	// using above structure create input layout
-	hr = gpID3D11Device->CreateInputLayout(&d3dInputElementDesc, 1, pID3DBlob_VertexShaderSourceCode->GetBufferPointer(), pID3DBlob_VertexShaderSourceCode->GetBufferSize(), &gpID3D11InputLayout);
+	hr = gpID3D11Device->CreateInputLayout(d3dInputElementDesc, _ARRAYSIZE(d3dInputElementDesc), pID3DBlob_VertexShaderSourceCode->GetBufferPointer(), pID3DBlob_VertexShaderSourceCode->GetBufferSize(), &gpID3D11InputLayout);
 
 	if (FAILED(hr))
 	{
@@ -635,6 +648,9 @@ HRESULT initialize(void)
 		-1.0f,-1.0f,0.0f
 	};
 
+	numOfElements = sizeof(triangle_position) / sizeof(triangle_position[0]);
+
+	// position
 	// create vertex buffer for position
 	D3D11_BUFFER_DESC d3d11BufferDesc;
 	ZeroMemory((void *)&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -654,14 +670,14 @@ HRESULT initialize(void)
 	if (FAILED(hr))
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
-		fprintf(gpFILE, "CreateBuffer() failed for vertex buffer\n\n");
+		fprintf(gpFILE, "CreateBuffer() failed for position vertex buffer\n\n");
 		fclose(gpFILE);
 		return(hr);
 	}
 	else
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
-		fprintf(gpFILE, "CreateBuffer() succeeded for vertex buffer\n\n");
+		fprintf(gpFILE, "CreateBuffer() succeeded for position vertex buffer\n\n");
 		fclose(gpFILE);
 	}
 
@@ -710,10 +726,44 @@ HRESULT initialize(void)
 	// set above buffer into pipeline
 	gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer);
 
+	// create and set rasterizer state to off backface culling
+	D3D11_RASTERIZER_DESC d3d11RasterizerDesc;
+
+	ZeroMemory((void *)&d3d11RasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	d3d11RasterizerDesc.CullMode = D3D11_CULL_NONE;
+	d3d11RasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	d3d11RasterizerDesc.MultisampleEnable = FALSE;
+	d3d11RasterizerDesc.DepthBias = 0;
+	d3d11RasterizerDesc.DepthBiasClamp = 0.0f;
+	d3d11RasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	d3d11RasterizerDesc.DepthClipEnable = TRUE;
+	d3d11RasterizerDesc.AntialiasedLineEnable = FALSE;
+	d3d11RasterizerDesc.FrontCounterClockwise = FALSE;
+	d3d11RasterizerDesc.ScissorEnable = FALSE;
+
+	hr = gpID3D11Device->CreateRasterizerState(&d3d11RasterizerDesc, &gpID3D11RasterizerState);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateRasterizerState() failed for Rasterizer State buffer\n\n");
+		fclose(gpFILE);
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateRasterizerState() succeeded for Rasterizer State constant buffer\n\n");
+		fclose(gpFILE);
+	}
+
+	gpID3D11DeviceContext->RSSetState(gpID3D11RasterizerState);
+
+
 	// define clear color
 	clearColor[0] = 0.0f;
 	clearColor[1] = 0.0f;
-	clearColor[2] = 1.0f;
+	clearColor[2] = 0.0f;
 	clearColor[3] = 1.0f;
 
 	// orthographic projection
@@ -749,6 +799,13 @@ HRESULT resize(int width, int height)
 		height = 1;
 	}
 
+	// release depth stencil view
+	if (gpID3D11DepthStencilView)
+	{
+		gpID3D11DepthStencilView->Release();
+		gpID3D11DepthStencilView = NULL;
+	}
+
 	// release render target view
 	if (gpID3D11RenderTargetView)
 	{
@@ -780,8 +837,65 @@ HRESULT resize(int width, int height)
 		fclose(gpFILE);
 	}
 
+	// Create an empty texture according to the new changed size we will call it as depth buffer
+	D3D11_TEXTURE2D_DESC d3d11Texture2DDesc;
+	ZeroMemory((void *)&d3d11Texture2DDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	d3d11Texture2DDesc.Width = (UINT)width;
+	d3d11Texture2DDesc.Height = (UINT)height;
+	d3d11Texture2DDesc.MipLevels = 1;
+	d3d11Texture2DDesc.ArraySize = 1;
+	d3d11Texture2DDesc.SampleDesc.Count = 1;
+	d3d11Texture2DDesc.SampleDesc.Quality = 0;
+	d3d11Texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+	d3d11Texture2DDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11Texture2DDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	d3d11Texture2DDesc.CPUAccessFlags = 0;
+	d3d11Texture2DDesc.MiscFlags = 0;
+
+	ID3D11Texture2D *pID3D11Texture2D_DepthBuffer = NULL;
+
+	hr = gpID3D11Device->CreateTexture2D(&d3d11Texture2DDesc, NULL, &pID3D11Texture2D_DepthBuffer);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
+	// create depth stencil view according to above depth buffer texture
+	D3D11_DEPTH_STENCIL_VIEW_DESC d3d11DepthStencilViewDesc;
+	ZeroMemory((void *)&d3d11DepthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+
+	d3d11DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+
+	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer,&d3d11DepthStencilViewDesc , &gpID3D11DepthStencilView);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		pID3D11Texture2D_DepthBuffer->Release();
+		pID3D11Texture2D_DepthBuffer = NULL;
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
 	// c) set this to pipeline
-	gpID3D11DeviceContext->OMSetRenderTargets(1, &gpID3D11RenderTargetView, NULL);
+	gpID3D11DeviceContext->OMSetRenderTargets(1, &gpID3D11RenderTargetView, gpID3D11DepthStencilView);
 	piD3D11Texture2D->Release();
 	piD3D11Texture2D = NULL;
 
@@ -810,11 +924,19 @@ HRESULT resize(int width, int height)
 void display(void)
 {
 	//code
+
+	
 	// similar to clear color in openGL
 	gpID3D11DeviceContext->ClearRenderTargetView(gpID3D11RenderTargetView, clearColor);
+	gpID3D11DeviceContext->ClearDepthStencilView(gpID3D11DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
 	// transformation
 	XMMATRIX worldMatrix = XMMatrixIdentity();
-	worldMatrix = XMMatrixTranslation(0.0f, 0.0f, 3.0f);
+
+	XMMATRIX translationMatrix = XMMatrixIdentity();
+	translationMatrix = XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+
+	worldMatrix = translationMatrix;
 
 	XMMATRIX viewMatrix = XMMatrixIdentity();
 	XMMATRIX wvpMatrix = worldMatrix * viewMatrix * perspectiveProjectionMatrix;
@@ -827,7 +949,6 @@ void display(void)
 	gpID3D11DeviceContext->UpdateSubresource(
 		gpID3D11Buffer_ConstantBuffer, 0, NULL,&constantBuffer, 0, 0);
 
-	
 	// set position buffer into pipeline here
 	UINT stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
 	UINT offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
@@ -837,7 +958,7 @@ void display(void)
 	gpID3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// draw the geometry
-	gpID3D11DeviceContext->Draw(3, 0);
+	gpID3D11DeviceContext->Draw(numOfElements, 0);
 
 	// do double buffer by presenting swapchain
 	gpIDXGISwapChain->Present(0,0);
@@ -846,7 +967,6 @@ void display(void)
 void update(void)
 {
 	//code
-
 }
 
 void uninitialize(void)
@@ -859,6 +979,11 @@ void uninitialize(void)
 	{
 		gpID3D11Buffer_ConstantBuffer->Release();
 		gpID3D11Buffer_ConstantBuffer = NULL;
+	}
+	if (gpID3D11RasterizerState)
+	{
+		gpID3D11RasterizerState->Release();
+		gpID3D11RasterizerState = NULL;
 	}
 	if (gpID3D11Buffer_PositionBuffer)
 	{
@@ -879,6 +1004,11 @@ void uninitialize(void)
 	{
 		gpID3D11VertexShader->Release();
 		gpID3D11VertexShader = NULL;
+	}
+	if (gpID3D11DepthStencilView)
+	{
+		gpID3D11DepthStencilView->Release();
+		gpID3D11DepthStencilView = NULL;
 	}
 	if (gpID3D11RenderTargetView)
 	{

@@ -38,19 +38,20 @@ IDXGISwapChain *gpIDXGISwapChain = NULL;
 ID3D11Device *gpID3D11Device = NULL;
 ID3D11DeviceContext *gpID3D11DeviceContext = NULL;
 ID3D11RenderTargetView *gpID3D11RenderTargetView = NULL;
+ID3D11DepthStencilView *gpID3D11DepthStencilView = NULL;
 
 ID3D11VertexShader *gpID3D11VertexShader = NULL;
 ID3D11PixelShader *gpID3D11PixelShader = NULL;
 ID3D11InputLayout *gpID3D11InputLayout = NULL;
 ID3D11Buffer *gpID3D11Buffer_PositionBuffer = NULL;
 ID3D11Buffer *gpID3D11Buffer_ColorBuffer = NULL;
-ID3D11Buffer *gpID3D11Buffer_ConstantBuffer = NULL;
+ID3D11Buffer *gpID3D11Buffer_ConstantBuffer = NULL; 
+ID3D11RasterizerState *gpID3D11RasterizerState = NULL;
 
 
 struct CBUFFER
 {
-	XMMATRIX WorldViewProjectionMatrix; // similar to OpenGL model is equal to 'world' word
-	XMMATRIX perspectiveProjectionMatrix; 
+	XMMATRIX WorldViewProjectionMatrix; // similar to OpenGL model is equal to 'world' word 
 };
 
 XMMATRIX perspectiveProjectionMatrix;
@@ -792,6 +793,39 @@ HRESULT initialize(void)
 	// set above buffer into pipeline
 	gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer);
 
+	// create and set rasterizer state to off backface culling
+	D3D11_RASTERIZER_DESC d3d11RasterizerDesc;
+
+	ZeroMemory((void *)&d3d11RasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	d3d11RasterizerDesc.CullMode = D3D11_CULL_NONE;
+	d3d11RasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	d3d11RasterizerDesc.MultisampleEnable = FALSE;
+	d3d11RasterizerDesc.DepthBias = 0;
+	d3d11RasterizerDesc.DepthBiasClamp = 0.0f;
+	d3d11RasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	d3d11RasterizerDesc.DepthClipEnable = TRUE;
+	d3d11RasterizerDesc.AntialiasedLineEnable = FALSE;
+	d3d11RasterizerDesc.FrontCounterClockwise = FALSE;
+	d3d11RasterizerDesc.ScissorEnable = FALSE;
+
+	hr = gpID3D11Device->CreateRasterizerState(&d3d11RasterizerDesc, &gpID3D11RasterizerState);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateRasterizerState() failed for Rasterizer State buffer\n\n");
+		fclose(gpFILE);
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateRasterizerState() succeeded for Rasterizer State constant buffer\n\n");
+		fclose(gpFILE);
+	}
+
+	gpID3D11DeviceContext->RSSetState(gpID3D11RasterizerState);
+
 	// define clear color
 	clearColor[0] = 0.0f;
 	clearColor[1] = 0.0f;
@@ -862,6 +896,63 @@ HRESULT resize(int width, int height)
 		fclose(gpFILE);
 	}
 
+	// Create an empty texture according to the new changed size we will call it as depth buffer
+	D3D11_TEXTURE2D_DESC d3d11Texture2DDesc;
+	ZeroMemory((void *)&d3d11Texture2DDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	d3d11Texture2DDesc.Width = (UINT)width;
+	d3d11Texture2DDesc.Height = (UINT)height;
+	d3d11Texture2DDesc.MipLevels = 1;
+	d3d11Texture2DDesc.ArraySize = 1;
+	d3d11Texture2DDesc.SampleDesc.Count = 1;
+	d3d11Texture2DDesc.SampleDesc.Quality = 0;
+	d3d11Texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+	d3d11Texture2DDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11Texture2DDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	d3d11Texture2DDesc.CPUAccessFlags = 0;
+	d3d11Texture2DDesc.MiscFlags = 0;
+
+	ID3D11Texture2D *pID3D11Texture2D_DepthBuffer = NULL;
+
+	hr = gpID3D11Device->CreateTexture2D(&d3d11Texture2DDesc, NULL, &pID3D11Texture2D_DepthBuffer);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
+	// create depth stencil view according to above depth buffer texture
+	D3D11_DEPTH_STENCIL_VIEW_DESC d3d11DepthStencilViewDesc;
+	ZeroMemory((void *)&d3d11DepthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+
+	d3d11DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+
+	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer, &d3d11DepthStencilViewDesc, &gpID3D11DepthStencilView);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		pID3D11Texture2D_DepthBuffer->Release();
+		pID3D11Texture2D_DepthBuffer = NULL;
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
 	// c) set this to pipeline
 	gpID3D11DeviceContext->OMSetRenderTargets(1, &gpID3D11RenderTargetView, NULL);
 	piD3D11Texture2D->Release();
@@ -894,6 +985,8 @@ void display(void)
 	//code
 	// similar to clear color in openGL
 	gpID3D11DeviceContext->ClearRenderTargetView(gpID3D11RenderTargetView, clearColor);
+	gpID3D11DeviceContext->ClearDepthStencilView(gpID3D11DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
 	// transformation
 	XMMATRIX worldMatrix = XMMatrixIdentity();
 	worldMatrix = XMMatrixTranslation(0.0f, 0.0f, 3.0f);
@@ -947,6 +1040,11 @@ void uninitialize(void)
 		gpID3D11Buffer_ConstantBuffer->Release();
 		gpID3D11Buffer_ConstantBuffer = NULL;
 	}
+	if (gpID3D11RasterizerState)
+	{
+		gpID3D11RasterizerState->Release();
+		gpID3D11RasterizerState = NULL;
+	}
 	if (gpID3D11Buffer_ColorBuffer)
 	{
 		gpID3D11Buffer_ColorBuffer->Release();
@@ -971,6 +1069,11 @@ void uninitialize(void)
 	{
 		gpID3D11VertexShader->Release();
 		gpID3D11VertexShader = NULL;
+	}
+	if (gpID3D11DepthStencilView)
+	{
+		gpID3D11DepthStencilView->Release();
+		gpID3D11DepthStencilView = NULL;
 	}
 	if (gpID3D11RenderTargetView)
 	{

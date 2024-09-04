@@ -1024,6 +1024,63 @@ HRESULT resize(int width, int height)
 		fclose(gpFILE);
 	}
 
+	// Create an empty texture according to the new changed size we will call it as depth buffer
+	D3D11_TEXTURE2D_DESC d3d11Texture2DDesc;
+	ZeroMemory((void *)&d3d11Texture2DDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	d3d11Texture2DDesc.Width = (UINT)width;
+	d3d11Texture2DDesc.Height = (UINT)height;
+	d3d11Texture2DDesc.MipLevels = 1;
+	d3d11Texture2DDesc.ArraySize = 1;
+	d3d11Texture2DDesc.SampleDesc.Count = 1;
+	d3d11Texture2DDesc.SampleDesc.Quality = 0;
+	d3d11Texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+	d3d11Texture2DDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11Texture2DDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	d3d11Texture2DDesc.CPUAccessFlags = 0;
+	d3d11Texture2DDesc.MiscFlags = 0;
+
+	ID3D11Texture2D *pID3D11Texture2D_DepthBuffer = NULL;
+
+	hr = gpID3D11Device->CreateTexture2D(&d3d11Texture2DDesc, NULL, &pID3D11Texture2D_DepthBuffer);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateTexture2D() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
+	// create depth stencil view according to above depth buffer texture
+	D3D11_DEPTH_STENCIL_VIEW_DESC d3d11DepthStencilViewDesc;
+	ZeroMemory((void *)&d3d11DepthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+
+	d3d11DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	d3d11DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+
+	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer, &d3d11DepthStencilViewDesc, &gpID3D11DepthStencilView);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() failed for depth buffer creation\n\n");
+		fclose(gpFILE);
+		pID3D11Texture2D_DepthBuffer->Release();
+		pID3D11Texture2D_DepthBuffer = NULL;
+		return(hr);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDepthStencilView() successfully for depth buffer creation \n\n");
+		fclose(gpFILE);
+	}
+
 	// c) set this to pipeline
 	gpID3D11DeviceContext->OMSetRenderTargets(1, &gpID3D11RenderTargetView, NULL);
 	piD3D11Texture2D->Release();

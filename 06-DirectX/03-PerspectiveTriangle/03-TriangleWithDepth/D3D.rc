@@ -1,5 +1,0 @@
-#include<windows.h>
-
-#include"D3D.h"
-
-MYICON ICON MyIcon.ico
