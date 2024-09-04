@@ -1,6 +1,6 @@
 
 
-clang++ -Wno-deprecated-declarations -c OGL.o OGL.mm Sphere.cpp -std=c++17
+clang++ -Wno-deprecated-declarations -c OGL.mm Sphere.cpp -std=c++17
 
 mkdir -p OGL.app/Contents/MacOS
 

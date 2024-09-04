@@ -166,6 +166,8 @@ int main(int argc, char* argv[])
     GLuint textureSamplerUniform_Cube;
 
     GLfloat cAngle;
+    // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
+    mat4 perspectiveProjectionMatrix_Cube;
 
     GLuint shaderProgramObject_PV;
     GLuint shaderProgramObject_PF;
@@ -228,7 +230,7 @@ int main(int argc, char* argv[])
 	GLfloat lightAngleTwo;
 
     // mat4 is datatype means 4 * 4 matrix (present in vmath.h)
-    mat4 perspectiveProjectionMatrix;
+    mat4 perspectiveProjectionMatrix_Sphere;
 
     // FBO(Frame Buffer Object) related variable
     GLint winWidth;
@@ -341,7 +343,7 @@ int main(int argc, char* argv[])
     NSRect rect = [self bounds];
 
     int width = rect.size.width;
-   int  height = rect.size.height;
+    int height = rect.size.height;
 
     // call user defined function resize
     [self resize_Cube:width : height];
@@ -668,7 +670,7 @@ int main(int argc, char* argv[])
     glClearColor(0.0f, 0.0f,  0.0f, 1.0f);
 
     // initialize orthographic projection matrix
-    perspectiveProjectionMatrix = vmath::mat4::identity();
+    perspectiveProjectionMatrix_Cube = vmath::mat4::identity();
 
     [self resize_Cube : WIN_WIDTH : WIN_HEIGHT];
 
@@ -1214,7 +1216,7 @@ int main(int argc, char* argv[])
     glClearColor(0.0f, 0.0f,  0.0f, 1.0f);
 
     // initialize orthographic projection matrix
-    perspectiveProjectionMatrix = vmath::mat4::identity();
+    perspectiveProjectionMatrix_Sphere = vmath::mat4::identity();
 
     
 	light[0].ambient = vec3(0.0f, 0.0f, 0.0f);
@@ -1340,7 +1342,7 @@ int main(int argc, char* argv[])
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
     // set perspective projection matrix
-    perspectiveProjectionMatrix = vmath::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+    perspectiveProjectionMatrix_Cube = vmath::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 }
 
 -(void)resize_Sphere :(int)width :(int)height
@@ -1355,7 +1357,7 @@ int main(int argc, char* argv[])
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
     // set perspective projection matrix
-    perspectiveProjectionMatrix = vmath::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+    perspectiveProjectionMatrix_Sphere = vmath::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 }
 
 -(void)display_Cube
@@ -1405,7 +1407,7 @@ int main(int argc, char* argv[])
     modelViewMatrix = translationMatrix * scaleMatrix * rotationMatrix;
 
     // order of multiplication is very important
-    mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
+    mat4 modelViewProjectionMatrix = perspectiveProjectionMatrix_Cube * modelViewMatrix;
 
     // push above mvp(model view projection) into vertex shader's mvp uniform
     glUniformMatrix4fv(mvpMatrixUniform_Cube, 1, GL_FALSE, modelViewProjectionMatrix);
@@ -1469,7 +1471,7 @@ int main(int argc, char* argv[])
 
 		glUniformMatrix4fv(viewMatrixUniform_PV, 1, GL_FALSE, viewMatrix);
 
-		glUniformMatrix4fv(projectionMatrixUniform_PV, 1, GL_FALSE, perspectiveProjectionMatrix);
+		glUniformMatrix4fv(projectionMatrixUniform_PV, 1, GL_FALSE, perspectiveProjectionMatrix_Sphere);
 
 		if (bLightingEnable == TRUE)
 		{
@@ -1525,7 +1527,7 @@ int main(int argc, char* argv[])
 
 		glUniformMatrix4fv(viewMatrixUniform_PF, 1, GL_FALSE, viewMatrix);
 
-		glUniformMatrix4fv(projectionMatrixUniform_PF, 1, GL_FALSE, perspectiveProjectionMatrix);
+		glUniformMatrix4fv(projectionMatrixUniform_PF, 1, GL_FALSE, perspectiveProjectionMatrix_Sphere);
 
 
 		if (bLightingEnable == TRUE)
