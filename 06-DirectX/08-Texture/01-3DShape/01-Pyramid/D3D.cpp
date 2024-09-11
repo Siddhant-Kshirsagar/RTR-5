@@ -60,7 +60,6 @@ ID3D11SamplerState *gpID3D11SamplerState = NULL;
 struct CBUFFER
 {
 	XMMATRIX WorldViewProjectionMatrix; // similar to OpenGL model is equal to 'world' word
-	XMMATRIX perspectiveProjectionMatrix; 
 };
 
 XMMATRIX perspectiveProjectionMatrix;
