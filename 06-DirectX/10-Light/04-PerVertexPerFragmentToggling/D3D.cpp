@@ -153,7 +153,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		fprintf(gpFILE, "====================================================\n\n");
 		fclose(gpFILE);
 	}
-	
+
 
 	//WNDCLASSEX Initialization
 	wndclass.cbSize = sizeof(WNDCLASSEX);
@@ -288,8 +288,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
-	//case WM_ERASEBKGND:
-	//	return(0);
+		//case WM_ERASEBKGND:
+		//	return(0);
 
 	case WM_KEYDOWN:
 	{
@@ -450,10 +450,10 @@ HRESULT initialize(void)
 			&d3dFeatureLevelAcquired,
 			&gpID3D11DeviceContext);
 
-			if (SUCCEEDED(hr))
-			{
-				break;
-			}
+		if (SUCCEEDED(hr))
+		{
+			break;
+		}
 	}
 
 
@@ -770,106 +770,109 @@ HRESULT initialize(void)
 		D3D11_BUFFER_DESC d3d11BufferDesc;
 		ZeroMemory((void *)&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
 
-d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT; // similar to openGL GL_DYNAMIC_DRAW
-d3d11BufferDesc.ByteWidth = gNumVertices * 3 * sizeof(float);
-d3d11BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-//d3d11BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT; // similar to openGL GL_DYNAMIC_DRAW
+		d3d11BufferDesc.ByteWidth = gNumVertices * 3 * sizeof(float);
+		d3d11BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		//d3d11BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-D3D11_SUBRESOURCE_DATA d3d11SubresourceData;
-ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-d3d11SubresourceData.pSysMem = sphere_vertices;
+		D3D11_SUBRESOURCE_DATA d3d11SubresourceData;
+		ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+		d3d11SubresourceData.pSysMem = sphere_vertices;
 
-hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_PositionBuffer_PV);
-if (FAILED(hr))
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() failed for position vertex buffer\n\n");
-	fclose(gpFILE);
-	return(hr);
-}
-else
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() succeeded for position vertex buffer\n\n");
-	fclose(gpFILE);
-}
+		hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_PositionBuffer_PV);
+		if (FAILED(hr))
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() failed for position vertex buffer\n\n");
+			fclose(gpFILE);
+			return(hr);
+		}
+		else
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() succeeded for position vertex buffer\n\n");
+			fclose(gpFILE);
+		}
 
-// Normals VB
-// Follow Same Above Method For Normals And Textures
-ZeroMemory(&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
-d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-d3d11BufferDesc.ByteWidth = gNumVertices * 3 * sizeof(float);
-d3d11BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		// Normals VB
+		// Follow Same Above Method For Normals And Textures
+		ZeroMemory(&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
+		d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		d3d11BufferDesc.ByteWidth = gNumVertices * 3 * sizeof(float);
+		d3d11BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-d3d11SubresourceData.pSysMem = sphere_normals;
-hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_NormalBuffer_PV);
-if (FAILED(hr))
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() failed for normals vertex buffer\n\n");
-	fclose(gpFILE);
-	return(hr);
-}
-else
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() succeeded for normals vertex buffer\n\n");
-	fclose(gpFILE);
-}
+		ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+		d3d11SubresourceData.pSysMem = sphere_normals;
+		hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_NormalBuffer_PV);
+		if (FAILED(hr))
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() failed for normals vertex buffer\n\n");
+			fclose(gpFILE);
+			return(hr);
+		}
+		else
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() succeeded for normals vertex buffer\n\n");
+			fclose(gpFILE);
+		}
 
-//  Index 
-// create index buffer
-ZeroMemory(&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
-d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-d3d11BufferDesc.ByteWidth = gNumElements * sizeof(unsigned short);
-d3d11BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		//  Index 
+		// create index buffer
+		ZeroMemory(&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
+		d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		d3d11BufferDesc.ByteWidth = gNumElements * sizeof(unsigned short);
+		d3d11BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-d3d11SubresourceData.pSysMem = sphere_elements;
-hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_IndexBuffer);
-if (FAILED(hr))
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() failed for index vertex buffer\n\n");
-	fclose(gpFILE);
-	return(hr);
-}
-else
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() succeeded for index vertex buffer\n\n");
-	fclose(gpFILE);
-}
+		ZeroMemory((void *)&d3d11SubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+		d3d11SubresourceData.pSysMem = sphere_elements;
+		hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, &d3d11SubresourceData, &gpID3D11Buffer_IndexBuffer);
+		if (FAILED(hr))
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() failed for index vertex buffer\n\n");
+			fclose(gpFILE);
+			return(hr);
+		}
+		else
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() succeeded for index vertex buffer\n\n");
+			fclose(gpFILE);
+		}
 
-// create constant buffer to send transformation like uniform data
-ZeroMemory((void *)&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
+		// create constant buffer to send transformation like uniform data
+		ZeroMemory((void *)&d3d11BufferDesc, sizeof(D3D11_BUFFER_DESC));
 
-d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT; // similar to openGL GL_DYNAMIC_DRAW
-d3d11BufferDesc.ByteWidth = sizeof(CBUFFER);
-d3d11BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		d3d11BufferDesc.Usage = D3D11_USAGE_DEFAULT; // similar to openGL GL_DYNAMIC_DRAW
+		d3d11BufferDesc.ByteWidth = sizeof(CBUFFER);
+		d3d11BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-// create constant buffer using above structure
-hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, NULL, &gpID3D11Buffer_ConstantBuffer_PV);
-if (FAILED(hr))
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() failed for constant buffer\n\n");
-	fclose(gpFILE);
-	return(hr);
-}
-else
-{
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "CreateBuffer() succeeded for constant buffer\n\n");
-	fclose(gpFILE);
-}
+		// create constant buffer using above structure
+		hr = gpID3D11Device->CreateBuffer(&d3d11BufferDesc, NULL, &gpID3D11Buffer_ConstantBuffer_PV);
+		if (FAILED(hr))
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() failed for constant buffer\n\n");
+			fclose(gpFILE);
+			return(hr);
+		}
+		else
+		{
+			gpFILE = fopen(gszLogFileName, "a+");
+			fprintf(gpFILE, "CreateBuffer() succeeded for constant buffer\n\n");
+			fclose(gpFILE);
+		}
 
-// set above buffer into pipeline
-gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer_PV);
+		// set above buffer into pipeline
+		gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer_PV);
+		gpID3D11DeviceContext->PSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer);
+
 	}
 
-		{
+	//per fragment
+	{
 		// Vertex Shader
 		const char *vertexShaderSourceCode =
 			"cbuffer ConstantBuffer" \
@@ -1088,7 +1091,7 @@ gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer
 		// initialize input element structure
 		// similiar to glBindAttribLocation()
 		D3D11_INPUT_ELEMENT_DESC d3dInputElementDesc[2];
-		ZeroMemory((void *)d3dInputElementDesc, sizeof(D3D11_INPUT_ELEMENT_DESC) * _ARRAYSIZE(d3dInputElementDesc));
+		ZeroMemory((void *)d3dInputElementDesc, sizeof(D3D11_INPUT_ELEMENT_DESC) *_ARRAYSIZE(d3dInputElementDesc));
 
 		// position
 		d3dInputElementDesc[0].SemanticName = "POSITION";
@@ -1246,8 +1249,8 @@ gpID3D11DeviceContext->VSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer
 		}
 
 		// set above buffer into pipeline
-		gpID3D11DeviceContext->VSSetConstantBuffers(0, 2, &gpID3D11Buffer_ConstantBuffer);
-		gpID3D11DeviceContext->PSSetConstantBuffers(0, 2, &gpID3D11Buffer_ConstantBuffer);
+		gpID3D11DeviceContext->VSSetConstantBuffers(1, 1, &gpID3D11Buffer_ConstantBuffer);
+		gpID3D11DeviceContext->PSSetConstantBuffers(0, 1, &gpID3D11Buffer_ConstantBuffer);
 	}
 
 	// create and set rasterizer state to off backface culling
@@ -1338,7 +1341,7 @@ HRESULT resize(int width, int height)
 	}
 
 	// resize swap chain buffer according to the changed 
-	gpIDXGISwapChain->ResizeBuffers(1,width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	gpIDXGISwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 	// create new render target view
 	// a) get the buffer for rtv from swapchain into the texture
@@ -1346,7 +1349,7 @@ HRESULT resize(int width, int height)
 	gpIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&piD3D11Texture2D);
 
 	// b) create RTV using above buffer
-	hr = gpID3D11Device->CreateRenderTargetView(piD3D11Texture2D,NULL,&gpID3D11RenderTargetView);
+	hr = gpID3D11Device->CreateRenderTargetView(piD3D11Texture2D, NULL, &gpID3D11RenderTargetView);
 	if (FAILED(hr))
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
@@ -1401,7 +1404,7 @@ HRESULT resize(int width, int height)
 	d3d11DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	d3d11DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 
-	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer,&d3d11DepthStencilViewDesc , &gpID3D11DepthStencilView);
+	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer, &d3d11DepthStencilViewDesc, &gpID3D11DepthStencilView);
 	if (FAILED(hr))
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
@@ -1500,7 +1503,7 @@ void display(void)
 		//// set position buffer into pipeline here
 		stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
 		offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
-		gpID3D11DeviceContext->IASetVertexBuffers(1, 1, &gpID3D11Buffer_NormalBuffer_PV, &stride, &offSet);
+		gpID3D11DeviceContext->IASetVertexBuffers(0, 1, &gpID3D11Buffer_NormalBuffer_PV, &stride, &offSet);
 
 		// set index buffer
 		gpID3D11DeviceContext->IASetIndexBuffer(gpID3D11Buffer_IndexBuffer, DXGI_FORMAT_R16_UINT, 0); // R16 maps with 'short'
@@ -1511,69 +1514,69 @@ void display(void)
 		// draw
 		gpID3D11DeviceContext->DrawIndexed(gNumElements, 0, 0);
 	}
-	//if (chooseShader == 'f')
-	//{
-	//	// transformation
-	//	XMMATRIX worldMatrix = XMMatrixIdentity();
+	if (chooseShader == 'f')
+	{
+		// transformation
+		XMMATRIX worldMatrix = XMMatrixIdentity();
 
-	//	XMMATRIX translationMatrix = XMMatrixIdentity();
-	//	translationMatrix = XMMatrixTranslation(0.0f, 0.0f, 4.0f);
+		XMMATRIX translationMatrix = XMMatrixIdentity();
+		translationMatrix = XMMatrixTranslation(0.0f, 0.0f, 4.0f);
 
-	//	worldMatrix = translationMatrix;
+		worldMatrix = translationMatrix;
 
-	//	XMMATRIX viewMatrix = XMMatrixIdentity();
+		XMMATRIX viewMatrix = XMMatrixIdentity();
 
-	//	CBUFFER constantBuffer;
-	//	ZeroMemory((void *)&constantBuffer, sizeof(CBUFFER));
-	//	constantBuffer.WorldMatrix = worldMatrix;
-	//	constantBuffer.ViewMatrix = viewMatrix;
-	//	constantBuffer.ProjectionMatrix = perspectiveProjectionMatrix;
+		CBUFFER constantBuffer;
+		ZeroMemory((void *)&constantBuffer, sizeof(CBUFFER));
+		constantBuffer.WorldMatrix = worldMatrix;
+		constantBuffer.ViewMatrix = viewMatrix;
+		constantBuffer.ProjectionMatrix = perspectiveProjectionMatrix;
 
-	//	if (bLightingEnable == TRUE)
-	//	{
-	//		constantBuffer.KeyPressed = 1;
+		if (bLightingEnable == TRUE)
+		{
+			constantBuffer.KeyPressed = 1;
 
-	//		constantBuffer.LightAmbient = XMVectorSet(lightAmbient[0], lightAmbient[1], lightAmbient[2], 0.0);
-	//		constantBuffer.LightDiffuse = XMVectorSet(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2], 0.0);
-	//		constantBuffer.LightSpecular = XMVectorSet(lightSpecular[0], lightSpecular[1], lightSpecular[2], 0.0);
-	//		constantBuffer.LightPosition = XMVectorSet(lightPosition[0], lightPosition[1], lightPosition[2], lightPosition[3]);
+			constantBuffer.LightAmbient = XMVectorSet(lightAmbient[0], lightAmbient[1], lightAmbient[2], 0.0);
+			constantBuffer.LightDiffuse = XMVectorSet(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2], 0.0);
+			constantBuffer.LightSpecular = XMVectorSet(lightSpecular[0], lightSpecular[1], lightSpecular[2], 0.0);
+			constantBuffer.LightPosition = XMVectorSet(lightPosition[0], lightPosition[1], lightPosition[2], lightPosition[3]);
 
-	//		constantBuffer.MaterialAmbient = XMVectorSet(materialAmbient[0], materialAmbient[1], materialAmbient[2], 0.0);
-	//		constantBuffer.MaterialDiffuse = XMVectorSet(materialDiffuse[0], materialDiffuse[1], materialDiffuse[2], 0.0);
-	//		constantBuffer.MaterialSpecular = XMVectorSet(materialSpecular[0], materialSpecular[1], materialSpecular[2], 0.0);
-	//		constantBuffer.MaterialShineness = materialShineness;
-	//	}
-	//	else
-	//	{
-	//		constantBuffer.KeyPressed = 0;
-	//	}
+			constantBuffer.MaterialAmbient = XMVectorSet(materialAmbient[0], materialAmbient[1], materialAmbient[2], 0.0);
+			constantBuffer.MaterialDiffuse = XMVectorSet(materialDiffuse[0], materialDiffuse[1], materialDiffuse[2], 0.0);
+			constantBuffer.MaterialSpecular = XMVectorSet(materialSpecular[0], materialSpecular[1], materialSpecular[2], 0.0);
+			constantBuffer.MaterialShineness = materialShineness;
+		}
+		else
+		{
+			constantBuffer.KeyPressed = 0;
+		}
 
-	//	// smiliar to glUniformMatrix4fv() in OpenGL
-	//	gpID3D11DeviceContext->UpdateSubresource(
-	//		gpID3D11Buffer_ConstantBuffer, 0, NULL, &constantBuffer, 0, 0);
+		// smiliar to glUniformMatrix4fv() in OpenGL
+		gpID3D11DeviceContext->UpdateSubresource(
+			gpID3D11Buffer_ConstantBuffer, 0, NULL, &constantBuffer, 0, 0);
 
-	//	//// set position buffer into pipeline here
-	//	UINT stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
-	//	UINT offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
-	//	gpID3D11DeviceContext->IASetVertexBuffers(0, 1, &gpID3D11Buffer_PositionBuffer, &stride, &offSet);
+		//// set position buffer into pipeline here
+		UINT stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
+		UINT offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
+		gpID3D11DeviceContext->IASetVertexBuffers(1, 1, &gpID3D11Buffer_PositionBuffer, &stride, &offSet);
 
-	//	//// set position buffer into pipeline here
-	//	stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
-	//	offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
-	//	gpID3D11DeviceContext->IASetVertexBuffers(1, 1, &gpID3D11Buffer_NormalBuffer, &stride, &offSet);
+		//// set position buffer into pipeline here
+		stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
+		offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
+		gpID3D11DeviceContext->IASetVertexBuffers(1, 1, &gpID3D11Buffer_NormalBuffer, &stride, &offSet);
 
-	//	// set index buffer
-	//	gpID3D11DeviceContext->IASetIndexBuffer(gpID3D11Buffer_IndexBuffer, DXGI_FORMAT_R16_UINT, 0); // R16 maps with 'short'
+		// set index buffer
+		gpID3D11DeviceContext->IASetIndexBuffer(gpID3D11Buffer_IndexBuffer, DXGI_FORMAT_R16_UINT, 0); // R16 maps with 'short'
 
-	//	 //set primitive geometry
-	//	gpID3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		 //set primitive geometry
+		gpID3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//	// draw
-	//	gpID3D11DeviceContext->DrawIndexed(gNumElements, 0, 0);
-	//}
+		// draw
+		gpID3D11DeviceContext->DrawIndexed(gNumElements, 0, 0);
+	}
 
 	// do double buffer by presenting swapchain
-	gpIDXGISwapChain->Present(0,0);
+	gpIDXGISwapChain->Present(0, 0);
 }
 
 void update(void)
@@ -1709,7 +1712,7 @@ void uninitialize(void)
 		ghwnd = NULL;
 	}
 
-	
+
 	// Close log file
 	if (gpFILE)
 	{
