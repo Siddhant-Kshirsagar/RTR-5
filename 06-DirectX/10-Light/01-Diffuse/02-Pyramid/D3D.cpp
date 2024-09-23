@@ -839,7 +839,7 @@ HRESULT initialize(void)
 	// now copy actual data
 	memcpy(d3dMappedSubresource.pData, pyramidNormals, sizeof(pyramidNormals));
 
-	// unmap position buffer
+	// unmap normal buffer
 	gpID3D11DeviceContext->Unmap(gpID3D11Buffer_NormalBuffer, 0);
 
 	// create constant buffer to send transformation like uniform data
