@@ -733,10 +733,6 @@ HRESULT initialize(void)
 	gNumVertices = getNumberOfSphereVertices();
 	gNumElements = getNumberOfSphereElements();
 
-	gpFILE = fopen(gszLogFileName, "a+");
-	fprintf(gpFILE, "getSphereVertexData() gNumVertices = %d \t  gNumElements = %d\n\n", gNumVertices,gNumElements);
-	fclose(gpFILE);
-
 	// position
 	// create vertex buffer for position
 	D3D11_BUFFER_DESC d3d11BufferDesc;
