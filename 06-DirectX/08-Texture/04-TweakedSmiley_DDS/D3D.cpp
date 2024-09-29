@@ -1043,7 +1043,7 @@ HRESULT resize(int width, int height)
 
 void display(void)
 {
-	HRESULT hr;
+	HRESULT hr = S_OK;
 	//code
 	// similar to clear color in openGL
 	gpID3D11DeviceContext->ClearRenderTargetView(gpID3D11RenderTargetView, clearColor);
