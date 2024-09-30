@@ -2,6 +2,8 @@
 #include<windows.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
+#include<dxgi.h>
 
 // d3d related header file
 #include<d3d11.h>
@@ -14,6 +16,7 @@
 // d3d related library
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
+#pragma comment(lib,"dxgi.lib")
 
 //Macros 
 #define WIN_WIDTH 800
@@ -317,6 +320,7 @@ HRESULT initialize(void)
 {
 	//function declarations
 	HRESULT resize(int width, int height);
+	void printD3DInfo(void);
 	// variable declaration
 	HRESULT hr = S_OK;
 
@@ -442,6 +446,8 @@ HRESULT initialize(void)
 		fprintf(gpFILE, "\n\n====================================================\n\n");
 		fclose(gpFILE);
 	}
+
+	printD3DInfo();
 
 	// Vertex Shader
 	const char *vertexShaderSourceCode =
@@ -849,6 +855,62 @@ HRESULT initialize(void)
 	}
 	return(hr);
 }
+
+void printD3DInfo(void)
+{
+	// variable declaration
+	IDXGIFactory *pIDXGIFactory = NULL;
+	IDXGIAdapter *pIDXGIAdaptor = NULL;
+	DXGI_ADAPTER_DESC dxgiAdaptorDesc;
+	HRESULT hr = S_OK;
+	char str[255];
+
+	// code
+	hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void **)&pIDXGIFactory);
+	if (FAILED(hr))
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDXGIFactory() failed\n\n");
+		fclose(gpFILE);
+		exit(0);
+	}
+	else
+	{
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "CreateDXGIFactory() successfully\n\n");
+		fclose(gpFILE);
+	}
+
+	if (pIDXGIFactory->EnumAdapters(0, &pIDXGIAdaptor) != DXGI_ERROR_NOT_FOUND)
+	{
+		ZeroMemory((void *)&dxgiAdaptorDesc, sizeof(DXGI_ADAPTER_DESC));
+		pIDXGIAdaptor->GetDesc(&dxgiAdaptorDesc);
+
+		WideCharToMultiByte(CP_ACP, 0, dxgiAdaptorDesc.Description, 255, str, 255, NULL, NULL);
+		gpFILE = fopen(gszLogFileName, "a+");
+		fprintf(gpFILE, "==================================================================\n\n");
+		fprintf(gpFILE, "Graphic Card Name = %s\n\n", str);
+		fprintf(gpFILE, "Memory in bytes = %I64d\n\n", dxgiAdaptorDesc.DedicatedVideoMemory);
+		fprintf(gpFILE, "Memory in GB = %d\n\n", (int)ceil(dxgiAdaptorDesc.DedicatedVideoMemory / 1024.0 / 1024.0 / 1024.0));
+		fprintf(gpFILE, "==================================================================\n\n");
+		fclose(gpFILE);
+
+	}
+
+	if (pIDXGIAdaptor)
+	{
+		pIDXGIAdaptor->Release();
+		pIDXGIAdaptor = NULL;
+	}
+
+	if (pIDXGIFactory)
+	{
+		pIDXGIFactory->Release();
+		pIDXGIFactory = NULL;
+	}
+
+}
+
 
 HRESULT resize(int width, int height)
 {
