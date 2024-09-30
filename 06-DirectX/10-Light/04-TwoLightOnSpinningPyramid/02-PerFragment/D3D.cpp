@@ -497,54 +497,6 @@ HRESULT initialize(void)
 	}
 
 	// Vertex Shader
-	/*const char *vertexShaderSourceCode =
-		"cbuffer ConstantBuffer" \
-		"{" \
-		"float4x4 worldMatrix;" \
-		"float4x4 viewMatrix;" \
-		"float4x4 projectionMatrix;" \
-		"float4 lightAmbient[2];" \
-		"float4 lightDiffuse[2];" \
-		"float4 lightSpecular[2];" \
-		"float4 lightPosition[2];" \
-		"float4 materialAmbient;" \
-		"float4 materialDiffuse;" \
-		"float4 materialSpecular;" \
-		"float materialShineness;" \
-		"uint KeyPressed;" \
-		"}" \
-		"struct vertex_output" \
-		"{" \
-		"float4 position:SV_POSITION;" \
-		"float3 phongADSLight:COLOR;" \
-		"};" \
-		"vertex_output main(float4 pos:POSITION, float3 norm:NORMAL)" \
-		"{" \
-		"vertex_output output;" \
-		"if(KeyPressed == 1)" \
-		"{" \
-		"float4 eyeCoordinates = mul(viewMatrix,mul(worldMatrix,pos));" \
-		"float3 transformedNormals = normalize(mul((float3x3)worldMatrix,norm));" \
-		"for(int i=0; i<2; i++)" \
-		"{" \
-		"float3 lightDirection = normalize((float3)(lightPosition[i] - eyeCoordinates));" \
-		"float3 reflectionVector = reflect(-lightDirection,transformedNormals);" \
-		"float3 viewerVector = normalize(-eyeCoordinates.xyz);" \
-		"float3 ambientLight = lightAmbient[i] * materialAmbient;" \
-		"float3 diffuseLight = lightDiffuse[i] * materialDiffuse * max(dot(lightDirection,transformedNormals),0.0);" \
-		"float3 specularLight = lightSpecular[i] * materialSpecular * pow(max(dot(reflectionVector,viewerVector),0.0),materialShineness);" \
-		"output.phongADSLight = output.phongADSLight + ambientLight + diffuseLight + specularLight;" \
-		"}" \
-		"}" \
-		"else" \
-		"{" \
-		"output.phongADSLight = float3(1.0,1.0,1.0);" \
-		"}" \
-		"float4 position = mul(projectionMatrix,mul(viewMatrix,mul(worldMatrix,pos)));" \
-		"output.position = position;" \
-		"return(output);" \
-		"}";*/
-
 	const char *vertexShaderSourceCode =
 		"cbuffer ConstantBuffer" \
 		"{" \
@@ -565,8 +517,8 @@ HRESULT initialize(void)
 		"{" \
 		"float4 position:SV_POSITION;" \
 		"float3 transformedNormal:NORMAL0;" \
-		"float3 lightDirection[2]:TEXCOORD0;" \
 		"float3 viewerVector:NORMAL1;" \
+		"float3 lightDirection[2]:TEXCOORD0;" \
 		"};" \
 		"vertex_output main(float4 pos:POSITION, float3 norm:NORMAL)" \
 		"{" \
@@ -671,8 +623,8 @@ HRESULT initialize(void)
 		"{" \
 		"float4 position:SV_POSITION;" \
 		"float3 transformedNormal:NORMAL0;" \
-		"float3 lightDirection[2]:TEXCOORD0;" \
 		"float3 viewerVector:NORMAL1;" \
+		"float3 lightDirection[2]:TEXCOORD0;" \
 		"};" \
 		"float4 main(vertex_output input): SV_TARGET" \
 		"{" \
@@ -1289,9 +1241,6 @@ void display(void)
 	stride = sizeof(float) * 3; // similar to glVertexAttribPointer() 3rd parameter
 	offSet = NULL;// similar to glVertexAttribPointer() 6th parameter
 	gpID3D11DeviceContext->IASetVertexBuffers(1, 1, &gpID3D11Buffer_NormalBuffer, &stride, &offSet);
-
-	// set index buffer
-	gpID3D11DeviceContext->IASetIndexBuffer(gpID3D11Buffer_IndexBuffer, DXGI_FORMAT_R16_UINT, 0); // R16 maps with 'short'
 
 	 //set primitive geometry
 	gpID3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

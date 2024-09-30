@@ -43,8 +43,8 @@ ID3D11DeviceContext *gpID3D11DeviceContext = NULL;
 ID3D11RenderTargetView *gpID3D11RenderTargetView = NULL;
 ID3D11DepthStencilView *gpID3D11DepthStencilView = NULL;
 
-ID3D11VertexShader *gpID3D11VertexShader = NULL;
-ID3D11PixelShader *gpID3D11PixelShader = NULL;
+ID3D11VertexShader *gpID3D11VertexShader_PV = NULL;
+ID3D11PixelShader *gpID3D11PixelShader_PV = NULL;
 
 ID3D11VertexShader *gpID3D11VertexShader_PF = NULL;
 ID3D11PixelShader *gpID3D11PixelShader_PF = NULL;
@@ -311,7 +311,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				ToggleFullScreen();
 				gbFullscreen = FALSE;
 			}
-			break;
 			break;
 		default:
 			break;
@@ -610,7 +609,7 @@ HRESULT initialize(void)
 			pID3DBlob_VertexShaderSourceCode->GetBufferPointer(),
 			pID3DBlob_VertexShaderSourceCode->GetBufferSize(),
 			NULL,
-			&gpID3D11VertexShader);
+			&gpID3D11VertexShader_PV);
 
 		if (FAILED(hr))
 		{
@@ -675,7 +674,7 @@ return(hr);
 			pID3DBlob_PixelShaderSourceCode->GetBufferPointer(),
 			pID3DBlob_PixelShaderSourceCode->GetBufferSize(),
 			NULL,
-			&gpID3D11PixelShader);
+			&gpID3D11PixelShader_PV);
 
 		if (FAILED(hr))
 		{
@@ -1394,9 +1393,9 @@ void display(void)
 	if (chooseShader == 'v')
 	{
 		// set above created vertex shader into pipeline
-		gpID3D11DeviceContext->VSSetShader(gpID3D11VertexShader, NULL, 0);
+		gpID3D11DeviceContext->VSSetShader(gpID3D11VertexShader_PV, NULL, 0);
 		// set above created pixel shader into pipeline
-		gpID3D11DeviceContext->PSSetShader(gpID3D11PixelShader, NULL, 0);
+		gpID3D11DeviceContext->PSSetShader(gpID3D11PixelShader_PV, NULL, 0);
 
 	}
 	else if (chooseShader == 'f')
@@ -1570,15 +1569,15 @@ void uninitialize(void)
 		gpID3D11InputLayout->Release();
 		gpID3D11InputLayout = NULL;
 	}
-	if (gpID3D11PixelShader)
+	if (gpID3D11PixelShader_PV)
 	{
-		gpID3D11PixelShader->Release();
-		gpID3D11PixelShader = NULL;
+		gpID3D11PixelShader_PV->Release();
+		gpID3D11PixelShader_PV = NULL;
 	}
-	if (gpID3D11VertexShader)
+	if (gpID3D11VertexShader_PV)
 	{
-		gpID3D11VertexShader->Release();
-		gpID3D11VertexShader = NULL;
+		gpID3D11VertexShader_PV->Release();
+		gpID3D11VertexShader_PV = NULL;
 	}
 	if (gpID3D11DepthStencilView)
 	{
