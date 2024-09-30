@@ -283,8 +283,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				fprintf(gpFILE, "resize() successfully\n\n");
 				fclose(gpFILE);
 			}
-			currentWinWidth = LOWORD(lParam);
-			currentWinHeight = HIWORD(lParam);
 		}
 		break;
 
@@ -1020,6 +1018,7 @@ void printD3DInfo(void)
 }
 
 
+
 HRESULT resize(int width, int height)
 {
 	// variable declaration
@@ -1045,8 +1044,12 @@ HRESULT resize(int width, int height)
 		gpID3D11RenderTargetView = NULL;
 	}
 
+	gpFILE = fopen(gszLogFileName, "a+");
+	fprintf(gpFILE, "Widht = %d height = %d \n\n", width, height);
+	fclose(gpFILE);
+
 	// resize swap chain buffer according to the changed 
-	gpIDXGISwapChain->ResizeBuffers(1,width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	gpIDXGISwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 	// create new render target view
 	// a) get the buffer for rtv from swapchain into the texture
@@ -1054,7 +1057,7 @@ HRESULT resize(int width, int height)
 	gpIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&piD3D11Texture2D);
 
 	// b) create RTV using above buffer
-	hr = gpID3D11Device->CreateRenderTargetView(piD3D11Texture2D,NULL,&gpID3D11RenderTargetView);
+	hr = gpID3D11Device->CreateRenderTargetView(piD3D11Texture2D, NULL, &gpID3D11RenderTargetView);
 	if (FAILED(hr))
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
@@ -1069,9 +1072,14 @@ HRESULT resize(int width, int height)
 		fclose(gpFILE);
 	}
 
+
 	// Create an empty texture according to the new changed size we will call it as depth buffer
 	D3D11_TEXTURE2D_DESC d3d11Texture2DDesc;
 	ZeroMemory((void *)&d3d11Texture2DDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	gpFILE = fopen(gszLogFileName, "a+");
+	fprintf(gpFILE, "Widht = %d height = %d \n\n", width, height);
+	fclose(gpFILE);
 
 	d3d11Texture2DDesc.Width = (UINT)width;
 	d3d11Texture2DDesc.Height = (UINT)height;
@@ -1109,7 +1117,7 @@ HRESULT resize(int width, int height)
 	d3d11DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	d3d11DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 
-	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer,&d3d11DepthStencilViewDesc , &gpID3D11DepthStencilView);
+	hr = gpID3D11Device->CreateDepthStencilView(pID3D11Texture2D_DepthBuffer, &d3d11DepthStencilViewDesc, &gpID3D11DepthStencilView);
 	if (FAILED(hr))
 	{
 		gpFILE = fopen(gszLogFileName, "a+");
@@ -1133,7 +1141,7 @@ HRESULT resize(int width, int height)
 
 	// initialize and set the view // similar to openGL viewport
 	D3D11_VIEWPORT d3dViewport;
-	
+
 	ZeroMemory((void *)&d3dViewport, sizeof(D3D11_VIEWPORT));
 
 	d3dViewport.TopLeftX = 0.0f;
@@ -1145,6 +1153,10 @@ HRESULT resize(int width, int height)
 
 	// set above viewport in pipeline
 	gpID3D11DeviceContext->RSSetViewports(1, &d3dViewport);
+
+	currentWinWidth = width;
+	currentWinHeight = height;
+
 	// initialize perspective projection
 
 	perspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
@@ -1585,6 +1597,7 @@ void display(void)
 		// shininess
 		materialShineness = 0.6f * 128;
 
+
 		// initialize and set the view // similar to openGL viewport
 		ZeroMemory((void *)&d3dViewport, sizeof(D3D11_VIEWPORT));
 
@@ -1594,6 +1607,7 @@ void display(void)
 		d3dViewport.Height = (float)difference_Y;
 		d3dViewport.MinDepth = 0.0f;
 		d3dViewport.MaxDepth = 1.0f;
+
 
 		// set above viewport in pipeline
 		gpID3D11DeviceContext->RSSetViewports(1, &d3dViewport);
@@ -1679,6 +1693,7 @@ void display(void)
 
 		// shininess
 		materialShineness = 0.1f * 128;
+
 
 		// initialize and set the view // similar to openGL viewport
 		ZeroMemory((void *)&d3dViewport, sizeof(D3D11_VIEWPORT));
